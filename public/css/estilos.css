@@ -1,0 +1,13 @@
+.fl_image {
+    float: left;
+    margin-right: 15px;
+}
+
+.fr_image {
+    float: right;
+    margin-left: 15px;
+}
+
+body{
+    font: 1.5em Arial, Helvetica, sans-serif;
+}

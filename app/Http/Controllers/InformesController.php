@@ -161,7 +161,7 @@ class InformesController extends Controller
         return  $pdf->stream('invoice.pdf');
         //return view('informes.diagnostico_vivienda', compact('info_vivienda'));
 
-        
+
         //comentrio para juanchoooo pkkkkkk Parece que si 3 2 1
 
     }
