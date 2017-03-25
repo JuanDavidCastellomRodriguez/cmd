@@ -1,0 +1,29 @@
+*{
+    font-family: 'Roboto Condensed', sans-serif;
+}
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+nav ul li a.btn{
+    margin-left:2px ;
+    margin-right: 0;
+    padding: 0 5px 0 5px;
+    font-size: 12px;
+
+}
+nav  a.button-collapse{
+    color: red;
+}
+
+@media only screen and (max-width: 992px) {
+    nav .brand-logo {
+    left:90%;
+    }
+}
