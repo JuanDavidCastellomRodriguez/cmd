@@ -160,6 +160,6 @@ class InformesController extends Controller
         $pdf->loadView('informes.diagnostico_vivienda',compact('info_vivienda'));
         return  $pdf->stream('invoice.pdf');
         //return view('informes.diagnostico_vivienda', compact('info_vivienda'));
-        //comentrio para juanchoooo
+        //comentrio para juanchoooo pkkkkkk
     }
 }
