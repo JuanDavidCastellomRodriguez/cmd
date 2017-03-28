@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class HabitacionesController extends Controller
 {
     public function getAllHabitaciones(Request $request){
-        $habitaciones = Habitacione::where('id_informacion', $request->idInfo)->get();
+        $habitaciones = Habitacione::where('id_informacion', $request->idInfo)->where('id_tipo_visita',$request->tipo_visita)->get()->first();
         /*$data = new Collection();
         foreach ($habitaciones as $item) {
             $data->add([
@@ -65,6 +65,7 @@ class HabitacionesController extends Controller
             }else{
 
                 $habitacion = new Habitacione();
+                $habitacion->id_tipo_visita = $request->habitacion->id_tipo_visita;
                 $habitacion->estructura_viga = $request->habitacion->estructura_viga;
                 $habitacion->estructura_columna = $request->habitacion->estructura_columna;
                 $habitacion->panete_interno = $request->habitacion->panete_interno;

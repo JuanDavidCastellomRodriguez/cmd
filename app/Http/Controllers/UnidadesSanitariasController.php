@@ -11,45 +11,46 @@ class UnidadesSanitariasController extends Controller
 {
     public function getAllUnidades(Request $request){
         try{
-            $unidades = UnidadesSanitaria::where('id_informacion', $request->id)->get();
-            $data = new Collection();
-            foreach ( $unidades as $u){
-                //$list = ElementosSanitariosInstalado::where('id_unidades_sanitarias',$u->id)->get()->pluck('id_elementos_sanitarios');
-
-                $data->push([
-                    'elementos' => $u->Elemento->pluck('id'),
-                    'id' => $u->id,
-                    'estructura_viga' => $u->estructura_viga,
-                    'estructura_columna' => $u->estructura_columna,
-                    'panete_interno' => $u->panete_interno,
-                    'panete_externo' => $u->panete_externo,
-                    'estuco' => $u->estuco,
-                    'pintura' => $u->pintura,
-                    'muros_enchapado' => $u->muros_enchapado,
-                    'cantidad_puertas' => $u->cantidad_puertas,
-                    'cantidad_ventanas' => $u->cantidad_ventanas,
-                    'observaciones' => $u->observaciones,
-                    'id_estado_vivienda' => $u->id_estado_vivienda,
-                    'id_informacion' => $u->id_informacion,
-                    'id_tipo_muro' => $u->id_tipo_muro,
-                    'id_tipo_piso' => $u->id_tipo_piso,
-                    'id_tipo_cubierta' => $u->id_tipo_cubierta,
-                    'id_material_puertas' => $u->id_material_puertas,
-                    'id_material_ventanas' => $u->id_material_ventanas,
-                    'piso_deteriorado' => $u->piso_deteriorado,
-                    'nombre' => $u->nombre,
-                    'puertas' => $u->puertas,
-                    'ventanas' => $u->ventanas,
-                    'id_tipo_unidad_sanitaria' => $u->id_tipo_unidad_sanitaria,
-                    'tanque_elevado' => $u->tanque_elevado,
-                    'tanque_lavadero' => $u->tanque_lavadero,
-                    'id_materiales_tanques_elevados' => $u->id_materiales_tanques_elevados,
-                    'id_materiales_tanques_lavaderos' => $u->id_materiales_tanques_lavaderos,
-                    'id_acabados_tanques_lavaderos' => $u->id_acabados_tanques_lavaderos,
+            $unidad = UnidadesSanitaria::where('id_informacion', $request->id)->where('id_tipo_visita',$request->tipo_visita)->get()->first();
+            $data = null;
+            if($unidad){
+                $data = ([
+                    'elementos' => $unidad->Elemento->pluck('id'),
+                    'id' => $unidad->id,
+                    'estructura_viga' => $unidad->estructura_viga,
+                    'estructura_columna' => $unidad->estructura_columna,
+                    'panete_interno' => $unidad->panete_interno,
+                    'panete_externo' => $unidad->panete_externo,
+                    'estuco' => $unidad->estuco,
+                    'pintura' => $unidad->pintura,
+                    'muros_enchapado' => $unidad->muros_enchapado,
+                    'cantidad_puertas' => $unidad->cantidad_puertas,
+                    'cantidad_ventanas' => $unidad->cantidad_ventanas,
+                    'observaciones' => $unidad->observaciones,
+                    'id_estado_vivienda' => $unidad->id_estado_vivienda,
+                    'id_informacion' => $unidad->id_informacion,
+                    'id_tipo_muro' => $unidad->id_tipo_muro,
+                    'id_tipo_piso' => $unidad->id_tipo_piso,
+                    'id_tipo_cubierta' => $unidad->id_tipo_cubierta,
+                    'id_material_puertas' => $unidad->id_material_puertas,
+                    'id_material_ventanas' => $unidad->id_material_ventanas,
+                    'id_tipo_visita' =>$unidad->id_tipo_visita,
+                    'piso_deteriorado' => $unidad->piso_deteriorado,
+                    'nombre' => $unidad->nombre,
+                    'puertas' => $unidad->puertas,
+                    'ventanas' => $unidad->ventanas,
+                    'id_tipo_unidad_sanitaria' => $unidad->id_tipo_unidad_sanitaria,
+                    'tanque_elevado' => $unidad->tanque_elevado,
+                    'tanque_lavadero' => $unidad->tanque_lavadero,
+                    'id_materiales_tanques_elevados' => $unidad->id_materiales_tanques_elevados,
+                    'id_materiales_tanques_lavaderos' => $unidad->id_materiales_tanques_lavaderos,
+                    'id_acabados_tanques_lavaderos' => $unidad->id_acabados_tanques_lavaderos,
                 ]);
-
-
             }
+
+
+
+
 
             return response()->json([
                 'estado' => 'ok',
@@ -58,7 +59,7 @@ class UnidadesSanitariasController extends Controller
 
             ]);
 
-        }catch (\Exception $ee){
+        }catch (\SQLiteException $ee){
             return response()->json([
                 'estado' => 'fail',
                 'error' => $ee->getMessage(),
@@ -115,6 +116,7 @@ class UnidadesSanitariasController extends Controller
 
             }else{
                 $unidad = new UnidadesSanitaria();
+                $unidad->id_tipo_visita = $request->unidad->id_tipo_visita;
                 $unidad->estructura_viga = $request->unidad->estructura_viga;
                 $unidad->estructura_columna = $request->unidad->estructura_columna;
                 $unidad->panete_interno = $request->unidad->panete_interno;

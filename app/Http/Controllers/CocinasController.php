@@ -11,7 +11,7 @@ class CocinasController extends Controller
         try{
             return response()->json([
                 'estado' => 'ok',
-                'cocinas' => Cocina::where('id_informacion', $request->idInfo)->get()
+                'cocinas' => Cocina::where('id_informacion', $request->idInfo)->where('id_tipo_visita',$request->tipo_visita)->get()->first()
             ]);
         }catch (\Exception $ee){
             return response()->json([
@@ -63,6 +63,7 @@ class CocinasController extends Controller
 
             }else{
                 $cocina = new Cocina();
+                $cocina->id_tipo_visita = $request->cocina->id_tipo_visita;
                 $cocina->estructura_viga = $request->cocina->estructura_viga;
                 $cocina->estructura_columna = $request->cocina->estructura_columna;
                 $cocina->panete_interno = $request->cocina->panete_interno;
@@ -107,19 +108,4 @@ class CocinasController extends Controller
         }
     }
 
-    public function eliminarCocina(Request $request){
-        try{
-            Cocina::find($request->id)->delete();
-            return response()->json([
-                'estado' => 'ok',
-                'mensaje' => 'Borrada Correctamente'
-            ]);
-
-        }catch (\Exception $ee){
-            return response()->json([
-                'estado' => 'fail',
-                'error' => $ee->getMessage(),
-            ]);
-        }
-    }
 }

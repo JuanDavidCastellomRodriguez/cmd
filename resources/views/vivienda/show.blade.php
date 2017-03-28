@@ -538,6 +538,7 @@
                     id_tipo_cubierta : null,
                     id_material_puertas : null,
                     id_material_ventanas : null,
+                    id_tipo_visita : 1,
 
                 },
                 habitacionToDelete : '',
@@ -551,18 +552,9 @@
                 this.$http.post('/vivienda/habitaciones/guardarhabitacion',{habitacion : this.nuevaHabitacion }).then((response)=>{
                    if(response.body.estado == 'ok'){
                        if(response.body.edicion){
-                           $("#modal-agregar-habitacion").modal('hide');
-                           var index = this.habitaciones.indexOf(this.habitacionToEdit);
-                           this.habitaciones.splice(index,1);
-                           this.habitaciones.splice(index,0,this.nuevaHabitacion);
                            notificarOk('', 'Habitación editada correctamente');
-                           this.formReset();
                        }else{
-                           this.nuevaHabitacion.id = response.body.id;
-                           this.habitaciones.push(this.nuevaHabitacion);
-                           $("#modal-agregar-habitacion").modal('hide');
                            notificarOk('', 'Habitación agregada correctamente');
-                           this.formReset();
                        }
 
                    }else{
@@ -573,65 +565,19 @@
                 });
 
             },
-            editarHabitacion : function (habitacion) {
-                this.nuevaHabitacion = JSON.parse(JSON.stringify(habitacion));
-                this.habitacionToEdit = habitacion;
-                $("#modal-agregar-habitacion").modal('show');
-            },
-            formReset : function(){
-                this.nuevaHabitacion = {
-                    id : '',
-                    id_informacion : this.idinfo,
-                    nombre : '',
-                    estructura_viga : false,
-                    estructura_columna : false,
-                    panete_interno : false,
-                    panete_externo : false,
-                    estuco : false,
-                    pintura : false,
-                    cantidad_puertas : 0,
-                    cantidad_ventanas : 0,
-                    ventanas : false,
-                    puertas : false,
-                    observaciones : '',
-                    piso_deteriorado : false,
-                    id_estado_vivienda : null,
-                    id_tipo_muro : null,
-                    id_tipo_piso : null,
-                    id_tipo_cubierta : null,
-                    id_material_puertas : null,
-                    id_material_ventanas : null,
 
-                }
-            },
-            eliminarHabitacion : function () {
-                this.$http.post('/vivienda/habitaciones/eliminarhabitacion', {id : this.habitacionToDelete.id}).then((response)=>{
-                    if(response.body.estado == 'ok'){
-                        this.habitaciones.splice(this.habitaciones.indexOf(this.habitacionToDelete),1);
-                        notificarOk('', 'Habitación eliminada correctamente');
-                        $("#modal-confirm-delete-habitacion").modal('hide');
-                    }else{
-                        notificarFail('', 'ERROR: ' + response.body.error);
-                        $("#modal-confirm-delete-habitacion").modal('hide');
-                    }
-                },(error)=>{
-                    notificarFail('', 'ERROR: '+error.status+' '+ error.statusText);
-                    $("#modal-confirm-delete-habitacion").modal('hide');
-                });
-            },
-            prepareToRemove : function (habitacion) {
-                this.habitacionToDelete = habitacion;
-            }
+
 
 
         },
-        created() {
 
-        },
         mounted(){
-            this.$http.post('/vivienda/habitaciones/getallhabitaciones',{idInfo : this.idinfo}).then((responde)=>{
+            this.$http.post('/vivienda/habitaciones/getallhabitaciones',{idInfo : this.idinfo, tipo_visita : 1}).then((responde)=>{
                 if(responde.body.estado == 'ok'){
-                    this.habitaciones = responde.body.habitaciones;
+                    if(responde.body.habitaciones != null){
+                        this.nuevaHabitacion = responde.body.habitaciones;
+                    }
+
                 }
             },(error)=>{
                 notificarFail('', 'ERROR: '+error.status+' '+ error.statusText);
@@ -675,6 +621,7 @@
                     id_material_puertas : null,
                     id_material_ventanas : null,
                     id_tipo_unidad_sanitaria : null,
+                    id_tipo_visita : 1,
                     tanque_elevado : false,
                     tanque_lavadero : false,
                     id_materiales_tanques_elevados : null,
@@ -694,18 +641,10 @@
                 this.$http.post('/subsidios/vivienda/diagnostico/usanitaria/guardarunidad',{unidad : this.nuevaUnidadSanitaria }).then((response)=>{
                     if(response.body.estado == 'ok'){
                         if(response.body.edicion){
-                            $("#modal-agregar-unidad").modal('hide');
-                            var index = this.unidadesSanitarias.indexOf(this.unidadToEdit);
-                            this.unidadesSanitarias.splice(index,1);
-                            this.unidadesSanitarias.splice(index,0,this.nuevaUnidadSanitaria);
                             notificarOk('', 'Unidad Sanitaria editada correctamente');
-                            this.formReset();
                         }else{
                             this.nuevaUnidadSanitaria.id = response.body.id;
-                            this.unidadesSanitarias.push(this.nuevaUnidadSanitaria);
-                            $("#modal-agregar-unidad").modal('hide');
                             notificarOk('', 'Unidad Sanitaria agregada correctamente');
-                            this.formReset();
                         }
 
                     }else{
@@ -716,64 +655,6 @@
                 });
 
             },
-            editarUnidadSanitaria : function (unidad) {
-                this.nuevaUnidadSanitaria = JSON.parse(JSON.stringify(unidad));
-                this.unidadToEdit = unidad;
-                $("#modal-agregar-unidad").modal('show');
-            },
-            formReset : function(){
-                this.nuevaUnidadSanitaria = {
-                    id : '',
-                    id_informacion : this.idinfo,
-                    nombre : '',
-                    estructura_viga : false,
-                    estructura_columna : false,
-                    panete_interno : false,
-                    panete_externo : false,
-                    estuco : false,
-                    pintura : false,
-                    cantidad_puertas : 0,
-                    cantidad_ventanas : 0,
-                    muros_enchapado : false,
-                    ventanas : false,
-                    puertas : false,
-                    observaciones : '',
-                    piso_deteriorado : false,
-                    id_estado_vivienda : null,
-                    id_tipo_muro : null,
-                    id_tipo_piso : null,
-                    id_tipo_cubierta : null,
-                    id_material_puertas : null,
-                    id_material_ventanas : null,
-                    id_tipo_unidad_sanitaria : null,
-                    tanque_elevado : false,
-                    tanque_lavadero : false,
-                    id_materiales_tanques_elevados : null,
-                    id_materiales_tanques_lavaderos : null,
-                    id_acabados_tanques_lavaderos : null,
-                    elementos : [],
-
-                }
-            },
-            eliminarUnidadSanitaria : function () {
-                this.$http.post('/subsidios/vivienda/diagnostico/usanitaria/eliminar', {id : this.unidadToDelete.id}).then((response)=>{
-                    if(response.body.estado == 'ok'){
-                        this.unidadesSanitarias.splice(this.unidadesSanitarias.indexOf(this.unidadToDelete),1);
-                        notificarOk('', 'Unidad Sanitaria eliminada correctamente');
-                        $("#modal-confirm-delete-unidad").modal('hide');
-                    }else{
-                        notificarFail('', 'ERROR: ' + response.body.error);
-                        $("#modal-confirm-delete-unidad").modal('hide');
-                    }
-                },(error)=>{
-                    notificarFail('', 'ERROR: '+error.status+' '+ error.statusText);
-                    $("#modal-confirm-delete-unidad").modal('hide');
-                });
-            },
-            prepareToRemove : function (unidad) {
-                this.unidadToDelete = unidad;
-            }
-
 
         },
         created() {
@@ -791,9 +672,12 @@
 
         },
         mounted(){
-            this.$http.post('/subsidios/vivienda/diagnostico/usanitaria/getallunidades',{id : this.idinfo}).then((responde)=>{
+            this.$http.post('/subsidios/vivienda/diagnostico/usanitaria/getallunidades',{id : this.idinfo, tipo_visita : 1}).then((responde)=>{
                 if(responde.body.estado == 'ok'){
-                    this.unidadesSanitarias = responde.body.data;
+                    if(responde.body.data != ''){
+                        this.nuevaUnidadSanitaria = responde.body.data;
+                    }
+
                 }
             },(error)=>{
                 notificarFail('', 'ERROR: '+error.status+' '+ error.statusText);
@@ -841,6 +725,7 @@
                         id_tipo_meson : null,
                         id_elemento_cocina : null,
                         id_fuente_energia_cocinas : null,
+                        id_tipo_visita : 1,
                         estufa : false,
                         meson : false,
                         lavaplato : false,
@@ -857,18 +742,10 @@
                     this.$http.post('/vivienda/cocinas/guardarcocina',{cocina : this.nuevaCocina }).then((response)=>{
                         if(response.body.estado == 'ok'){
                             if(response.body.edicion){
-                                $("#modal-agregar-cocina").modal('hide');
-                                var index = this.cocinas.indexOf(this.cocinaToEdit);
-                                this.cocinas.splice(index,1);
-                                this.cocinas.splice(index,0,this.nuevaCocina);
                                 notificarOk('', 'Cocina editada correctamente');
-                                this.formReset();
                             }else{
                                 this.nuevaCocina.id = response.body.id;
-                                this.cocinas.push(this.nuevaCocina);
-                                $("#modal-agregar-cocina").modal('hide');
                                 notificarOk('', 'Cocina agregada correctamente');
-                                this.formReset();
                             }
 
                         }else{
@@ -879,62 +756,7 @@
                     });
 
                 },
-                editarCocina : function (cocina) {
-                    this.nuevaCocina = JSON.parse(JSON.stringify(cocina));
-                    this.cocinaToEdit = cocina;
-                    $("#modal-agregar-cocina").modal('show');
-                },
-                formReset : function(){
-                    this.nuevaCocina = {
-                        id : '',
-                        id_informacion : this.idinfo,
-                        nombre : '',
-                        estructura_viga : false,
-                        estructura_columna : false,
-                        panete_interno : false,
-                        panete_externo : false,
-                        estuco : false,
-                        pintura : false,
-                        cantidad_puertas : 0,
-                        cantidad_ventanas : 0,
-                        muros_enchapado : false,
-                        ventanas : false,
-                        puertas : false,
-                        observaciones : '',
-                        piso_deteriorado : false,
-                        id_estado_vivienda : null,
-                        id_tipo_muro : null,
-                        id_tipo_piso : null,
-                        id_tipo_cubierta : null,
-                        id_material_puertas : null,
-                        id_material_ventanas : null,
-                        id_tipo_meson : null,
-                        id_elemento_cocina : null,
-                        id_fuente_energia_cocinas : null,
-                        estufa : false,
-                        meson : false,
-                        lavaplato : false,
 
-                    }
-                },
-                eliminarCocina : function () {
-                    this.$http.post('/vivienda/cocinas/eliminarcocina', {id : this.cocinaToDelete.id}).then((response)=>{
-                        if(response.body.estado == 'ok'){
-                            this.cocinas.splice(this.cocinas.indexOf(this.cocinaToDelete),1);
-                            notificarOk('', 'Cocina eliminada correctamente');
-                            $("#modal-confirm-delete-cocina").modal('hide');
-                        }else{
-                            notificarFail('', 'ERROR: ' + response.body.error);
-                            $("#modal-confirm-delete-habitacion").modal('hide');
-                        }
-                    },(error)=>{
-                        notificarFail('', 'ERROR: '+error.status+' '+ error.statusText);
-                        $("#modal-confirm-delete-habitacion").modal('hide');
-                    });
-                },
-                prepareToRemove : function (cocina) {
-                    this.cocinaToDelete = cocina;
-                }
 
 
             },
@@ -950,9 +772,12 @@
 
             },
             mounted(){
-                this.$http.post('/vivienda/cocinas/getallcocinas',{idInfo : this.idinfo}).then((responde)=>{
+                this.$http.post('/vivienda/cocinas/getallcocinas',{idInfo : this.idinfo, tipo_visita : 1}).then((responde)=>{
                     if(responde.body.estado == 'ok'){
-                        this.cocinas = responde.body.cocinas;
+                        if(responde.body.cocinas != null){
+                            this.nuevaCocina = responde.body.cocinas;
+                        }
+
                     }
                 },(error)=>{
                     notificarFail('', 'ERROR: '+error.status+' '+ error.statusText);
