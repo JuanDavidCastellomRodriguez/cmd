@@ -22,6 +22,8 @@
                 <li><a href="{{ url('/subsidios/productivos/')}}" class="btn btn-default red geopark white-text" style="padding: 6px 12px 6px 12px">Proyectos Productivos</a></li>
                 <li><a href="#" class="btn btn-default red geopark white-text" style="padding: 6px 12px 6px 12px">Planes de Desarrollo</a></li>
                 <li><a href="{{ url('/subsidios/informes') }}" class="btn btn-default red geopark white-text" style="padding: 6px 12px 6px 12px" >Informes</a></li>
+                <li><a href="{{ url('/fases') }}" class="btn btn-default red geopark white-text" style="padding: 6px 12px 6px 12px" >Fases</a></li>
+                <li><a href="{{ url('/ordenes') }}" class="btn btn-default red geopark white-text" style="padding: 6px 12px 6px 12px" >Ordenes</a></li>
 
                 <li>
                     <form id="logout-form" action="{{ url('/logout') }}" method="POST">

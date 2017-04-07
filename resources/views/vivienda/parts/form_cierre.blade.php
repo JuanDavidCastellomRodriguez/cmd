@@ -1,9 +1,78 @@
 <template id="form-cierre">
     <div>
         <h2>Cierre</h2>
+
+        <h4>Indicadores</h4>
+        <form >
+            <div class="row">
+
+                <div class="form-group col-lg-3 col-sm-12">
+                    <label for="exampleInputName2">Numero de Habitaciones</label>
+                    <input type="number" required class="form-control" id="exampleInputName2" >
+                </div>
+                <div class="form-group col-lg-2 col-sm-6">
+                    <label for="exampleInputName2">¿Hacinamiento?</label>
+                    <div class="checkbox" >
+                        <label><input type="checkbox"  name="propietario">Si</label>
+                    </div>
+                </div>
+                <div class="form-group col-lg-3 col-sm-6">
+                    <label for="exampleInputName2">¿Sanemaiento Basico?</label>
+                    <div class="checkbox" >
+                        <label><input type="checkbox"  name="propietario">Si</label>
+                    </div>
+                </div>
+                <div class="form-group col-lg-3 col-sm-6">
+                    <label for="exampleInputName2">¿Condciones de seguridad, estrucutra y estetica?</label>
+                    <div class="checkbox" >
+                        <label><input type="checkbox"  name="propietario">Si</label>
+                    </div>
+                </div>
+            </div>
+            <h4>Zona de Riesgo</h4>
+            <div class="row">
+                <div class="form-group col-lg-3 col-sm-12">
+                    <label for="exampleInputName2">Distancia de Rio/Quebrada</label>
+                    <select  class="form-control">
+                        <option value="" disabled >Seleccione...</option>
+                        <option v-for="tipologia in tipologiasFamilia" :value="tipologia.id">@{{ tipologia.tipologia_familia }}</option>
+                    </select>
+                </div>
+                <div class="form-group col-lg-3 col-sm-6">
+                    <label for="exampleInputName2">¿Vulnerabilidad a Sismos?</label>
+                    <div class="checkbox" >
+                        <label><input type="checkbox"  name="propietario">Si</label>
+                    </div>
+                </div>
+                <div class="form-group col-lg-3 col-sm-6">
+                    <label for="exampleInputName2">¿Vulnerabilidad a Deslizamiento?</label>
+                    <div class="checkbox" >
+                        <label><input type="checkbox"  name="propietario">Si</label>
+                    </div>
+                </div>
+                <div class="form-group col-lg-3 col-sm-6">
+                    <label for="exampleInputName2">¿Vulnerabilidad a Enfermedades?</label>
+                    <div class="checkbox" >
+                        <label><input type="checkbox"  name="propietario">Si</label>
+                    </div>
+                </div>
+                <div class="form-group col-lg-3 col-sm-6">
+                    <label for="exampleInputName2">¿Vulnerabilidad a Incendios?</label>
+                    <div class="checkbox" >
+                        <label><input type="checkbox"  name="propietario">Si</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="text-align: right">
+                <button type="submit"  class="btn btn-default " data-loading-text="<i class='fa fa-spinner fa-spin '></i> Guardando..." id="btn-guardar">Guardar</button>
+            </div>
+
+        </form>
+
+
         <div class="row">
             <div class="col-md-12">
-                <h3>Imagenes Subidas al Servidor</h3>
+                <h3>Registro Fotografico de Diagnostico (Imagenes Subidas al Servidor)</h3>
                 <label  v-if="images.length == 0">Ninguna Imagen Encontrada</label>
                 <div style="position:relative; display: inline-block" v-for="img in images">
                     <img  :src="img.ruta"  >

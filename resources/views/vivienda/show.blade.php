@@ -31,8 +31,8 @@
             <section class="col-lg-2 col-sm-4" id="seccion-menu-lateral">
                 <ul class="nav nav-tabs" role="tablist">
                     Informacion General
-                    <li role="presentation" class="active" ><a  class="red geopark white-text" href="#predio" aria-controls="predio" role="tab" data-toggle="tab" >Predio<span class="glyphicon glyphicon-asterisk red-text" v-bind:class="{'white-text' : predioEditado}" aria-hidden="true"></span> </a></li>
-                    <li role="presentation"><a  class="red geopark white-text" href="#general" aria-controls="general" role="tab" data-toggle="tab" >General<span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span> </a></li>
+                    <li role="presentation" class="active" ><a  class="red geopark white-text" href="#predio" aria-controls="predio" role="tab" data-toggle="tab" >Predio</a></li>
+                    <li role="presentation"><a  class="red geopark white-text" href="#general" aria-controls="general" role="tab" data-toggle="tab" >General</a></li>
                     <li role="presentation"><a class="red geopark white-text" href="#habitantes" aria-controls="habitantes" role="tab" data-toggle="tab">Habitante(s)</a></li>
                     <li role="presentation"><a class="red geopark white-text" href="#p-cargos" aria-controls="p-cargos" role="tab" data-toggle="tab">Persona(s) a Cargo</a></li>
                     <li>Vivienda</li>
@@ -868,6 +868,9 @@
                 loading :false,
                 images :[],
                 subirMas : false,
+                cierre : {
+
+                }
             }
         },
         methods: {
@@ -894,8 +897,13 @@
                     this.loading = true;
                     this.$http.post('/subsidios/vivienda/diagnostico/cierre/agregarimagenes',{images: this.image, id : this.idinfo, tipo : 1 }).then(response => {
                         this.loading = false;
-                        this.images.concat(this.image)
+                        for(index in response.body.fotos){
+                            this.images.push(response.body.fotos[index]);
+                            console.log(index)
+                        }
                         this.image = []
+                        notificarOk('', 'Imagen(es) Subidas')
+                        this.subirMas = false;
                     });
                 }else{
                     notificarFail("", "Ningun Archivo Seleccionado")

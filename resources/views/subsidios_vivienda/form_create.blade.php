@@ -56,27 +56,12 @@
                                 <label for="exampleInputName2">Valor Subsidio (en Pesos)</label>
                                 <input type="number" required class="form-control" id="exampleInputName2" v-model.number="nuevoSubsidio.valor">
                             </div>
+
                             <div class="form-group has-feedback col-lg-6 col-sm-12">
-                                <label for="exampleInputName2">Departamento</label>
-                                <select class="form-control" v-model="nuevoSubsidio.idDepartamento" v-on:change="changeDepartamento($event.target.value, '')" required>
-                                    <option value="" disabled >Seleccione...</option>
-                                    <option v-for="departamento in departamentos" :value="departamento.id">@{{ departamento.departamento  }}</option>
-                                </select>
-                                <span class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 25px;"></span>
-                            </div>
-                            <div class="form-group has-feedback col-lg-6 col-sm-12">
-                                <label for="exampleInputName2">Municipio</label>
-                                <select class="form-control" v-model="nuevoSubsidio.idMunicipio" v-on:change="changeMunicipio($event.target.value, '')" required >
-                                    <option value="" disabled >Seleccione...</option>
-                                    <option v-for="municipio in municipios" :value="municipio.id">@{{ municipio.municipio }}</option>
-                                </select>
-                                <span class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 25px;"></span>
-                            </div>
-                            <div class="form-group has-feedback col-lg-6 col-sm-12">
-                                <label for="exampleInputName2">Vereda</label>
-                                <select class="form-control" v-model="nuevoSubsidio.id_vereda" required>
+                                <label for="exampleInputName2">Fase</label>
+                                <select class="form-control" v-model="nuevoSubsidio.id_fase" required>
                                     <option value="" disabled  >Seleccione...</option>
-                                    <option v-for="vereda in veredas" :value="vereda.id">@{{ vereda.vereda  }}</option>
+                                    <option v-for="fase in fases" :value="fase.id">@{{ fase.nombre_fase  }}</option>
                                 </select>
                                 <span class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 25px;"></span>
                             </div>

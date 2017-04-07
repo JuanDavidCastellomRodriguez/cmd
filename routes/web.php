@@ -99,5 +99,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/subsidios/vivienda/diagnostico/cierre/agregarimagenes', 'ViviendasController@agregarFotos');
     Route::post('/subsidios/vivienda/diagnostico/cierre/todasimagenes', 'ViviendasController@todasImagenes');
     Route::post('/subsidios/vivienda/diagnostico/cierre/borrarimagen', 'ViviendasController@borrarImagen');
+    Route::post('/fases/getfases', 'FasesController@getAllFases');
+    Route::post('/fases/getpaginatefases', 'FasesController@getPaginateFases');
+    Route::post('/ordenes/getpaginateordenes', 'OrdenServiciosController@getPaginateOrdenes');
+    Route::resource('/fases', 'FasesController');
+    Route::resource('/ordenes', 'OrdenServiciosController');
 });
 

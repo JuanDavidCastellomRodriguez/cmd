@@ -453,6 +453,7 @@ class ViviendasController extends Controller
     }
     public function agregarFotos(Request $request){
         $request =  json_decode($request->getContent());
+        $fotos = new Collection();
         foreach($request->images as $img){
             $imageData = $img;
             $fileName = Carbon::now()->timestamp . '_' . uniqid() . '.' . explode('/', explode(':', substr($imageData, 0, strpos($imageData, ';')))[1])[1];
@@ -462,10 +463,14 @@ class ViviendasController extends Controller
             $foto->tipo = 1;
             $foto->id_informacion = $request->id;
             $foto->save();
-
+            $fotos->add($foto);
             //return response()->json(['error'=>false]);
         }
-        return 'ok';
+        return response([
+            'estado' => 'ok',
+            'fotos' => $fotos
+
+        ]);
 
     }
 

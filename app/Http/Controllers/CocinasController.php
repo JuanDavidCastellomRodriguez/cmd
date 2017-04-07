@@ -52,7 +52,7 @@ class CocinasController extends Controller
                 $cocina->puertas = $request->cocina->puertas;
                 $cocina->ventanas = $request->cocina->ventanas;
                 $cocina->estufa = $request->cocina->estufa;
-                $cocina->id_fuente_energia_cocinas = $request->cocina->id_fuente_energia_cocinas;
+                $cocina->id_elemento_cocina = $request->cocina->id_fuente_energia_cocinas;
 
 
                 $cocina->save();
@@ -90,7 +90,7 @@ class CocinasController extends Controller
                 $cocina->puertas = $request->cocina->puertas;
                 $cocina->ventanas = $request->cocina->ventanas;
                 $cocina->estufa = $request->cocina->estufa;
-                $cocina->id_fuente_energia_cocinas = $request->cocina->id_fuente_energia_cocinas;
+                $cocina->id_elemento_cocina = $request->cocina->id_fuente_energia_cocinas;
                 $cocina->save();
 
                 return response()->json([

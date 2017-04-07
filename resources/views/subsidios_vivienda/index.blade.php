@@ -52,6 +52,7 @@
                     <th>Consecutivo</th>
                     <th>Fecha</th>
                     <th>Vereda</th>
+                    <th>Fase</th>
                     <th>Beneficiario</th>
                     <th>Valor</th>
                     <th>Ejecutado</th>
@@ -62,6 +63,7 @@
                     <td>@{{ (("000000" + info.consecutivo).slice(-6)) }}</td>
                     <td>@{{ info.fecha_inicio }}</td>
                     <td>@{{ info.vereda }}</td>
+                    <td>@{{ info.fase }}</td>
                     <td>@{{ info.beneficiario }}</td>
                     <td>@{{ info.valor }}</td>
                     <td>@{{ info.porcentaje_ejecucion+' %' }}</td>
@@ -129,7 +131,7 @@
                 nuevoSubsidio : {
                     id_beneficiario : '',
                     id_tipo_subsidio : 1,
-                    id_vereda : '',
+                    id_fase : '',
                     fecha_inicio : '',
                     valor : 0,
                     id_info_vivienda : null,
@@ -142,9 +144,7 @@
 
                 },
                 subsidios : '',
-                departamentos : '',
-                municipios : '',
-                veredas : '',
+                fases: '',
                 loading : false,
                 nuevoDiagnostico : {
                     fechaEncuesta: '',
@@ -297,7 +297,7 @@
                     this.nuevoSubsidio = {
                         id_beneficiario : '',
                         id_tipo_subsidio : 1,
-                        id_vereda : '',
+                        id_fase : '',
                         fecha_inicio : '',
                         valor : 0,
                         id_info_vivienda : null,
@@ -317,20 +317,10 @@
 
                 },
 
-                getDepartamentos : function () {
-                    this.$http.post('/getdepartamentos',{_token: this.token}).then((response)=>{
-                        this.departamentos = response.body.data
-                    })
-                },
-                changeDepartamento : function (value, municipio) {
-                    this.$http.post('/getmunicipios',{_token: this.token, id: value}).then((response)=>{
-                        this.municipios = response.body.data
-                        //this.predio.idMunicipio = municipio;
-                    })
-                },
-                changeMunicipio : function (value, vereda) {
-                    this.$http.post('/getveredas',{_token: this.token, id: value}).then((response)=>{
-                        this.veredas = response.body.data
+
+                getFases : function () {
+                    this.$http.post('/fases/getfases').then((response)=>{
+                        this.fases = response.body.data
                         //this.predio.idVereda = vereda;
 
                     })
@@ -374,7 +364,7 @@
 
             },
             created(){
-                this.getDepartamentos()
+                this.getFases()
             },
             mounted(){
                 $('#fecha_subsidio').datepicker({

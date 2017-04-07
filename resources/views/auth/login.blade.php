@@ -11,39 +11,39 @@
 </head>
 <body>
     <div class="row contenedor" style="height:100%">
-        <div class="col s8" id="panel-izquierdo" style="height:100%" >
+        <div class="col l8 m8" id="panel-izquierdo" style="height:100%" >
 
             <img src="img/geopark_fondo_1.jpg" height="100%">
 
         </div>
-        <div class="col s4" id="panel-derecho">
+        <div class="col s12 l4 m4 " id="panel-derecho">
             <div class="row" style="margin-top: 20px">
-                <div class="col s6" id="logo cmd">
+                <div class="col l6 m6 s6" id="logo cmd">
                     <img src="img/logouniminuto.png" style="width: 60%">
 
                 </div>
-                <div class="col s6" id="logo_gp">
+                <div class="col l6 m6 s6" id="logo_gp">
                     <img src="img/geopark.png" >
                 </div>
             </div>
 
-            <form id="form_login" v-on:submit.prevent="loginUser()">
-                <div class="row">
+            <form id="form_login" class="row" v-on:submit.prevent="loginUser()">
+
                     <div class="input-field col s12">
                         <i class="material-icons prefix">perm_identity</i>
                         <input id="email" type="email" class="validate" required v-model="userInfo.email">
                         <label for="email">Email</label>
                     </div>
-                </div>
 
-                <div class="row">
+
+
                     <div class="input-field col s12">
                         <i class="material-icons prefix">lock_outline</i>
                         <input id="password" type="password" class="validate" required v-model="userInfo.password">
                         <label for="password">Password</label>
                     </div>
-                </div>
-                <button class="waves-effect waves-light red btn" type="submit" >Ingresar</button>
+
+                <button class="waves-effect waves-light red btn" type="submit" style="margin-top: 20px" >Ingresar</button>
             </form>
 
         </div>
@@ -97,6 +97,11 @@
     #logo_gp{
         margin-top: 40px;
 
+    }
+    @media (max-width: 600px) {
+        #panel-izquierdo{
+            visibility: hidden;
+        }
     }
 
 </style>

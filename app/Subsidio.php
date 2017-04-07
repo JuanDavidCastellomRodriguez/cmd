@@ -6,9 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Subsidio extends Model
 {
-    public function Vereda(){
+    public function Fase(){
 
-        return $this->hasOne('App\Vereda','id','id_vereda');
+        return $this->hasOne('App\Fase','id','id_fase');
     }
 
     public function Beneficiario(){
@@ -43,6 +43,8 @@ class Subsidio extends Model
                 $query->where('nombres', 'like','%'.$data.'%')
                     ->orWhere('apellidos', 'like','%'.$data.'%')
                     ->orWhere('no_cedula', 'like','%'.$data.'%');
+            })->orWhereHas('Fase',function ($query) use ($data){
+               $query->where('nombre_fase','like','%'.$data.'%');
             });
     }
 }
