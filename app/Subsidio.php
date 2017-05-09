@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Subsidio extends Model
 {
+    public function Vereda(){
+
+        return $this->hasOne('App\Vereda','id','id_vereda');
+    }
+
     public function Fase(){
 
         return $this->hasOne('App\Fase','id','id_fase');
@@ -46,5 +51,8 @@ class Subsidio extends Model
             })->orWhereHas('Fase',function ($query) use ($data){
                $query->where('nombre_fase','like','%'.$data.'%');
             });
+    }
+    public function Campos(){
+        return $this->hasManyThrough('App\Campo','App\Vereda','id_subsidio', 'id_campo','id');
     }
 }

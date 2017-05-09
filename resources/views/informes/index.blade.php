@@ -12,14 +12,23 @@
 
             <form class="form" v-on:submit.prevent="consultarDatos()" style="margin-bottom: 20px">
 
-                <div class=" form-group col-lg-2 col-sm-6 col-md-3">
-                    <label for="exampleInputName2">Fecha Inicial</label>
-                    <input type="text"   id="fecha_inicial" class="form-control datepickers" required v-model="nuevaConsulta.fechaInicial">
+                <div class="form-group has-feedback col-lg-2 col-sm-6 col-md-3">
+                    <label for="exampleInputName2">Orden de Servicio</label>
+                    <select class="form-control" v-model="nuevaConsulta.ordenServicio" v-on:change="changeOrden($event.target.value)"  required>
+                        <option value="9999"  >Todas</option>
+                        <option v-for="orden in ordenes" :value="orden.id">@{{ orden.consecutivo + orden.objeto  }}</option>
+                    </select>
+                    <span class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 25px;"></span>
                 </div>
-                <div class=" form-group col-lg-2 col-sm-6 col-md-3">
-                    <label for="exampleInputName2">Fecha Final</label>
-                    <input type="text"   id="fecha_final" class="form-control datepickers" required v-model="nuevaConsulta.fechaFinal">
+                <div class="form-group has-feedback col-lg-2 col-sm-6 col-md-3">
+                    <label for="exampleInputName2">Fase</label>
+                    <select class="form-control" v-model="nuevaConsulta.fase"  id="fase" required>
+                        <option value="9999"  >Todos</option>
+                        <option v-for="fase in fases" :value="fase.id">@{{ fase.nombre_fase  }}</option>
+                    </select>
+                    <span class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 25px;"></span>
                 </div>
+
                 <div class="form-group has-feedback col-lg-2 col-sm-6 col-md-3">
                     <label for="exampleInputName2">Tipo Subsidio</label>
                     <select class="form-control" v-model="nuevaConsulta.tipo"   required>
@@ -30,46 +39,32 @@
                 </div>
                 <div class="form-group has-feedback col-lg-2 col-sm-6 col-md-3">
                     <label for="exampleInputName2">Campos</label>
-                    <select class="form-control" v-model="nuevaConsulta.campo" v-on:change="changeCampo($event.target.value, '')"  required>
+                    <select class="form-control" v-model="nuevaConsulta.campo" id="campo"  required>
                         <option value="9999"  >Todos</option>
                         <option v-for="campo in campos" :value="campo.id">@{{ campo.nombre_campo  }}</option>
                     </select>
                     <span class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 25px;"></span>
                 </div>
-                <div class="form-group has-feedback col-lg-2 col-sm-6 col-md-3">
-                    <label for="exampleInputName2">Municipio</label>
-                    <select class="form-control" v-model="nuevaConsulta.municipio" v-on:change="changeMunicipio($event.target.value, '')" required >
-                        <option value="9999"   >Todos</option>
-                        <option v-for="municipio in municipios" :value="municipio.id">@{{ municipio.municipio }}</option>
-                    </select>
-                    <span class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 25px;"></span>
-                </div>
-                <div class="form-group has-feedback col-lg-2 col-sm-6 col-md-3">
-                    <label for="exampleInputName2">Vereda</label>
-                    <select class="form-control" v-model="nuevaConsulta.vereda" required>
-                        <option value="9999"   >Todas</option>
-                        <option v-for="vereda in veredas" :value="vereda.id">@{{ vereda.vereda  }}</option>
-                    </select>
-                    <span class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 25px;"></span>
-                </div>
-                <div class="col-lg-12 col-sm-12" style="margin-bottom: 15px">
-                    <button class="btn btn-default" type="submit" >Consultar</button>
-                    <label v-show="loading" for="">
-                        Consultando...
-                        <i class="fa fa-spinner fa-spin"></i>
-                    </label>
+
+                <div class="col-lg-2 col-sm-12 form-group form-inline" style="margin-top: 25px">
+                    <button class="btn btn-default " type="submit" >Consultar
+                        <label v-show="loading" >
+                            <i class="fa fa-spinner fa-spin"></i>
+                        </label>
+                    </button>
+
 
 
                 </div>
             </form>
 
-            <div class="col-lg-4" style="margin-top: 10px">
+            <div class="col-lg-12" style="margin-top: 10px">
 
                 <div class="form-group">
                     <label for="exampleInputName2">Ver grafico por:</label>
                     <select class="form-control" v-model="vistas" required>
-                        <option value="1">Subsidio por Visitas de Diagnostico</option>
-                        <option value="2">Subsidio por Visitas de Seguimiento</option>
+                        <option value="1">Inversion Total</option>
+                        <option value="2">Subsidio Asignados</option>
                         <option value="3">Subsidio Asignados</option>
                         <option value="4">Subsidio Concertados</option>
                         <option value="5">Subsidio Entregados</option>
@@ -89,9 +84,11 @@
                 <div  id="chartdiv"   style=" height: 500px;"></div>
 
             </div>
-            <table class="table table-responsive" v-show="subsidios.length > 0" style="margin-top: 20px">
+            <table class="table table-responsive" v-show="subsidios != '' " style="margin-top: 20px">
                 <tr>
-                    <th>Item</th>
+                    <th>Bloque</th>
+                    <th>Fase</th>
+                    <th>Vereda</th>
                     <th>Subsidios</th>
                     <th>Concertados</th>
                     <th>Entregados</th>
@@ -103,7 +100,9 @@
                     <th>V Entrega</th>
                 </tr>
                 <tr v-for="subsidio in subsidiosTabulados">
+                    <td>@{{ subsidio.bloque }}</td>
                     <td>@{{ subsidio.item }}</td>
+                    <td>@{{ subsidio.vereda }}</td>
                     <td>@{{ subsidio.numeroSubsidio }}</td>
                     <td>@{{ subsidio.concertados }}</td>
                     <td>@{{ subsidio.entregado }}</td>
@@ -155,16 +154,13 @@
                 subsidios : '',
                 subsidiosTabulados : '',
                 nuevaConsulta : {
-                    fechaInicial : '',
-                    fechaFinal : '',
+                    ordenServicio : '',
                     campo : '9999',
-                    municipio : '9999',
-                    vereda : '9999',
                     tipo : '9999',
+                    fase : '9999',
                 },
-                departamentos : '',
-                municipios : '',
-                veredas : '',
+                ordenes : '',
+                fases : '',
                 campos : '',
                 vistas : 1,
                 tiposSubsidio : '',
@@ -174,7 +170,14 @@
                 loading : false,
                 pieChart : null,
                 serialchart : null,
-                chartSerialTwoRows : null
+                chartSerialTwoRows : null,
+                subsidiosBloqueFase : '',
+                subsidiosBloqueFaseVereda: '',
+                datosGrafico : '',
+                camposGrafico : [],
+                subsidiosBloqueOVereda: ''
+
+
 
 
             },
@@ -182,10 +185,22 @@
                 vistas: function (val) {
                     switch (val) {
                         case '1' :
-                            app.subsidiosByDiagnostico();
+                            //app.subsidiosByDiagnostico();
+                            if(this.nuevaConsulta.campo == '9999'){
+                                app.subsidiosByBloqueFaseWithValor();
+                            }else{
+                                app.subsidiosByVeredaFaseWithValor();
+                            }
+
                             break;
                         case '2' :
-                            app.subsidiosBySeguimiento();
+                            //app.subsidiosBySeguimiento();
+                            if(app.nuevaConsulta.campo == '9999'){
+                                app.subsidiosByBloqueFaseWithSubsidios();
+                            }else{
+                                app.subsidiosByVeredaFaseWithSubsidios();
+                            }
+
                             break;
                         case '3' :
                             app.subsidiosByAsignados();
@@ -214,28 +229,6 @@
             },
             methods:{
 
-                changeMunicipio : function (value, vereda) {
-                    this.veredas = '';
-                    this.nuevaConsulta.vereda = '9999';
-                    this.nuevaConsulta.campo = '9999';
-                    this.$http.post('/getveredas',{_token: this.token, id: value}).then((response)=>{
-                        this.veredas = response.body.data
-                        //this.predio.idVereda = vereda;
-
-                    })
-                },
-
-                changeCampo : function (value, vereda) {
-                    this.veredas = '';
-                    this.nuevaConsulta.vereda = '9999';
-                    this.nuevaConsulta.municipio = '9999';
-                    this.$http.post('/getveredasbycampo',{id: value}).then((response)=>{
-                        this.veredas = response.body.data
-                        //this.predio.idVereda = vereda;
-
-                    })
-                },
-
 
                 subsidiosByValor : function () {
                     var data = [];
@@ -263,13 +256,28 @@
                 subsidiosByAsignados(){
                     this.hiddenGraphics();
                     var data = [];
-                    var p = Object.keys(this.subsidios);
-                    for(item in this.subsidiosTabulados){
-                        data.push({
-                            'country' : this.subsidiosTabulados[item].item,
-                            'visits' : this.subsidiosTabulados[item].numeroSubsidio,
-                        })
-                    }
+
+                    var asignadoVivienda = 0;
+                    var asignadoProductivos = 0;
+
+                    $.each(this.subsidiosBloqueOVereda, function (bloque,subs) {
+
+                        asignadoVivienda += subs.subsidiosVivienda;
+                        asignadoProductivos += subs.subsidiosProyectos;
+                    });
+                    data.push({
+                        'country': 'Subsidios Vivienda',
+                        'visits' : asignadoVivienda
+
+                    });
+                    data.push({
+                        'country': 'Subsidios Productivos',
+                        'visits' : asignadoProductivos
+
+                    });
+
+
+
 
                     this.dibujarPie(data, "Grafico Subsidios Asignados")
                     //this.pie = true
@@ -341,7 +349,25 @@
                             'ejecutado' : this.subsidiosTabulados[item].ejecutado,
                         })
                     }
-                    this.dibujarSerialTwoRows(data, "Grafico Presupuesto Asignado Vs Ejecutado", 'Asignado','asignado','Ejecutado',"ejecutado")
+                    var dataBloques = [];
+                    var bloques = [];
+                    $.each(this.subsidiosBloqueOVereda, function (bloque,subs) {
+
+                                    var tempo = {};
+                                    bloques.push(bloque);
+                                    tempo['country'] = bloque
+                                    tempo['asignado'] =subs.valor;
+                                    tempo['ejecutado'] =subs.ejecutado;
+
+                                    //console.log(tempo)
+                                    dataBloques.push(tempo)
+
+
+
+                    });
+                    jQuery.unique(bloques);
+                    console.log(dataBloques);
+                    this.dibujarSerialTwoRows(dataBloques, bloques, "Grafico Presupuesto Asignado Vs Ejecutado", 'Asignado','asignado','Ejecutado',"ejecutado")
 
                 },
 
@@ -349,7 +375,101 @@
 
                     this.pie = false
                     this.serial = false
+
                 },
+
+                subsidiosByBloqueFaseWithValor: function () {
+
+                    var bloques = [];
+                    var dataBloques = [];
+                    $.each(this.subsidios, function (x,value) {
+                        $.each(value,function (fase, v) {
+                            var tempo = {'category': fase};
+                            $.each (v,function (key,d) {
+                                $.each(d,function (bloque, subs) {
+                                    bloques.push(bloque);
+                                    tempo[bloque] =subs.valor;
+                                })
+                            })
+                            dataBloques.push(tempo)
+                            //console.log(tempo)
+
+                        })
+                    });
+                    jQuery.unique(bloques);
+
+                    this.dibujarSerialBloqueFase("Inversion Total Por Bloque",dataBloques,bloques, "Pesos Colombianos")
+                },
+
+                subsidiosByVeredaFaseWithValor: function () {
+
+                    var veredas = [];
+                    var dataBloques = [];
+                    var bloqueActual = '' ;
+                    $.each(this.subsidios, function (bloque,subFase) {
+                        bloqueActual = bloque;
+                        $.each(subFase,function (fase, subVereda) {
+                            var tempo = {'category': fase};
+                            $.each(subVereda,function (vereda, subItem) {
+                                veredas.push(vereda);
+                                tempo[vereda] = subItem.valor
+                            })
+                            dataBloques.push(tempo)
+                        })
+                    });
+                    console.log(dataBloques)
+                    jQuery.unique(veredas);
+
+                    this.dibujarSerialBloqueFase("Inversion Total Por Bloque",dataBloques,veredas, "Pesos Colombianos")
+                },
+
+
+                subsidiosByBloqueFaseWithSubsidios: function () {
+
+                    var bloques = [];
+                    var dataBloques = [];
+                    $.each(this.subsidios, function (x,value) {
+                        $.each(value,function (fase, v) {
+                            var tempo = {'category': fase};
+                            $.each (v,function (key,d) {
+                                $.each(d,function (bloque, subs) {
+                                    bloques.push(bloque);
+                                    tempo[bloque] =subs.entregado;
+                                })
+                            })
+                            dataBloques.push(tempo)
+                            //console.log(tempo)
+
+                        })
+                    });
+                    jQuery.unique(bloques);
+
+                    this.dibujarSerialBloqueFase("Subsidios Total Por Bloque",dataBloques,bloques,"Cantidad de Subsidios")
+                },
+                subsidiosByVeredaFaseWithSubsidios: function () {
+
+                    var veredas = [];
+                    var dataBloques = [];
+                    var bloqueActual = '' ;
+                    $.each(this.subsidios, function (bloque,subFase) {
+                        bloqueActual = bloque;
+                        $.each(subFase,function (fase, subVereda) {
+                            var tempo = {'category': fase};
+                            $.each(subVereda,function (vereda, subItem) {
+                                veredas.push(vereda);
+                                tempo[vereda] = subItem.entregado
+                            })
+                            dataBloques.push(tempo)
+                        })
+                    });
+                    console.log(dataBloques)
+                    jQuery.unique(veredas);
+
+                    this.dibujarSerialBloqueFase("Subsidios Total "+bloqueActual,dataBloques,veredas,"Cantidad de Subsidios")
+                },
+
+
+
 
                 consultarDatos : function () {
                     this.loading = true;
@@ -357,33 +477,90 @@
                     this.subsidios = '';
                     this.vistas = 1
                     this.$http.post('/informes/getdatareport', this.nuevaConsulta).then((response)=>{
-                        if(response.body.data.length > 0){
+                        if(response.body.data != ""){
                             this.subsidios = response.body.data;
+                            this.subsidiosBloqueOVereda = response.body.dataBloque;
                             this.loading = false;
                             var data = [];
-                            var p = Object.keys(this.subsidios);
-                            p.forEach(function (per) {
-                                var items = Object.keys(app.subsidios[per]);
-                                items.forEach(function (item) {
-                                    var value = app.subsidios[per][item];
-                                    data.push({
-                                        item :item,
-                                        numeroSubsidio : value.numeroSubsidio,
-                                        concertados : value.concertados,
-                                        entregado: value.entregado,
-                                        obras_en_construccion : value.obras_en_construccion,
-                                        valor : value.valor,
-                                        ejecutado:  value.ejecutado,
-                                        visitas_seguimiento :value.visitas_seguimiento,
-                                        visitas_entrega : value.visitas_entrega,
-                                        visitas_diagnostico : value.visitas_diagnostico,
+                            var bloques = [];
+                            var dataBloques = [];
+                            if(this.nuevaConsulta.campo == '9999'){
+                                $.each(response.body.data, function (x,value) {
+                                    //console.log('-->'+value);
+                                    $.each(value,function (fase, v) {
+                                        var tempo = {'category': fase};
+                                        $.each (v,function (key,d) {
+
+                                            $.each(d,function (bloque, subs) {
+                                                bloques.push(bloque);
+                                                tempo[bloque] =subs.valor;
+                                                data.push({
+                                                    bloque : bloque,
+                                                    item :fase,
+                                                    numeroSubsidio : subs.numeroSubsidio,
+                                                    concertados : subs.concertados,
+                                                    entregado: subs.entregado,
+                                                    obras_en_construccion : subs.obras_en_construccion,
+                                                    valor : subs.valor,
+                                                    ejecutado:  subs.ejecutado,
+                                                    visitas_seguimiento :subs.visitas_seguimiento,
+                                                    visitas_entrega : subs.visitas_entrega,
+                                                    visitas_diagnostico : subs.visitas_diagnostico,
+                                                })
+                                            })
+
+
+                                        })
+                                        dataBloques.push(tempo)
+                                        //console.log(tempo)
 
                                     })
-                                })
-                            });
+                                });
+                                this.subsidiosBloqueFase = data;
+                                //this.datosGrafico = response.body.grafico;
+                                this.datosGrafico = dataBloques;
+                                jQuery.unique(bloques);
+                                this.camposGrafico = bloques;
+                                //console.log(bloques)
+                                this.subsidiosByBloqueFaseWithValor()
+
+
+                            }else{
+
+                                $.each(response.body.data, function (bloque,itemfases) {
+                                    $.each(itemfases,function (fase, itemveredas) {
+                                        $.each (itemveredas,function (vereda,item) {
+                                            data.push({
+                                                item : fase,
+                                                bloque :bloque,
+                                                vereda: vereda,
+                                                numeroSubsidio : item.numeroSubsidio,
+                                                concertados : item.concertados,
+                                                entregado: item.entregado,
+                                                obras_en_construccion : item.obras_en_construccion,
+                                                valor : item.valor,
+                                                ejecutado:  item.ejecutado,
+                                                visitas_seguimiento :item.visitas_seguimiento,
+                                                visitas_entrega : item.visitas_entrega,
+                                                visitas_diagnostico : item.visitas_diagnostico,
+                                            });
+
+
+
+                                        })
+
+                                    })
+                                });
+                                this.subsidiosBloqueFaseVereda = data
+                                this.subsidiosByVeredaFaseWithValor()
+
+                            }
+
+
                             this.subsidiosTabulados = data;
-                            this.vistas = 3;
-                            this.subsidiosByAsignados()
+                            this.vistas = 1;
+
+
 
 
                         }else{
@@ -469,7 +646,8 @@
 
                     this.charSerial = AmCharts.makeChart('chartdiv',charSerialConfig);
                 },
-                dibujarSerialTwoRows : function (data, titulo, cat1, label1, cat2, label2) {
+                dibujarSerialTwoRows : function (data, bloques, titulo, cat1, label1, cat2, label2) {
+
                     var chartSerialTwoRowsConfig =  {
                         "theme": "light",
                         "type": "serial",
@@ -481,6 +659,10 @@
                             "title": "Valor en Pesos Colombianos",
                             "minimum" : 0
                         }],
+                        "legend": {
+                            "enabled": true,
+                            "useGraphSettings": true,
+                        },
                         "startDuration": 1,
                         "graphs": [{
                             "balloonText": " [[category]] ("+cat1+"): <b>[[value]]</b>",
@@ -488,14 +670,18 @@
                             "lineAlpha": 0.2,
                             "title": cat1,
                             "type": "column",
-                            "valueField": label1
+                            "valueField": label1,
+                            "labelText": "[[value]]",
+                            "labelPosition": "center"
                         }, {
                             "balloonText": "[[category]] ("+cat2+"): <b>[[value]]</b>",
                             "fillAlphas": 0.9,
                             "lineAlpha": 0.2,
                             "title": cat2,
                             "type": "column",
-                            "valueField": label2
+                            "valueField": label2,
+                            "labelText": "[[value]]",
+
                         }],
                         "plotAreaFillAlphas": 0.1,
                         "depth3D": 60,
@@ -512,9 +698,83 @@
                                 "id": "Title-1",
                                 "size": 15,
                                 "text": titulo,
-                            }]
+                            }],
+
                     };
                     this.chartSerialTwoRows  = AmCharts.makeChart('chartdiv', chartSerialTwoRowsConfig);
+                },
+                dibujarSerialBloqueFase :function (titulo,data, bloques,medida) {
+                    var graphs = []
+                    var i = 1;
+                    $.each(bloques,function (key , value) {
+                        graphs.push({
+                            "balloonText": "[[title]] EN LA  [[category]]:[[value]]",
+                            "fillAlphas": 1,
+                            "id": "AmGraph-"+i,
+                            "title": value,
+                            "type": "column",
+                            "valueField": value,
+                            "showAllValueLabels": true,
+                            "visibleInLegend" :true,
+                            "labelText": "[[value]]",
+                            "labelPosition": "center"
+                        })
+                        i++;
+                    });
+
+
+
+                    var serialBloqueFase = {
+                        "type": "serial",
+                        "categoryField": "category",
+                        "startDuration": 1,
+                        "theme": "default",
+                        "angle": 30,
+                        "depth3D": 30,
+                        "categoryAxis": {
+                            "gridPosition": "start"
+                        },
+                        "trendLines": [],
+                        "graphs": graphs,
+                        "guides": [],
+                        "valueAxes": [
+                            {
+                                "id": "ValueAxis-1",
+                                "title": medida
+                            },
+
+                        ],
+
+                        "balloon": {
+                                "fixedPosition": false,
+                                "showBullet": true
+                            },
+                        "legend": {
+                            "enabled": true,
+                            "useGraphSettings": true
+                        },
+                        "titles": [
+                            {
+                                "id": "Title-1",
+                                "size": 15,
+                                "text": titulo
+                            }
+                        ],
+                        "dataProvider": data,
+                        "export": {
+                            "enabled": true
+                        },
+                    }
+                    this.chartSerialTwoRows  = AmCharts.makeChart('chartdiv', serialBloqueFase);
+
+                },
+
+                changeOrden :function (id) {
+                    this.$http.post('/fases/listabyorden',{id : id}).then((response)=>{
+                        this.fases = response.body.data;
+                    },(error)=>{
+
+                    });
                 },
 
 
@@ -528,19 +788,27 @@
 
             created(){
 
-
-                this.$http.post('/getmunicipios',{ id: 85}).then((response)=>{
-                    this.municipios = response.body.data
-                    //this.predio.idMunicipio = municipio;
-                });
-                this.$http.post('/getcampos').then((response)=>{
+                /*this.$http.post('/getcampos').then((response)=>{
                     this.campos = response.body.data
                     //this.predio.idMunicipio = municipio;
-                });
+                });*/
                 this.$http.post('/gettipossubsidios').then((response)=>{
                     this.tiposSubsidio = response.body.data
                     //this.predio.idMunicipio = municipio;
                 });
+                this.$http.post('/ordenes/lista').then((response)=>{
+                    this.ordenes = response.body.data;
+                },(error)=>{
+
+                });
+
+                this.$http.post('/campos/listabyfase').then((response)=>{
+                    this.campos = response.body.data;
+                },(error)=>{
+
+                });
+
+
 
             },
             mounted(){

@@ -15,4 +15,11 @@ class Vereda extends Model
 
         return $this->hasMany('App\CamposVereda','id_vereda','id');
     }
+
+    public function Campo(){
+
+        return $this->hasOne('App\Campo','id','id_campo');
+    }
+
+
 }

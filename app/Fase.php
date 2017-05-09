@@ -10,4 +10,15 @@ class Fase extends Model
 
         return $this->hasOne('App\Vereda','id','id_vereda');
     }
+    public function Veredas(){
+        return $this->hasMany('App\Vereda','id','id_vereda');
+    }
+
+    public function VeredasFase(){
+        return $this->belongsToMany('App\Vereda','fase_veredas','id_fase','id_vereda');
+    }
+
+    public function Subsidios(){
+        return $this->hasMany('App\Subsidio','id_fase','id');
+    }
 }

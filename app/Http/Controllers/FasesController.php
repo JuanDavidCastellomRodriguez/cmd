@@ -14,6 +14,14 @@ class FasesController extends Controller
             'data' => $fases,
         ]);
     }
+
+    public function getFasesByOrden(Request $request){
+        $fases = Fase::where('id_orden_servicio',$request->id)->get();
+        return response()->json([
+            'estado' => 'ok',
+            'data' => $fases,
+        ]);
+    }
     public function getPaginateFases(Request $request){
         return Fase::paginate(10);
     }

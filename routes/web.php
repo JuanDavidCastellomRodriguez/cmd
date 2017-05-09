@@ -103,6 +103,13 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/fases/getpaginatefases', 'FasesController@getPaginateFases');
     Route::post('/ordenes/getpaginateordenes', 'OrdenServiciosController@getPaginateOrdenes');
     Route::resource('/fases', 'FasesController');
+    Route::post('//fases/listabyorden', 'FasesController@getFasesByOrden');
     Route::resource('/ordenes', 'OrdenServiciosController');
+    Route::post('/ordenes/lista', 'OrdenServiciosController@getListOrdenServicios');
+
+
+    Route::post('/campos/listabyfase', 'CamposController@getCamposByFase');
+
+
 });
 

@@ -17,7 +17,7 @@ class SubsidiosController extends Controller
         foreach ($subsidios as $subs){
 
             $data->add([
-                'vereda' => $subs->Fase->Vereda->vereda."(".$subs->Fase->Vereda->Municipio->municipio.")",
+                'vereda' => $subs->Vereda->vereda."(".$subs->Vereda->Municipio->municipio.")",
                 'beneficiario' => $subs->Beneficiario->nombres." ". $subs->Beneficiario->apellidos." (".$subs->Beneficiario->no_cedula.")",
                 'id' => $subs->id,
                 //'campo'=> $subs->Vereda->Campo

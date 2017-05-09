@@ -13,4 +13,12 @@ class OrdenServiciosController extends Controller
     public function index(Request $request){
         return view('ordenes.index');
     }
+
+    public function getListOrdenServicios(){
+        return response()->json([
+            'estado' => 'ok',
+            'data' => OrdenServicio::all(),
+        ]);
+    }
+
 }
