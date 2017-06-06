@@ -7,14 +7,14 @@
         <div class="row" style="margin-top: 10px;">
             <div>
                 <h3>Ordenes de Servicio</h3>
-                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-agregar-subsidio" >
+                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-agregar-orden" >
                     Nuevo
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                 </button>
 
             </div>
             <div class="col-lg-6 pull-right" style="text-align: right">
-                <form class="form-inline" style="display: inline-block; padding-top: 20px; ">
+                <form class="form-inline" style="display: inline-block; padding-top: 20px; padding-bottom: 10px; ">
                     <div class="form-group">
                         <label v-show="filtrado">Filtro:  @{{ $data.filtroActual }}   <span class="glyphicon glyphicon-remove" v-on:click="limpiarFiltro()" aria-hidden="true"></span> </label>
                         <input type="text" required class="form-control" v-model="buscar" placeholder="Buscar">
@@ -47,33 +47,37 @@
                 </nav>
             </div>
 
-            <table v-show="fases.length > 0" class="table" style="margin-top: 10px;">
+            <table v-show="ordenes.length > 0" class="table" style="margin-top: 10px;">
                 <tr>
-                    <th>Consecutivo</th>
-                    <th>Observaciones</th>
+                    <th>Numero</th>
+                    <th>Fecha Inicio</th>
                     <th>Presupuesto</th>
+                    <th>objeto</th>
+                    <th>Estado</th>
                     <th>Opciones</th>
                 </tr>
-                <tr v-for="info in fases">
+                <tr v-for="info in ordenes">
 
-                    <td>@{{ (("000000" + info.consecutivo).slice(-6)) }}</td>
-                    <td>@{{ info.observaciones }}</td>
+                    <td>@{{ info.consecutivo }}</td>
+                    <td>@{{ info.fecha_inicio }}</td>
                     <td>@{{ info.presupuesto }}</td>
+                    <td>@{{ info.objeto }}</td>
+                    <td>@{{ info.estado == 1 ? "Activa":"Inactiva" }}</td>
                     <td>
-                        <a  class="btn btn-sm btn-default" title="Ver" >Ver</a>
+                        <a  class="btn btn-sm btn-default" title="Ver" v-on:click="editOrden(info)" >Editar</a>
                     </td>
 
                 </tr>
 
 
             </table>
-            <h4 v-if="fases.length == 0">No hay datos para mostrar</h4>
+            <h4 v-if="ordenes.length == 0">No hay datos para mostrar</h4>
 
 
 
         </div>
 
-        @include('fases.form_create')
+        @include('ordenes.form_create')
 
 
 
@@ -85,6 +89,7 @@
 @section('scripts')
     <script src="{{asset("js/bootstrap-datepicker.min.js")}}"></script>
     <script src="{{asset("js/bootstrap-datepicker.es.min.js")}}"></script>
+    <script src="{{asset("js/jquery.priceformat.min.js")}}"></script>
 
     <script>
 
@@ -102,16 +107,20 @@
         var app = new Vue({
             el : '#app',
             data : {
-                esNuevoBeneficiario : false,
-                nuevaFase : {
-                    fecha_fase : '',
-                    nombre_fase : '',
-                    observaciones : '',
-                    id_vereda : '',
-                    id_orden_servicio : ''
-                },
 
-                fases: '',
+                nuevaOrden : {
+                    id:'',
+                    consecutivo : '',
+                    fecha_inicio : '',
+                    fecha_final : '',
+                    presupuesto : '',
+                    objeto : '',
+                    observaciones : '',
+                    estado : ''
+                },
+                editarOrden : false,
+                itemEditando : '',
+                ordenes: '',
                 loading : false,
                 pagination : {
                     current_page : 1,
@@ -158,11 +167,11 @@
                 }
             },
             methods:{
-                getFases: function(page){
-                    this.fases = '';
+                getOrdenes: function(page){
+                    this.ordenes = '';
 
                 this.$http.post('/ordenes/getpaginateordenes?page='+page,{ buscar : this.buscar}).then((response) => {
-                    this.fases = response.body.data;
+                    this.ordenes = response.body.data;
                     this.pagination = response.body.pagination;
                 });
 
@@ -172,23 +181,29 @@
                     this.pagination.current_page = page;
                     this.getVueItems(page);
                 },
-                guardarSubsidio : function () {
+                guardarOrden : function () {
 
-                    this.$http.post('/subsidios/guardarsubsidio', this.nuevaFase).then((response)=>{
+                    this.$http.post('/ordenes/guardarorden', this.nuevaOrden).then((response)=>{
 
                         if(response.body.estado == 'ok'){
-                            this.nuevoSubsidio.id = response.body.id;
-                            this.nuevoSubsidio.id_beneficiario = response.body.idBeneficiario;
-                            this.nuevoSubsidio.vereda = response.body.vereda;
-                            this.nuevoSubsidio.beneficiario = response.body.beneficiario;
-                            this.nuevoSubsidio.consecutivo = response.body.consecutivo;
-                            this.subsidios.push(this.nuevoSubsidio);
-                            $("#modal-agregar-subsidio").modal('hide');
-                            this.formReset();
-                            notificarOk('', "Subsidio de vivienda creado correctamente");
+                            if(response.body.editado){
+                                notificarOk('', "Orden Actualizada correctamente");
+                                var index = this.ordenes.indexOf(this.itemEditando);
+                                this.ordenes[index] = this.nuevaOrden;
+                                $("#modal-agregar-orden").modal('hide');
+                                this.formReset();
+
+                            }else{
+                                this.nuevaOrden.id = response.body.id;
+                                this.ordenes.push(this.nuevaOrden);
+                                $("#modal-agregar-orden").modal('hide');
+                                this.formReset();
+                                notificarOk('', "Orden creada correctamente");
+                            }
+
 
                         }else{
-                            notificarFail('', 'Error:  ' + response.body.error);
+                            notificarFail('', 'Error:  ' + response.body.mensaje);
 
 
                         }
@@ -198,16 +213,25 @@
                     });
 
                 },
+                editOrden : function (item) {
+                    this.itemEditando = item
+                    this.nuevaOrden = JSON.parse(JSON.stringify(item))
 
+                    $("#modal-agregar-orden").modal('show');
+                    this.editarOrden = true
+                },
 
 
                 formReset: function () {
-                    this.nuevaFase = {
-                        fecha_fase : '',
-                        nombre_fase : '',
+                    this.nuevaOrden = {
+                        id:'',
+                        consecutivo : '',
+                        fecha_inicio : '',
+                        fecha_final : '',
+                        presupuesto : '',
+                        objeto : '',
                         observaciones : '',
-                        id_vereda : '',
-                        id_orden_servicio : ''
+                        estado : ''
                     };
 
 
@@ -220,7 +244,7 @@
                         this.filtroActual = this.buscar
                     }
                     this.$http.post('/ordenes/getpaginateordenes',{ buscar : this.buscar}).then((response)=>{
-                        this.fases = response.body.data;
+                        this.ordenes = response.body.data;
                         this.pagination = {
                             current_page : response.body.current_page,
                             from : 1,
@@ -249,15 +273,27 @@
                 this.buscarData();
             },
             mounted(){
-                $('#fecha_fase').datepicker({
+                $('#fecha_inicio').datepicker({
                     orientation: 'auto top',
                     language : 'es',
                     todayBtn : true,
                     format: 'yyyy-mm-dd'
                 }).on('changeDate', function(e) {
-                    app.nuevaFase.fecha_fase = $(this).val();
+                    app.nuevaOrden.fecha_inicio = $(this).val();
+                });$('#fecha_fin').datepicker({
+                    orientation: 'auto top',
+                    language : 'es',
+                    todayBtn : true,
+                    format: 'yyyy-mm-dd'
+                }).on('changeDate', function(e) {
+                    app.nuevaOrden.fecha_final = $(this).val();
                 });
 
+                $('.presupuesto').priceFormat({
+                    prefix: 'COP$ ',
+                    centsSeparator: ',',
+                    thousandsSeparator: '.'
+                });
 
 
 

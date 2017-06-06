@@ -1,20 +1,22 @@
 @extends('layouts.apps')
 @section('estilos')
     <link rel="stylesheet" href="{{asset("css/bootstrap-datepicker3.min.css")}}">
+
+
 @endsection
 @section('content')
     <div class="container" id="app">
         <div class="row" style="margin-top: 10px;">
             <div>
                 <h3>Fases de los Subsidios</h3>
-                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-agregar-subsidio" >
+                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-agregar-fase" >
                     Nuevo
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                 </button>
 
             </div>
             <div class="col-lg-6 pull-right" style="text-align: right">
-                <form class="form-inline" style="display: inline-block; padding-top: 20px; ">
+                <form class="form-inline" style="display: inline-block; padding-top: 20px;  margin-bottom: 10px;">
                     <div class="form-group">
                         <label v-show="filtrado">Filtro:  @{{ $data.filtroActual }}   <span class="glyphicon glyphicon-remove" v-on:click="limpiarFiltro()" aria-hidden="true"></span> </label>
                         <input type="text" required class="form-control" v-model="buscar" placeholder="Buscar">
@@ -62,7 +64,8 @@
                     <td>@{{ info.vereda }}</td>
                     <td>@{{ info.orden }}</td>
                     <td>
-                        <a  class="btn btn-sm btn-default" title="Ver" >Ver</a>
+                        @{{ info.veredas_fase.pivot = '' }}
+                        <a  class="btn btn-sm btn-default" title="Ver" v-on:click="editFase(info)" >Ver/Editar</a>
                     </td>
 
                 </tr>
@@ -81,12 +84,45 @@
 
     </div>
 
+    <style>
 
+        .twitter-typeahead{
+
+        }
+        .tt-query {
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+        }
+        .tt-hint {
+            color: #999999;
+        }
+        .tt-menu {
+            background-color: #FFFFFF;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+            margin-top: 12px;
+            padding: 8px 0;
+            width: 422px;
+        }
+        .tt-suggestion {
+            font-size: 16px;  /* Set suggestion dropdown font size */
+            padding: 3px 20px;
+        }
+        .tt-suggestion:hover {
+            cursor: pointer;
+            background-color: #0097CF;
+            color: #FFFFFF;
+        }
+        .tt-suggestion p {
+            margin: 0;
+        }
+    </style>
 
 @endsection
 @section('scripts')
     <script src="{{asset("js/bootstrap-datepicker.min.js")}}"></script>
     <script src="{{asset("js/bootstrap-datepicker.es.min.js")}}"></script>
+    <script src="{{asset("js/typeahead.js")}}"></script>
 
     <script>
 
@@ -106,15 +142,28 @@
             data : {
                 esNuevoBeneficiario : false,
                 nuevaFase : {
+                    id:'',
                     fecha_fase : '',
                     nombre_fase : '',
                     observaciones : '',
-                    id_vereda : '',
-                    id_orden_servicio : ''
+                    id_orden_servicio : '',
+                    veredas_fase: [],
+                    estado : ''
                 },
 
                 fases: '',
+                municipios:'',
+                ordenes:'',
+                //veredasFase: [],
+                veredas : '',
+                veredasComplete : '',
+                veredaToAdd : '',
                 loading : false,
+                //loadingVereda: false,
+
+                editarFase : false,
+                itemEditando : '',
+
                 pagination : {
                     current_page : 1,
                     from : 1,
@@ -129,7 +178,8 @@
                 offset : 4,
                 buscar : '',
                 filtrado : false,
-                filtroActual : ''
+                filtroActual : '',
+
 
 
 
@@ -174,23 +224,30 @@
                     this.pagination.current_page = page;
                     this.getVueItems(page);
                 },
-                guardarSubsidio : function () {
+                guardarFase : function () {
 
-                    this.$http.post('/subsidios/guardarsubsidio', this.nuevaFase).then((response)=>{
+                    this.$http.post('/fases/guardarfase', this.nuevaFase).then((response)=>{
 
                         if(response.body.estado == 'ok'){
-                            this.nuevoSubsidio.id = response.body.id;
-                            this.nuevoSubsidio.id_beneficiario = response.body.idBeneficiario;
-                            this.nuevoSubsidio.vereda = response.body.vereda;
-                            this.nuevoSubsidio.beneficiario = response.body.beneficiario;
-                            this.nuevoSubsidio.consecutivo = response.body.consecutivo;
-                            this.subsidios.push(this.nuevoSubsidio);
-                            $("#modal-agregar-subsidio").modal('hide');
-                            this.formReset();
-                            notificarOk('', "Subsidio de vivienda creado correctamente");
+                            if(!response.body.editado){
+                                this.nuevaFase.id = response.body.id;
+                                this.fases.push(this.nuevaFase);
+                                $("#modal-agregar-fase").modal('hide');
+                                this.formReset();
+                                notificarOk('', "Fase creada correctamente");
+                            }else{
+                                notificarOk('', "Fase Actualizada correctamente");
+                                var index = this.fases.indexOf(this.itemEditando);
+                                this.fases[index] = this.nuevaFase;
+                                $("#modal-agregar-fase").modal('hide');
+                                this.formReset();
+                                //this.editarFase = false;
+
+                            }
+
 
                         }else{
-                            notificarFail('', 'Error:  ' + response.body.error);
+                            notificarFail('', 'Error:  ' + response.body.mensaje);
 
 
                         }
@@ -199,6 +256,12 @@
                         notificarFail('', 'Error:  ' + error.status+' '+ error.statusText);
                     });
 
+                },
+                editFase : function (item) {
+                    this.itemEditando = item
+                    this.nuevaFase = JSON.parse(JSON.stringify(item))
+                    $("#modal-agregar-fase").modal('show');
+                    this.editarFase = true
                 },
 
 
@@ -209,8 +272,10 @@
                         nombre_fase : '',
                         observaciones : '',
                         id_vereda : '',
-                        id_orden_servicio : ''
+                        id_orden_servicio : '',
+                        veredas_fase : [],
                     };
+                    this.editarFase = false;
 
 
 
@@ -223,6 +288,7 @@
                     }
                     this.$http.post('/fases/getpaginatefases',{ buscar : this.buscar}).then((response)=>{
                         this.fases = response.body.data;
+
                         this.pagination = {
                             current_page : response.body.current_page,
                             from : 1,
@@ -243,12 +309,81 @@
                     this.filtroActual = '';
                     this.filtrado = false;
                     this.buscarData();
+                },
+                getVeredas : function (id) {
+                    this.loading = true;
+                    this.veredas = '';
+                    this.$http.post('/getveredas', {id: id}).then((response)=>{
+                        this.loading = false;
+                        this.veredas = response.body.data;
+                        this.veredasComplete = new Bloodhound({
+                            local: this.veredas,
+                            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('vereda'),
+                            queryTokenizer: Bloodhound.tokenizers.whitespace,
+                            //identify: function(obj) { return obj.value; },
+                        });
+                        $('#autocomplete').typeahead('destroy');
+                        $('#autocomplete').typeahead({
+                                hint: false,
+                                highlight: true, /* Enable substring highlighting */
+                                minLength: 1, /* Specify minimum characters required for showing result */
+                                //display:"label",
+                                //limit:10,
+
+                            },
+                            {
+                                name: 'Veredas',
+                                source: this.veredasComplete.ttAdapter(),
+                                displayKey: 'vereda',
+                            }).on('typeahead:selected', function(event, data){
+                                app.veredaToAdd = data;
+
+                            //console.log(data)
+
+                        })
+                    },(error)=>{
+                        this.loading = false;
+                    });
+                },
+                agregarVereda : function () {
+                    if(this.veredaToAdd != ''){
+                        this.nuevaFase.veredas_fase.push(this.veredaToAdd)
+                        this.veredaToAdd = ''
+                        $('#autocomplete').typeahead('val','')
+                    }else {
+                        notificarFail("", "Selecione una vereda")
+                    }
+
+                },
+                eliminarVereda : function (vereda) {
+                    this.nuevaFase.veredas_fase.splice(this.nuevaFase.veredas_fase.indexOf(vereda),1)
+
                 }
 
             },
             created(){
                 //this.getFases()
                 this.buscarData();
+                this.$http.post('/ordenes/lista').then((response)=>{
+                    this.ordenes = response.body.data;
+                },(error)=>{
+
+                });
+
+                this.$http.post('/ordenes/lista').then((response)=>{
+                    this.ordenes = response.body.data;
+                },(error)=>{
+
+                });
+
+                this.$http.post('/getmunicipios', {id: 85}).then((response)=>{
+                    this.municipios = response.body.data;
+                },(error)=>{
+
+                });
+
+
+
             },
             mounted(){
                 $('#fecha_fase').datepicker({

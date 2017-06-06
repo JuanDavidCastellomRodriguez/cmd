@@ -72,7 +72,7 @@
                         <servicios-publicos :idinfo="idInfoVivienda"></servicios-publicos>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="cierre">
-                        <cierre :idinfo="idInfoVivienda"></cierre>
+                        <cierre :idinfo="idInfoVivienda" :estadovivienda="estadoVivienda"></cierre>
                     </div>
                 </div>
             </section>
@@ -861,7 +861,7 @@
     });
     Vue.component('cierre', {
        template : '#form-cierre',
-        props : ['idinfo'],
+        props : ['idinfo','estadovivienda'],
         data : function () {
             return {
                 image: [],
@@ -869,8 +869,18 @@
                 images :[],
                 subirMas : false,
                 cierre : {
+                    indicadores : {
+                        habitaciones :0,
+                        hacinamiento : false,
+                        saneamientoBasico : false,
+                        condicionesSegEst: false,
+                    },
 
-                }
+                    riesgos : [],
+                    estadoVivienda: '',
+
+                },
+                riesgos: '',
             }
         },
         methods: {
@@ -929,6 +939,11 @@
         mounted(){
            this.$http.post('/subsidios/vivienda/diagnostico/cierre/todasimagenes', {id :this.idinfo, tipo : 1 }).then((response)=>{
                this.images = response.body.data;
+           }, (error)=>{
+
+           });
+           this.$http.post('/subsidios/vivienda/diagnostico/cierre/riesgos').then((response)=>{
+               this.riesgos = response.body.data;
            }, (error)=>{
 
            });

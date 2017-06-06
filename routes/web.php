@@ -99,13 +99,19 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/subsidios/vivienda/diagnostico/cierre/agregarimagenes', 'ViviendasController@agregarFotos');
     Route::post('/subsidios/vivienda/diagnostico/cierre/todasimagenes', 'ViviendasController@todasImagenes');
     Route::post('/subsidios/vivienda/diagnostico/cierre/borrarimagen', 'ViviendasController@borrarImagen');
+    Route::post('/subsidios/vivienda/diagnostico/cierre/riesgos', 'ViviendasController@getRiesgos');
+
     Route::post('/fases/getfases', 'FasesController@getAllFases');
     Route::post('/fases/getpaginatefases', 'FasesController@getPaginateFases');
-    Route::post('/ordenes/getpaginateordenes', 'OrdenServiciosController@getPaginateOrdenes');
+
     Route::resource('/fases', 'FasesController');
-    Route::post('//fases/listabyorden', 'FasesController@getFasesByOrden');
+    Route::post('/fases/listabyorden', 'FasesController@getFasesByOrden');
+    Route::post('/fases/guardarfase', 'FasesController@guardarFase');
+
     Route::resource('/ordenes', 'OrdenServiciosController');
     Route::post('/ordenes/lista', 'OrdenServiciosController@getListOrdenServicios');
+    Route::post('/ordenes/guardarorden', 'OrdenServiciosController@guardarOrden');
+    Route::post('/ordenes/getpaginateordenes', 'OrdenServiciosController@getPaginateOrdenes');
 
 
     Route::post('/campos/listabyfase', 'CamposController@getCamposByFase');

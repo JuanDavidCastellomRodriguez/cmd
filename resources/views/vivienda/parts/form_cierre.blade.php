@@ -5,62 +5,45 @@
         <h4>Indicadores</h4>
         <form >
             <div class="row">
-
                 <div class="form-group col-lg-3 col-sm-12">
-                    <label for="exampleInputName2">Numero de Habitaciones</label>
-                    <input type="number" required class="form-control" id="exampleInputName2" >
+                    <label  for="exampleInputName2">Numero de Habitaciones</label>
+                    <input v-model="cierre.habitaciones" type="number" required class="form-control" id="exampleInputName2" >
                 </div>
                 <div class="form-group col-lg-2 col-sm-6">
                     <label for="exampleInputName2">¿Hacinamiento?</label>
                     <div class="checkbox" >
-                        <label><input type="checkbox"  name="propietario">Si</label>
+                        <label><input type="checkbox" v-model="cierre.hacinamiento" name="propietario">Si</label>
                     </div>
                 </div>
                 <div class="form-group col-lg-3 col-sm-6">
                     <label for="exampleInputName2">¿Sanemaiento Basico?</label>
                     <div class="checkbox" >
-                        <label><input type="checkbox"  name="propietario">Si</label>
+                        <label><input type="checkbox" v-model="cierre.saneamientoBasico"  name="propietario">Si</label>
                     </div>
                 </div>
                 <div class="form-group col-lg-3 col-sm-6">
                     <label for="exampleInputName2">¿Condciones de seguridad, estrucutra y estetica?</label>
                     <div class="checkbox" >
-                        <label><input type="checkbox"  name="propietario">Si</label>
+                        <label><input type="checkbox" v-model="cierre.condicionesSegEst"  name="propietario">Si</label>
                     </div>
                 </div>
             </div>
             <h4>Zona de Riesgo</h4>
             <div class="row">
-                <div class="form-group col-lg-3 col-sm-12">
-                    <label for="exampleInputName2">Distancia de Rio/Quebrada</label>
-                    <select  class="form-control">
-                        <option value="" disabled >Seleccione...</option>
-                        <option v-for="tipologia in tipologiasFamilia" :value="tipologia.id">@{{ tipologia.tipologia_familia }}</option>
+                <div class="form-group col-lg-3 col-sm-6 col-md-4" v-for=" riesgo in riesgos">
+                    <div class="checkbox">
+                        <label >
+                            <input type="checkbox" :value="riesgo.id"  class="" v-model="cierre.riesgos">
+                            @{{ riesgo.riesgo }}
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group col-lg-3 col-sm-6">
+                    <label for="exampleInputName2">Estado General de la Vivienda</label>
+                    <select  class="form-control" v-model="cierre.estadoVivienda">
+                        <option value="" disabled>Seleccione...</option>
+                        <option v-for="estado in estadovivienda" :value="estado.id" >@{{ estado.estado_vivienda }}</option>
                     </select>
-                </div>
-                <div class="form-group col-lg-3 col-sm-6">
-                    <label for="exampleInputName2">¿Vulnerabilidad a Sismos?</label>
-                    <div class="checkbox" >
-                        <label><input type="checkbox"  name="propietario">Si</label>
-                    </div>
-                </div>
-                <div class="form-group col-lg-3 col-sm-6">
-                    <label for="exampleInputName2">¿Vulnerabilidad a Deslizamiento?</label>
-                    <div class="checkbox" >
-                        <label><input type="checkbox"  name="propietario">Si</label>
-                    </div>
-                </div>
-                <div class="form-group col-lg-3 col-sm-6">
-                    <label for="exampleInputName2">¿Vulnerabilidad a Enfermedades?</label>
-                    <div class="checkbox" >
-                        <label><input type="checkbox"  name="propietario">Si</label>
-                    </div>
-                </div>
-                <div class="form-group col-lg-3 col-sm-6">
-                    <label for="exampleInputName2">¿Vulnerabilidad a Incendios?</label>
-                    <div class="checkbox" >
-                        <label><input type="checkbox"  name="propietario">Si</label>
-                    </div>
                 </div>
             </div>
             <div class="row" style="text-align: right">

@@ -12,6 +12,7 @@ use App\InformacionVivienda;
 use App\PersonasCargo;
 use App\Predio;
 use App\PropietariosPredio;
+use App\Riesgo;
 use App\Subsidio;
 use App\TenenciaTierra;
 use Carbon\Carbon;
@@ -510,6 +511,12 @@ class ViviendasController extends Controller
                 'error' => $ee->getMessage()
             ]);
         }
+    }
+    public function getRiesgos(){
+        return response()->json([
+            'estado' => 'ok',
+            'data' => Riesgo::all()
+        ]);
     }
 
 }
