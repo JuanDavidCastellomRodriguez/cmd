@@ -43,6 +43,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/getselectspredio', 'SelectsController@getSelectsPredio');
     Route::post('/getselectsservicios', 'SelectsController@getSelectsServicios');
     Route::post('/getselectstipoproyectos', 'SelectsController@getSelectsTipoProyectos');
+    Route::post('/getselectstipocobertura', 'SelectsController@getSelectsTipoCobertura');
+    Route::post('/getselectssubtipocobertura', 'SelectsController@getSelectsSubtipoCobertura');
+    Route::post('/getselectstipofuentehidrica', 'SelectsController@getSelectsTipoFuentesHidricas');
 
 
 
@@ -86,6 +89,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/subsidios/productivos/diagnostico/getmanoobra', "FlujoManoObraController@getFlujoManoObra");
     Route::post('/subsidios/productivos/diagnostico/guardarmanoobra', "FlujoManoObraController@guardarFlujoManoObra");
     Route::post('/subsidios/productivos/diagnostico/borrarmanoobra', "FlujoManoObraController@borrarFlujoManoObra");
+    Route::post('/subsidios/productivos/diagnostico/getpotreros', "InformacionLotesController@getPotreros");
+    Route::post('/subsidios/productivos/diagnostico/borrarpotrero', "InformacionLotesController@borrarPotrero");
+    Route::post('/subsidios/productivos/diagnostico/guardarpotrero', "InformacionLotesController@guardarPotrero");
 
 
     Route::get('/subsidios/productivos/visitas/{id}', "VisitasController@show");

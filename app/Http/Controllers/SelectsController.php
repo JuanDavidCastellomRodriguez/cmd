@@ -28,8 +28,11 @@ use App\Municipio;
 use App\NivelEducativo;
 use App\OpcionTenenciaTierra;
 use App\SistemaEliminacionAguasGrise;
+use App\SubtipoCobertura;
 use App\TiemposRecorrido;
+use App\TipoCobertura;
 use App\TipoCubierta;
+use App\TipoFuentesHidrica;
 use App\TipologiasFamilia;
 use App\TipoMuro;
 use App\TipoPersonasCargo;
@@ -293,6 +296,56 @@ class SelectsController extends Controller
             return response()->json([
                 'estado' => 'ok',
                 'data'=> TipoProyecto::all()
+
+
+            ]);
+
+        }catch (\Exception $ee){
+            return response()->json([
+                'estado' => 'fail',
+                'error' => $ee->getMessage(),
+            ]);
+        }
+    }
+    public function getSelectsTipoCobertura(){
+        try{
+            return response()->json([
+                'estado' => 'ok',
+                'data'=> TipoCobertura::all()
+
+
+            ]);
+
+        }catch (\Exception $ee){
+            return response()->json([
+                'estado' => 'fail',
+                'error' => $ee->getMessage(),
+            ]);
+        }
+    }
+
+    public function getSelectsSubtipoCobertura(Request $request){
+        try{
+            return response()->json([
+                'estado' => 'ok',
+                'data'=> SubtipoCobertura::where('id_tipo_cobertura',$request->id)->get(),
+
+
+            ]);
+
+        }catch (\Exception $ee){
+            return response()->json([
+                'estado' => 'fail',
+                'error' => $ee->getMessage(),
+            ]);
+        }
+    }
+
+    public function getSelectsTipoFuentesHidricas(){
+        try{
+            return response()->json([
+                'estado' => 'ok',
+                'data'=> TipoFuentesHidrica::all()
 
 
             ]);

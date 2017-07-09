@@ -41,7 +41,7 @@ class FlujoManoObraController extends Controller
 
     public function guardarFlujoManoObra(Request $request){
 
-        //try{
+        try{
         $request =  json_decode($request->getContent());
         //return $request->mano->id_mes;
             $manoExiste = FlujoManoObra::where('id_mes',$request->mano->id_mes)->where('id_info_productivo',$request->mano->id_info_productivo)->get();
@@ -69,12 +69,12 @@ class FlujoManoObraController extends Controller
             }
 
 
-        /*}catch (\Exception $exception){
+        }catch (\Exception $exception){
             return response()->json([
                 'estado' => 'fail',
                 'error' => $exception,
             ]);
-        }*/
+        }
     }
 
     public function borrarFlujoManoObra(Request $request){

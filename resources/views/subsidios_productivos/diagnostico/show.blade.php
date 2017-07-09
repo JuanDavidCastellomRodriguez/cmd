@@ -62,7 +62,7 @@
                         <mano-obra :idinfo="idInfoProductivo"></mano-obra>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="habitaciones">
-
+                        <potreros :idinfo="idInfoProductivo" ></potreros>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="cocinas">
 
@@ -578,6 +578,154 @@
 
 
         });
+        Vue.component('potreros',{
+            template : '#potreros',
+            props : ['idinfo'],
+            data : function () {
+                return {
+
+                    loading : false,
+                    nuevoPotrero: {
+                        id : '',
+                        potrero_lote : '',
+                        extension_has : 0,
+                        rotacional_dias_descanso : 0,
+                        rotacional_dias_ocupacion : 0,
+                        id_subtipo_cobertura : '',
+                        id_tipo_cobertura : '',
+                        id_mes : '',
+                        id_info_productivo : this.idinfo,
+                        id_fuente_hidrica : '',
+                        fuente : '',
+                        tipoCobertura : '',
+                        subtipoCobertura : '',
+                        uso : '',
+
+
+                    },
+                    potreros: '',
+
+                    potreroToRemove : '',
+                    tipoCobertura : '',
+                    subtipoCobertura : '',
+                    fuentesHidricas : '',
+
+
+
+
+
+
+                }
+            },
+
+
+
+            methods : {
+                coberturaSelected : function (id, nombre) {
+                    this.nuevoPotrero.tipoCobertura = nombre;
+                    this.$http.post('/getselectssubtipocobertura',{id : id}).then((response)=>{
+                        this.subtipoCobertura = response.body.data;
+                    },(error)=>{
+                        notificarFail('', 'Error al obtener los Tipos de Cobertura ' + error.status+' '+ error.statusText);
+                    });
+                },
+                subcoberturaSelected : function (nombre) {
+                    this.nuevoPotrero.subtipoCobertura = nombre;
+
+                },
+                fuenteSelected : function (nombre) {
+                    this.nuevoPotrero.fuente = nombre;
+
+                },
+                prepareToRemove : function (potrero) {
+                    this.potreroToRemove = potrero;
+                },
+                formReset : function () {
+                    this.nuevoPotrero = {
+                        id : '',
+                        potrero_lote : '',
+                        extension_has : 0,
+                        rotacional_dias_descanso : 0,
+                        rotacional_dias_ocupacion : 0,
+                        id_subtipo_cobertura : '',
+                        id_tipo_cobertura : '',
+                        id_mes : '',
+                        id_info_productivo : this.idinfo,
+                        id_fuente_hidrica : '',
+                        fuente : '',
+                        tipoCobertura : '',
+                        subtipoCobertura : '',
+                        uso : '',
+
+                    }
+                },
+
+                guardarPotrero : function () {
+                    this.loading = true;
+                    this.$http.post('/subsidios/productivos/diagnostico/guardarpotrero',{potrero : this.nuevoPotrero }).then((response)=>{
+                        this.loading = false;
+                        if(response.body.estado == 'ok'){
+
+                            this.nuevoPotrero.id = response.body.id;
+                            this.potreros.push(this.nuevoPotrero);
+                            $("#modal-agregar-potrero").modal('hide');
+                            notificarOk('', 'Potrero agregado correctamente');
+                            this.formReset();
+
+                        }else{
+                            notificarFail('', 'Error:  ' + response.body.error);
+                        }
+
+                    },(error)=>{
+                        this.loading = false;
+                        notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                    });
+
+                },
+
+                eliminarPotrero : function () {
+                    this.loading = true;
+                    this.$http.post('/subsidios/productivos/diagnostico/borrarpotrero',{potrero : this.potreroToRemove.id}).then((response)=>{
+                        this.loading = false;
+                        if(response.body.estado == 'ok'){
+                            $("#modal-confirm-delete-potrero").modal('hide');
+                            notificarOk('', 'Potrero borrado correctamente');
+                            this.potreros.splice(this.potreros.indexOf(this.potreroToRemove),1);
+                        }else{
+                            $("#modal-confirm-delete-potrero").modal('hide');
+                            notificarFail('', 'Error: ' + response.body.error);
+                        }
+                    },(error)=>{
+                        $("#modal-confirm-delete-potrero").modal('hide');
+                        notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                        this.loading = false;
+                    });
+
+                }
+
+            },
+            mounted(){
+                this.$http.post('/subsidios/productivos/diagnostico/getpotreros',{idInfo: this.idinfo}).then((response)=>{
+                    this.potreros = response.body.data;
+                },(error)=>{
+                    notificarFail('', 'Error al obtener los Potreros ' + error.status+' '+ error.statusText);
+                });
+
+                this.$http.post('/getselectstipocobertura').then((response)=>{
+                    this.tipoCobertura = response.body.data;
+                },(error)=>{
+                    notificarFail('', 'Error al obtener los Potreros ' + error.status+' '+ error.statusText);
+                });
+
+                this.$http.post('/getselectstipofuentehidrica').then((response)=>{
+                    this.fuentesHidricas = response.body.data;
+                },(error)=>{
+                    notificarFail('', 'Error al obtener los Potreros ' + error.status+' '+ error.statusText);
+                });
+            },
+
+
+        });
 
 
     var app = new Vue({
@@ -769,3 +917,4 @@
 @include('subsidios_productivos.diagnostico.parts.form_predio')
 @include('subsidios_productivos.diagnostico.parts.table_beneficiarios')
 @include('subsidios_productivos.diagnostico.parts.table_mano_obra')
+@include('subsidios_productivos.diagnostico.parts.table_potreros')
