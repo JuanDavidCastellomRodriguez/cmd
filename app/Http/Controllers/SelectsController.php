@@ -12,6 +12,7 @@ use App\ElementosSanitariosInstalado;
 use App\EstadosCivile;
 use App\EstadosVia;
 use App\EstadosVivienda;
+use App\Fase;
 use App\FuenteEnergiaElectrica;
 use App\FuentesAgua;
 use App\Gas;
@@ -33,6 +34,7 @@ use App\TipologiasFamilia;
 use App\TipoMuro;
 use App\TipoPersonasCargo;
 use App\TipoPiso;
+use App\TipoProyecto;
 use App\TiposMesone;
 use App\TipoSubsidio;
 use App\TiposVehiculo;
@@ -69,12 +71,21 @@ class SelectsController extends Controller
     }
 
     public function getVeredasByCampo(Request $request){
-        $veredas =  $veredas = Campo::find($request->id)->VeredasCampo;
+        $veredas = Campo::find($request->id)->VeredasCampo;
         return response()->json([
             'estado' => 'ok',
             'data' => $veredas,
         ]);
     }
+
+    public function getVeredasByFase(Request $request){
+        $veredas = Fase::find($request->id)->VeredasFase;
+        return response()->json([
+            'estado' => 'ok',
+            'data' => $veredas,
+        ]);
+    }
+
 
     public function getTipoVehiculo(){
         $tipoVehiculo =TiposVehiculo::all();
@@ -265,6 +276,23 @@ class SelectsController extends Controller
                 'gas' => Gas::all(),
                 'electricidad' => FuenteEnergiaElectrica::all(),
                 'comunicaciones' => MediosComunicaciones::all(),
+
+
+            ]);
+
+        }catch (\Exception $ee){
+            return response()->json([
+                'estado' => 'fail',
+                'error' => $ee->getMessage(),
+            ]);
+        }
+    }
+
+    public function getSelectsTipoProyectos(){
+        try{
+            return response()->json([
+                'estado' => 'ok',
+                'data'=> TipoProyecto::all()
 
 
             ]);

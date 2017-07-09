@@ -28,6 +28,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/getmunicipios','SelectsController@getMunicipios');
     Route::post('/getveredas','SelectsController@getVeredas');
     Route::post('/getveredasbycampo','SelectsController@getVeredasByCampo');
+    Route::post('/getveredasbyfase','SelectsController@getVeredasByFase');
     Route::post('/gettipovehiculo', 'SelectsController@getTipoVehiculo');
     Route::post('/gettipologiasfamilia', 'SelectsController@getTipologiaFamilia');
     Route::post('/gettiemposrecorrido', 'SelectsController@getTiemposRecorrido');
@@ -41,6 +42,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/gettipossubsidios', 'SelectsController@getTiposSubsidio');
     Route::post('/getselectspredio', 'SelectsController@getSelectsPredio');
     Route::post('/getselectsservicios', 'SelectsController@getSelectsServicios');
+    Route::post('/getselectstipoproyectos', 'SelectsController@getSelectsTipoProyectos');
 
 
 
@@ -77,8 +79,18 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/subsidios/productivos', "SubsidiosController@subsidiosProductivos");
     Route::resource('/subsidios/productivos/diagnostico', "ProductivosController");
+    Route::post('/subsidios/productivos/diagnostico/getgeneralidades', "ProductivosController@getGeneralidades");
+    Route::post('/subsidios/productivos/diagnostico/guardargeneralidades', "ProductivosController@guardarGeneralidades");
+    Route::post('/subsidios/productivos/diagnostico/getpredio', "ProductivosController@getPredio");
+    Route::post('/subsidios/productivos/diagnostico/guardarpredio', "ProductivosController@guardarPredio");
+    Route::post('/subsidios/productivos/diagnostico/getmanoobra', "FlujoManoObraController@getFlujoManoObra");
+    Route::post('/subsidios/productivos/diagnostico/guardarmanoobra', "FlujoManoObraController@guardarFlujoManoObra");
+    Route::post('/subsidios/productivos/diagnostico/borrarmanoobra', "FlujoManoObraController@borrarFlujoManoObra");
+
 
     Route::get('/subsidios/productivos/visitas/{id}', "VisitasController@show");
+
+
 
     Route::post('/subsidios/getinfo','SubsidiosController@getSubsidios');
     Route::post('/subsidios/guardarsubsidio','SubsidiosController@guardarSubsidio');

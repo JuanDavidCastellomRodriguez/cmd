@@ -22,18 +22,19 @@
                                 <label for="exampleInputName2">No de familias viven en la vivienda</label>
                                 <input type="number" required class="form-control" id="exampleInputName2" v-model.number="nuevoDiagnostico.numeroFamiliasVivienda">
                             </div>
-                            <div class="form-group col-lg-6 col-sm-6">
+                            <div class="form-group col-lg-6 col-sm-12">
                                 <label for="exampleInputName2">¿Atiende el propietario de la vivienda?</label>
                                 <div class="checkbox" >
                                     <label><input type="checkbox" v-model="nuevoDiagnostico.respondePropietario" name="propietario">Si</label>
                                 </div>
                             </div>
-                            <div class="form-group col-lg-6 col-sm-6">
+                            <div class="form-group col-lg-6 col-sm-12">
                                 <label for="exampleInputName2">¿Beneficiario de programa de Inversión Social?</label>
                                 <div class="checkbox"  >
                                     <label><input type="checkbox" v-model="nuevoDiagnostico.programaSocial" name="programasocial">Si</label>
                                 </div>
                             </div>
+
 
 
 

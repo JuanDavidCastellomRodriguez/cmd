@@ -244,7 +244,7 @@
                     //this.nuevoBeneficiario.no_cedula = cedula;
                     if(this.nuevoBeneficiario.no_cedula != ''){
                         this.loading = true;
-                        this.$http.post('/vivienda/habitantes/buscar',{no_cedula : this.nuevoBeneficiario.no_cedula}).then((response)=>{
+                        this.$http.post('/vivienda/habitantes/buscar',{no_cedula : this.nuevoBeneficiario.no_cedula,tipoSubsidio : 1}).then((response)=>{
                             if(response.body.estado == 'ok'){
                                 this.nuevoBeneficiario = response.body.data;
                                 this.creandoNuevoBeneficiario = false;
@@ -276,7 +276,7 @@
                     })
 
                     if(esnuevo){
-                        this.$http.post('/vivienda/habitantes/guardar',{idInfo : this.idinfo, habitante : this.nuevoBeneficiario }).then((response)=>{
+                        this.$http.post('/vivienda/habitantes/guardar',{idInfo : this.idinfo, habitante : this.nuevoBeneficiario, tipoSubsidio : 1 }).then((response)=>{
                             if(response.body.estado == 'ok'){
                                 if(response.body.yaEsHabitante == true){
                                     notificarFail('', 'El beneficiario ya existe en otro proyecto');
@@ -301,7 +301,7 @@
                 
                 eliminarBeneficiario : function () {
                     this.loading = true;
-                    this.$http.post('/vivienda/habitantes/remove',{habitante : this.beneficiarioToRemove.id, idInfo: this.idinfo}).then((response)=>{
+                    this.$http.post('/vivienda/habitantes/remove',{habitante : this.beneficiarioToRemove.id, idInfo: this.idinfo,tipoSubsidio : 1}).then((response)=>{
                         this.loading = false;
                         if(response.body.estado == 'ok'){
                             $("#modal-confirm-delete-beneficiario").modal('hide');
@@ -321,7 +321,7 @@
                 
             },
             created (){
-                this.$http.post('/vivienda/habitantes/get', {_token : this.token, idInfo : this.idinfo }).then((response)=>{
+                this.$http.post('/vivienda/habitantes/get', {_token : this.token, idInfo : this.idinfo,tipoSubsidio : 1 }).then((response)=>{
                     this.beneficiarios = response.body.data;
                 }, (error)=>{
                     notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);

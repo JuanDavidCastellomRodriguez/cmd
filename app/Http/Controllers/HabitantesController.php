@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Habitante;
 use App\HabitantesVivienda;
+use App\InformacionProductivos;
 use App\InformacionVivienda;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -13,16 +14,26 @@ use League\Flysystem\Exception;
 class HabitantesController extends Controller
 {
     public function getHabitantes(Request  $request){
-        $info = InformacionVivienda::find($request->idInfo)->HabitantesViviendas->all();
-        //$data = InformacionVivienda::find($request->idInfo)->with(['HabitantesViviendas'])->get();
-        return response()->json([
-            'data'=> $info
-        ]);
+        if($request->tipoSubsidio == 1){
+            $info = InformacionVivienda::find($request->idInfo)->HabitantesViviendas->all();
+            //$data = InformacionVivienda::find($request->idInfo)->with(['HabitantesViviendas'])->get();
+            return response()->json([
+                'data'=> $info
+            ]);
+        }else{
+            $info = InformacionProductivos::find($request->idInfo)->HabitantesViviendas->all();
+            //$data = InformacionVivienda::find($request->idInfo)->with(['HabitantesViviendas'])->get();
+            return response()->json([
+                'data'=> $info
+            ]);
+        }
+
+
     }
 
     public function buscarHabitante(Request $request){
 
-        $habitante = Habitante::where('no_cedula', $request->cedula)->first();
+        $habitante = Habitante::where('no_cedula', $request->no_cedula)->first();
         if($habitante != null){
             return response()->json([
                 'estado' => 'ok',
@@ -42,6 +53,8 @@ class HabitantesController extends Controller
         $idHabitante = '';
         $existeOtroPrograma = false;
         try{
+
+
             if($request->habitante->id == ''){
                 $habitante = new Habitante();
                 $habitante->no_cedula = $request->habitante->no_cedula;
@@ -59,7 +72,13 @@ class HabitantesController extends Controller
 
                 $habitanteVivienda = new HabitantesVivienda();
                 $habitanteVivienda->id_habitante = $habitante->id;
-                $habitanteVivienda->id_informacion = $request->idInfo;
+                if($request->tipoSubsidio == 1){
+                    $habitanteVivienda->id_informacion = $request->idInfo;
+                }else{
+                    $habitanteVivienda->id_productivo = $request->idInfo;
+                }
+
+
                 $habitanteVivienda->save();
 
                 $idHabitante = $habitante->id;
@@ -86,7 +105,13 @@ class HabitantesController extends Controller
 
                 $habitanteVivienda = new HabitantesVivienda();
                 $habitanteVivienda->id_habitante = $habitante->id;
-                $habitanteVivienda->id_informacion = $request->idInfo;
+                if($request->tipoSubsidio == 1){
+                    $habitanteVivienda->id_informacion = $request->idInfo;
+                }else{
+                    $habitanteVivienda->id_productivo = $request->idInfo;
+                }
+
+
                 $habitanteVivienda->save();
 
                 $idHabitante = $habitante->id;
@@ -118,11 +143,23 @@ class HabitantesController extends Controller
     public function removerHabitante(Request $request){
         //dd($request);
         try{
-            HabitantesVivienda::where('id_informacion', $request->idInfo)->where('id_habitante', $request->habitante)->first()->delete();
-            return response()->json([
-                'estado' => 'ok',
-                'mensaje' => 'Habitante removido'
-            ]);
+            if($request->tipoSubsidio == 1){
+
+
+                HabitantesVivienda::where('id_informacion', $request->idInfo)->where('id_habitante', $request->habitante)->first()->delete();
+                return response()->json([
+                    'estado' => 'ok',
+                    'mensaje' => 'Habitante removido'
+                ]);
+            }else{
+                HabitantesVivienda::where('id_productivo', $request->idInfo)->where('id_habitante', $request->habitante)->first()->delete();
+                return response()->json([
+                    'estado' => 'ok',
+                    'mensaje' => 'Habitante removido'
+                ]);
+            }
+
+
 
         }catch (Exception $ee){
             return response()->json([

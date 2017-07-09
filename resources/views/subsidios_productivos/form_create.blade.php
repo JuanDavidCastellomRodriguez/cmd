@@ -97,7 +97,7 @@
                 </div>
                 <div class="modal-footer">
                     <i  v-show="loading" class="fa fa-spinner fa-spin"></i>
-                    <button type="button" class="btn btn-default" data-dismiss="modal" @click="resetForm()" >Cancelar</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal" @click="formReset()" >Cancelar</button>
                     <button type="submit"  class="btn btn-default "  id="btn-guardar">Crear Subsidio</button>
                 </div>
             </form>

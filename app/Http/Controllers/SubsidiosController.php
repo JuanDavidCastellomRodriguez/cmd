@@ -12,42 +12,47 @@ class SubsidiosController extends Controller
     public function getSubsidios(Request $request){
 
         $subsidios = Subsidio::where('id_tipo_subsidio',$request->tipoSubsidio)->Buscar($request->buscar)->paginate(10);
-        //return $subsidios;
+        //return $subsidios->total();
         $data = new Collection();
-        foreach ($subsidios as $subs){
+        $pagination = "";
+        if($subsidios->total() > 0){
+            foreach ($subsidios as $subs){
 
-            $data->add([
-                'vereda' => $subs->Vereda->vereda."(".$subs->Vereda->Municipio->municipio.")",
-                'beneficiario' => $subs->Beneficiario->nombres." ". $subs->Beneficiario->apellidos." (".$subs->Beneficiario->no_cedula.")",
-                'id' => $subs->id,
-                //'campo'=> $subs->Vereda->Campo
-                'consecutivo' => $subs->consecutivo,
-                'id_tipo_subsidio' => $subs->id_tipo_subsidio,
-                'id_fase' => $subs->id_fase,
-                'fase' => $subs->Fase->nombre_fase,
-                'fecha_inicio' => $subs->fecha_inicio,
-                'valor' => $subs->valor,
-                'id_info_vivienda' => $subs->id_info_vivienda,
-                'id_info_productivo' => $subs->id_info_productivo,
-                'porcentaje_ejecucion' => $subs->porcentaje_ejecucion,
-                'entregado' => $subs->entregado,
-                'obras_en_construccion' => $subs->obras_en_construccion,
+                $data->add([
+                    'vereda' => $subs->Vereda->vereda."(".$subs->Vereda->Municipio->municipio.")",
+                    'beneficiario' => $subs->Beneficiario->nombres." ". $subs->Beneficiario->apellidos." (".$subs->Beneficiario->no_cedula.")",
+                    'id' => $subs->id,
+                    //'campo'=> $subs->Vereda->Campo
+                    'consecutivo' => $subs->consecutivo,
+                    'id_tipo_subsidio' => $subs->id_tipo_subsidio,
+                    'id_fase' => $subs->id_fase,
+                    'fase' => $subs->Fase->nombre_fase,
+                    'fecha_inicio' => $subs->fecha_inicio,
+                    'valor' => $subs->valor,
+                    'valor_beneficiario' => $subs->valor_beneficiario,
+                    'id_info_vivienda' => $subs->id_info_vivienda,
+                    'id_info_productivo' => $subs->id_info_productivo,
+                    'porcentaje_ejecucion' => $subs->porcentaje_ejecucion,
+                    'entregado' => $subs->entregado,
+                    'obras_en_construccion' => $subs->obras_en_construccion,
 
 
 
+                ]);
+
+            }
+            $pagination = ([
+                'current_page' =>$subsidios->currentPage(),
+                'from' => $subsidios->firstItem(),
+                'last_page' =>$subsidios->lastPage(),
+                'next_page_url' => $subsidios->nextPageUrl(),
+                'per_page' => $subsidios->perPage(),
+                'prev_page_url' => $subsidios->previousPageUrl(),
+                'to' => $subsidios->lastItem(),
+                'total' => $subsidios->total(),
             ]);
 
         }
-        $pagination = ([
-            'current_page' =>$subsidios->currentPage(),
-            'from' => $subsidios->firstItem(),
-            'last_page' =>$subsidios->lastPage(),
-            'next_page_url' => $subsidios->nextPageUrl(),
-            'per_page' => $subsidios->perPage(),
-            'prev_page_url' => $subsidios->previousPageUrl(),
-            'to' => $subsidios->lastItem(),
-            'total' => $subsidios->total(),
-        ]);
 
         return response()->json([
             'estado' => 'ok',
@@ -88,8 +93,10 @@ class SubsidiosController extends Controller
                     $subsidio->consecutivo = $consecutivo;
                     $subsidio->id_tipo_subsidio = $request->subsidio->id_tipo_subsidio;
                     $subsidio->id_fase = $request->subsidio->id_fase;
+                    $subsidio->id_vereda = $request->subsidio->id_vereda;
                     $subsidio->fecha_inicio = $request->subsidio->fecha_inicio;
                     $subsidio->valor = $request->subsidio->valor;
+                    $subsidio->valor_beneficiario = $request->subsidio->valor_beneficiario;
                     $subsidio->id_usuario = Auth::User()->id;
                     $subsidio->observaciones = $request->subsidio->observaciones;
 
@@ -100,7 +107,7 @@ class SubsidiosController extends Controller
                         'estado' => 'ok',
                         'id' => $id,
                         'idBeneficiario' => $subsidio->id_beneficiario,
-                        'vereda' => $subsidio->Fase->Vereda->vereda."(".$subsidio->Fase->Vereda->Municipio->municipio.")",
+                        'vereda' => $subsidio->Vereda->vereda."(".$subsidio->Vereda->Municipio->municipio.")",
                         'beneficiario' => $subsidio->Beneficiario->nombres." ". $subsidio->Beneficiario->apellidos." (".$subsidio->Beneficiario->no_cedula.")",
                         'consecutivo' => $subsidio->consecutivo
                     ]);
@@ -112,8 +119,10 @@ class SubsidiosController extends Controller
                 $subsidio->id_tipo_subsidio = $request->subsidio->id_tipo_subsidio;
                 $subsidio->consecutivo = $consecutivo;
                 $subsidio->id_fase = $request->subsidio->id_fase;
+                $subsidio->id_vereda = $request->subsidio->id_vereda;
                 $subsidio->fecha_inicio = $request->subsidio->fecha_inicio;
                 $subsidio->valor = $request->subsidio->valor;
+                $subsidio->valor_beneficiario = $request->subsidio->valor_beneficiario;
                 $subsidio->id_usuario = Auth::User()->id;
                 $subsidio->observaciones = $request->subsidio->observaciones;
                 $subsidio->save();
@@ -123,7 +132,7 @@ class SubsidiosController extends Controller
                     'estado' => 'ok',
                     'id' => $id,
                     'idBeneficiario' => $subsidio->id_beneficiario,
-                    'vereda' => $subsidio->Fase->Vereda->vereda."(".$subsidio->Fase->Vereda->Municipio->municipio.")",
+                    'vereda' => $subsidio->Vereda->vereda."(".$subsidio->Vereda->Municipio->municipio.")",
                     'beneficiario' => $subsidio->Beneficiario->nombres." ". $subsidio->Beneficiario->apellidos." (".$subsidio->Beneficiario->no_cedula.")",
                     'consecutivo' => $subsidio->consecutivo
                 ]);

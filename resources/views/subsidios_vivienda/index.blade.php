@@ -70,7 +70,7 @@
                     <td>
 
                         <a :href="'/vivienda/'+info.id_info_vivienda" v-if="info.id_info_vivienda != null" class="btn btn-sm btn-default" title="Ver Diagnostico" >Ver</a>
-                        <a  v-if="info.id_info_vivienda == null" v-on:click="nuevoDiagnostico.subsidio = info.id" class="btn btn-sm btn-default" data-toggle="modal" data-target="#modal-agregar-diagnostico" title="Ver Diagnostico" >Ver</a>
+                        <a  v-if="info.id_info_vivienda == null" v-on:click="nuevoDiagnostico.subsidio = info.id" class="btn btn-sm btn-default" data-toggle="modal" data-target="#modal-agregar-diagnostico" title="Ver Diagnostico" >Crear</a>
                         <a :href="'/informes/getdiagnosticovivienda/'+info.id_info_vivienda" v-if="info.id_info_vivienda != null" class="btn btn-sm btn-default" title="Ver Diagnostico" >
                             <span class="glyphicon glyphicon-print" aria-hidden="true"></span>
                         </a>
@@ -132,8 +132,10 @@
                     id_beneficiario : '',
                     id_tipo_subsidio : 1,
                     id_fase : '',
+                    id_vereda : '',
                     fecha_inicio : '',
                     valor : 0,
+                    valor_beneficiario : 0,
                     id_info_vivienda : null,
                     id_info_productivo : null,
                     porcentaje_ejecucion : 0,
@@ -144,6 +146,7 @@
 
                 },
                 subsidios : '',
+                veredas : '',
                 fases: '',
                 loading : false,
                 nuevoDiagnostico : {
@@ -298,6 +301,7 @@
                         id_beneficiario : '',
                         id_tipo_subsidio : 1,
                         id_fase : '',
+                        id_vereda:'',
                         fecha_inicio : '',
                         valor : 0,
                         id_info_vivienda : null,
@@ -360,6 +364,16 @@
                     this.filtroActual = '';
                     this.filtrado = false;
                     this.buscarData();
+                },
+                obtenerVeredas : function (fase) {
+                    this.$http.post('/getveredasbyfase',{id: fase}).then((response)=>{
+                        this.veredas = response.body.data;
+                        //this.pagination = response.body.pagination;
+
+                    }, (error)=>{
+
+                    });
+
                 }
 
             },

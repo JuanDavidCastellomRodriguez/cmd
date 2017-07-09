@@ -56,12 +56,25 @@
                                 <label for="exampleInputName2">Valor Subsidio (en Pesos)</label>
                                 <input type="number" required class="form-control" id="exampleInputName2" v-model.number="nuevoSubsidio.valor">
                             </div>
+                            <div class="form-group col-lg-6 col-sm-12">
+                                <label for="exampleInputName2">Aporte Beneficiario (en Pesos)</label>
+                                <input type="number" required class="form-control" id="exampleInputName2" v-model.number="nuevoSubsidio.valor_beneficiario">
+                            </div>
 
                             <div class="form-group has-feedback col-lg-6 col-sm-12">
                                 <label for="exampleInputName2">Fase</label>
-                                <select class="form-control" v-model="nuevoSubsidio.id_fase" required>
+                                <select class="form-control" v-model="nuevoSubsidio.id_fase" v-on:change="obtenerVeredas($event.target.value)" required>
                                     <option value="" disabled  >Seleccione...</option>
                                     <option v-for="fase in fases" :value="fase.id">@{{ fase.nombre_fase  }}</option>
+                                </select>
+                                <span class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 25px;"></span>
+                            </div>
+
+                            <div class="form-group has-feedback col-lg-6 col-sm-12">
+                                <label for="exampleInputName2">Vereda</label>
+                                <select class="form-control" v-model="nuevoSubsidio.id_vereda" required>
+                                    <option value="" disabled  >Seleccione...</option>
+                                    <option v-for="vereda in veredas" :value="vereda.id">@{{ vereda.vereda  }}</option>
                                 </select>
                                 <span class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 25px;"></span>
                             </div>
@@ -80,7 +93,7 @@
                 </div>
                 <div class="modal-footer">
                     <i  v-show="loading" class="fa fa-spinner fa-spin"></i>
-                    <button type="button" class="btn btn-default" data-dismiss="modal" @click="resetForm()" >Cancelar</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal" @click="formReset()" >Cancelar</button>
                     <button type="submit"  class="btn btn-default "  id="btn-guardar">Crear Subsidio</button>
                 </div>
             </form>

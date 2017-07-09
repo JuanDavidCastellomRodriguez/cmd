@@ -27,7 +27,7 @@
     <div class="container" id="app">
         <div class="row" style="margin-top: 10px;">
 
-            <h3>Visita de Diagnostico No @{{ infoVivienda.consecutivo }}</h3>
+            <h3>Visita de Diagnostico No @{{ infoProductivo.consecutivo }}</h3>
             <section class="col-lg-2 col-sm-4" id="seccion-menu-lateral">
                 <ul class="nav nav-tabs" role="tablist">
                     Informacion General
@@ -49,17 +49,17 @@
             <section class="col-lg-10 col-sm-8">
                 <div class="tab-content">
                     <div role="tabpanel" class="tab-pane active" id="predio">
-
+                        <form-predio  :idinfo="idInfoProductivo" :idpredio="idPredio" ></form-predio>
 
                     </div>
                     <div role="tabpanel" class="tab-pane" id="habitantes">
-
+                        <beneficiarios  :idinfo="idInfoProductivo" :generos="generos" :niveles="nivelesEducativos"></beneficiarios>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="general">
-                        @include('vivienda.parts.form_inicial')
+                        @include('subsidios_productivos.diagnostico.parts.form_inicial')
                     </div>
                     <div role="tabpanel" class="tab-pane" id="p-cargos">
-
+                        <mano-obra :idinfo="idInfoProductivo"></mano-obra>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="habitaciones">
 
@@ -96,102 +96,8 @@
     <script>
         Vue.http.headers.common['X-CSRF-TOKEN'] = $("#token").attr("value");
 
-    Vue.component('personas-cargo',{
-       template : '#personas-cargo',
-        props: ['idinfo','niveles','generos'],
-        data : function () {
-            return {
-                personasCargo : '',
-                tiposPersonaCargo : '',
-                nuevaPersona : {
-                    id : '',
-                    fecha_nacimiento : '',
-                    id_genero : '',
-                    id_tipo : '',
-                    id_nivel_educativo : '',
-                    id_informacion : ''
-                },
-                personaToDelete : '',
-                loading : false,
 
-            }
-        },
-        methods : {
-            prepareToRemove : function (persona) {
-                this.personaToDelete = persona;
-            },
-            guardarPersona : function () {
-                this.$http.post('/vivienda/personacargo/agregar',{idInfo : this.idinfo, persona : this.nuevaPersona }).then((response)=>{
-                    if(response.body.estado == 'ok'){
-                        this.personasCargo.push(response.body.persona);
-                        $("#modal-agregar-persona").modal('hide');
-                        notificarOk('', 'Persona agregada correctamente');
-                        this.formReset();
-
-                    }else{
-                        notificarFail('', 'Error al guardar ' + response.body.error);
-                    }
-
-                },(error)=>{
-
-                    notificarFail('', 'Error. ' + error.status+' '+ error.statusText);
-                });
-            },
-            formReset : function () {
-                //
-            },
-            eliminarPersona: function () {
-                this.$http.post('/vivienda/personacargo/remove',{persona : this.personaToDelete.id, idInfo: this.idinfo}).then((response)=>{
-                    this.loading = false;
-                    if(response.body.estado == 'ok'){
-                        $("#modal-confirm-delete-persona").modal('hide');
-                        notificarOk('', 'Persona removida correctamente');
-                        this.personasCargo.splice(this.personasCargo.indexOf(this.personaToDelete),1);
-                    }else{
-                        $("#modal-confirm-delete-persona").modal('hide');
-                        notificarFail('', 'Error en el servidor ' + response.body.error);
-                    }
-                },(error)=>{
-                    $("#modal-confirm-delete-beneficiario").modal('hide');
-                    notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
-                    this.loading = false;
-                });
-            }
-        },
-        created(){
-            this.$http.post('/gettipopersonascargo').then((response)=>{
-                if(response.body.estado == 'ok'){
-                    this.tiposPersonaCargo = response.body.data;
-                }
-            }, (error)=>{
-                notificarFail('', 'Error al cargar el tipo de Personas a Cargo ' + error.status+' '+ error.statusText);
-            });
-        },
-        mounted(){
-            this.$http.post('/vivienda/personascargo/getpersonas').then((response)=>{
-                if(response.body.estado == 'ok'){
-                    this.personasCargo = response.body.data;
-                }
-            }, (error)=>{
-                notificarFail('', 'Error al cargar las Personas a Cargo ' + error.status+' '+ error.statusText);
-            });
-
-            var component = this;
-            $('#fecha_nacimiento_persona').datepicker({
-                orientation: 'auto top',
-                language : 'es',
-                todayBtn : 'linked',
-                format: 'yyyy-mm-dd'
-            }).on('changeDate', function(e) {
-
-                component.nuevaPersona.fecha_nacimiento = e.target.value;
-                //console.log(component.nuevoBeneficiario.fecha_nacimiento)
-
-            });
-        },
-
-    });
-    Vue.component('beneficiarios',{
+        Vue.component('beneficiarios',{
             template : '#beneficiarios',
             props : ['idinfo', 'generos', 'niveles'],
             data : function () {
@@ -243,18 +149,19 @@
                         cabeza_hogar : true,
                     }
                 },
-                buscarBeneficiario : function (cedula) {
-                    this.formReset();
+                buscarBeneficiario : function () {
+
                     $("#txt-buscar-beneficiario").attr('disabled','disabled');
-                    this.nuevoBeneficiario.no_cedula = cedula;
-                    if(cedula != ''){
-                        this.loading = true
-                        this.$http.post('/beneficiarios/buscarbeneficiario',{no_cedula : cedula}).then((response)=>{
+                    //this.nuevoBeneficiario.no_cedula = cedula;
+                    if(this.nuevoBeneficiario.no_cedula != ''){
+                        this.loading = true;
+                        this.$http.post('/vivienda/habitantes/buscar',{no_cedula : this.nuevoBeneficiario.no_cedula, tipoSubsidio : 2}).then((response)=>{
                             if(response.body.estado == 'ok'){
-                                this.nuevoBeneficiario = response.body.habitante
-                                this.creandoNuevoBeneficiario = false
+                                this.nuevoBeneficiario = response.body.habitante;
+                                this.creandoNuevoBeneficiario = false;
+                                //this.formReset();
                             }else{
-                                this.creandoNuevoBeneficiario = true
+                                this.creandoNuevoBeneficiario = true;
                                 notificarFail('', 'Beneficiario no encontrado, se creará uno nuevo ' );
                             }
                             this.loading = false
@@ -267,8 +174,9 @@
                         notificarFail('', 'Debe ingresar un valor');
                         this.loading = false
                     }
+
                 },
-                
+
                 guardarBeneficiario : function () {
                     var esnuevo = true;
                     var id = this.nuevoBeneficiario.id;
@@ -279,7 +187,7 @@
                     })
 
                     if(esnuevo){
-                        this.$http.post('/vivienda/habitantes/guardar',{idInfo : this.idinfo, habitante : this.nuevoBeneficiario }).then((response)=>{
+                        this.$http.post('/vivienda/habitantes/guardar',{idInfo : this.idinfo, habitante : this.nuevoBeneficiario,tipoSubsidio : 2 }).then((response)=>{
                             if(response.body.estado == 'ok'){
                                 if(response.body.yaEsHabitante == true){
                                     notificarFail('', 'El beneficiario ya existe en otro proyecto');
@@ -301,10 +209,10 @@
                         notificarFail('', 'El Habitante ya existe en este proyecto');
                     }
                 },
-                
+
                 eliminarBeneficiario : function () {
                     this.loading = true;
-                    this.$http.post('/vivienda/habitantes/remove',{habitante : this.beneficiarioToRemove.id, idInfo: this.idinfo}).then((response)=>{
+                    this.$http.post('/vivienda/habitantes/remove',{habitante : this.beneficiarioToRemove.id, idInfo: this.idinfo, tipoSubsidio : 2}).then((response)=>{
                         this.loading = false;
                         if(response.body.estado == 'ok'){
                             $("#modal-confirm-delete-beneficiario").modal('hide');
@@ -321,10 +229,10 @@
                     });
 
                 }
-                
+
             },
             created (){
-                this.$http.post('/vivienda/habitantes/get', {_token : this.token, idInfo : this.idinfo }).then((response)=>{
+                this.$http.post('/vivienda/habitantes/get', {_token : this.token, idInfo : this.idinfo,tipoSubsidio : 2 }).then((response)=>{
                     this.beneficiarios = response.body.data;
                 }, (error)=>{
                     notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
@@ -356,16 +264,16 @@
                 });
             }
         });
-    Vue.component('form-predio',{
+        Vue.component('form-predio',{
             template : '#form-predio-template',
-            props: ['token', 'departamentos','idinfo','idpredio'],
+            props: ['departamentos','idinfo','idpredio'],
             data : function () {
                 return  {
                     predio:{
                         id:'',
                         nombre: '',
                         direccion: '',
-                        idVereda : '',
+                        //idVereda : '',
                         latitud: '',
                         longitud : '',
                         msnm : '',
@@ -381,20 +289,36 @@
                         idPredio: '',
                         editado : false
                     },
-                    municipios : '',
-                    veredas : '',
-                    predioEditado : false
+                    tenenciaPredio :{
+                        id : '',
+                        area_predio_has :'',
+                        pdf :'',
+                        id_productivo :this.idinfo,
+                        id_opcion : '',
+                        id_tipo_tenencia_tierras : ''
+
+                    },
+                    //municipios : '',
+                    //veredas : '',
+                    predioEditado : false,
+                    opcionesTenencia : '',
+                    tipoTenencia : '',
+                    pdf : '',
                 }
             },
             methods:{
                 guardarPredio : function () {
+                    var fdata = new FormData();
+                    fdata.append('pdf', this.pdf);
                     infoEnviar = {
                         idInfo : this.idinfo,
                         predio : this.predio,
                         propietario : this.propietarioPredio,
-                        _token : this.token,
-                    }
-                    this.$http.post('/vivienda/guardarpredio', infoEnviar ).then((response)=>{
+                        tenencia : this.tenenciaPredio,
+                        pdf : this.pdf,
+                        fdata : fdata,
+                    };
+                    this.$http.post('/subsidios/productivos/diagnostico/guardarpredio', infoEnviar ).then((response)=>{
                         console.log(response);
                         $("#btn-guardar").button('reset');
 
@@ -412,21 +336,22 @@
 
                     });
                 },
-                changeDepartamento : function (value, municipio) {
-                    this.$http.post('/getmunicipios',{_token: this.token, id: value}).then((response)=>{
-                        this.municipios = response.body.data
-                        this.predio.idMunicipio = municipio;
-                    })
-                },
-                changeMunicipio : function (value, vereda) {
-                    this.$http.post('/getveredas',{_token: this.token, id: value}).then((response)=>{
-                        this.veredas = response.body.data
-                        this.predio.idVereda = vereda;
 
-                    })
-                },
+                onFileChange : function (e) {
+                    var files = e.target.files || e.dataTransfer.files;
 
-
+                    var file = files[0];
+                    this.pdf = file;
+                    //console.log(files[0]);
+                    /*
+                     var reader = new FileReader();
+                     var vm = this;
+                     reader.onload = (e) => {
+                     this.tenenciaPredio.pdf = e.target.result;
+                     };
+                     reader.readAsDataURL(file);
+                     */
+                }
             },
             watch: {
                 predio: {
@@ -441,10 +366,9 @@
             },
             mounted(){
                 if(this.idpredio != ''){
-                    this.$http.post('/vivienda/getpredio',{_token: this.token, idPredio : this.idpredio}).then((response)=>{
+                    this.$http.post('/subsidios/productivos/diagnostico/getpredio',{ idPredio : this.idpredio, idInfo : this.idinfo }).then((response)=>{
 
-                        this.changeDepartamento(response.body.departamento, response.body.municipio);
-                        this.changeMunicipio(response.body.municipio,response.body.predio.id_vereda);
+
 
                         this.predio.id = response.body.predio.id;
                         this.predio.nombre = response.body.predio.nombre_predio;
@@ -452,489 +376,224 @@
                         this.predio.latitud = response.body.predio.latitud;
                         this.predio.longitud = response.body.predio.longitud;
                         this.predio.msnm = response.body.predio.msnm;
-                        this.predio.idDepartamento = response.body.departamento;
 
-                        this.propietarioPredio.id = response.body.propietario.id;
-                        this.propietarioPredio.noCedula = response.body.propietario.no_cedula;
-                        this.propietarioPredio.nombres = response.body.propietario.nombres_propietario;
-                        this.propietarioPredio.apellidos = response.body.propietario.apellidos_propietario;
-                        this.propietarioPredio.telefono = response.body.propietario.no_telefonico;
-                        this.propietarioPredio.idPredio = response.body.propietario.id_predio;
+
+                        if(response.body.propietario != null ){
+                            this.propietarioPredio.id = response.body.propietario.id;
+                            this.propietarioPredio.noCedula = response.body.propietario.no_cedula;
+                            this.propietarioPredio.nombres = response.body.propietario.nombres_propietario;
+                            this.propietarioPredio.apellidos = response.body.propietario.apellidos_propietario;
+                            this.propietarioPredio.telefono = response.body.propietario.no_telefonico;
+                            this.propietarioPredio.idPredio = response.body.propietario.id_predio;
+                        }
+
 
                         this.predioEditado = false;
+                        this.tenenciaPredio = response.body.tenencia;
 
 
                     },(response)=>{
                         notificarFail('Predio', 'Tenemos problemas al cargar la informacion del predio ' + + response.status+' '+ response.statusText);
                     });
                 }
+            },
+            created(){
+                this.$http.post('/getselectspredio').then((response) => {
+                    if(response.body.estado == 'ok'){
+                        this.opcionesTenencia = response.body.opciones;
+                        this.tipoTenencia = response.body.tipo;
+                    }else{
+                        notificarFail('', 'Error al cargar datos ' + response.body.error);
+                    }
+                },(error)=>{
+                    notificarFail('', 'Error en el servidor ' + response.status+' '+ response.statusText);
+                });
             }
 
         });
-    Vue.component('table-habitaciones',{
-        template : '#table-habitaciones',
-        props : ['idinfo','tipomuro', 'tipopiso', 'tipocubierta','materialpuertas', 'materialventanas','estadovivienda'],
-        data : function(){
-            return{
-                habitaciones : '',
-                nuevaHabitacion : {
-                    id : '',
-                    id_informacion : this.idinfo,
-                    nombre : '',
-                    estructura_viga : false,
-                    estructura_columna : false,
-                    panete_interno : false,
-                    panete_externo : false,
-                    estuco : false,
-                    pintura : false,
-                    cantidad_puertas : 0,
-                    cantidad_ventanas : 0,
-                    ventanas : false,
-                    puertas : false,
-                    observaciones : '',
-                    piso_deteriorado : false,
-                    id_estado_vivienda : null,
-                    id_tipo_muro : null,
-                    id_tipo_piso : null,
-                    id_tipo_cubierta : null,
-                    id_material_puertas : null,
-                    id_material_ventanas : null,
+        Vue.component('mano-obra',{
+            template : '#mano-obra',
+            props : ['idinfo', 'generos', 'niveles'],
+            data : function () {
+                return {
 
-                },
-                habitacionToDelete : '',
-                habitacionToEdit :'',
-                loading : false,
-
-            }
-        },
-        methods :{
-            guardarHabitacion : function () {
-                this.$http.post('/vivienda/habitaciones/guardarhabitacion',{habitacion : this.nuevaHabitacion }).then((response)=>{
-                   if(response.body.estado == 'ok'){
-                       if(response.body.edicion){
-                           $("#modal-agregar-habitacion").modal('hide');
-                           var index = this.habitaciones.indexOf(this.habitacionToEdit);
-                           this.habitaciones.splice(index,1);
-                           this.habitaciones.splice(index,0,this.nuevaHabitacion);
-                           notificarOk('', 'Habitación editada correctamente');
-                           this.formReset();
-                       }else{
-                           this.nuevaHabitacion.id = response.body.id;
-                           this.habitaciones.push(this.nuevaHabitacion);
-                           $("#modal-agregar-habitacion").modal('hide');
-                           notificarOk('', 'Habitación agregada correctamente');
-                           this.formReset();
-                       }
-
-                   }else{
-                       notificarFail('', 'ERROR: ' + response.body.error);
-                   }
-                }, (error)=>{
-
-                });
-
-            },
-            editarHabitacion : function (habitacion) {
-                this.nuevaHabitacion = JSON.parse(JSON.stringify(habitacion));
-                this.habitacionToEdit = habitacion;
-                $("#modal-agregar-habitacion").modal('show');
-            },
-            formReset : function(){
-                this.nuevaHabitacion = {
-                    id : '',
-                    id_informacion : this.idinfo,
-                    nombre : '',
-                    estructura_viga : false,
-                    estructura_columna : false,
-                    panete_interno : false,
-                    panete_externo : false,
-                    estuco : false,
-                    pintura : false,
-                    cantidad_puertas : 0,
-                    cantidad_ventanas : 0,
-                    ventanas : false,
-                    puertas : false,
-                    observaciones : '',
-                    piso_deteriorado : false,
-                    id_estado_vivienda : null,
-                    id_tipo_muro : null,
-                    id_tipo_piso : null,
-                    id_tipo_cubierta : null,
-                    id_material_puertas : null,
-                    id_material_ventanas : null,
-
-                }
-            },
-            eliminarHabitacion : function () {
-                this.$http.post('/vivienda/habitaciones/eliminarhabitacion', {id : this.habitacionToDelete.id}).then((response)=>{
-                    if(response.body.estado == 'ok'){
-                        this.habitaciones.splice(this.habitaciones.indexOf(this.habitacionToDelete),1);
-                        notificarOk('', 'Habitación eliminada correctamente');
-                        $("#modal-confirm-delete-habitacion").modal('hide');
-                    }else{
-                        notificarFail('', 'ERROR: ' + response.body.error);
-                        $("#modal-confirm-delete-habitacion").modal('hide');
-                    }
-                },(error)=>{
-                    notificarFail('', 'ERROR: '+error.status+' '+ error.statusText);
-                    $("#modal-confirm-delete-habitacion").modal('hide');
-                });
-            },
-            prepareToRemove : function (habitacion) {
-                this.habitacionToDelete = habitacion;
-            }
-
-
-        },
-        created() {
-
-        },
-        mounted(){
-            this.$http.post('/vivienda/habitaciones/getallhabitaciones',{idInfo : this.idinfo}).then((responde)=>{
-                if(responde.body.estado == 'ok'){
-                    this.habitaciones = responde.body.habitaciones;
-                }
-            },(error)=>{
-                notificarFail('', 'ERROR: '+error.status+' '+ error.statusText);
-            });
-        }
-
-    });
-    Vue.component('table-unidades-sanitarias',{
-        template : '#table-unidades-sanitarias',
-        props : ['idinfo','tipomuro', 'tipopiso', 'tipocubierta','materialpuertas', 'materialventanas','estadovivienda'],
-        data : function(){
-            return{
-                tipoMuro : '',
-                tipoPiso : '',
-                tipoCubierta : '',
-                materialPuertas : '',
-                materialVentanas : '',
-                estadoVivienda : '',
-                tipoUnidadesSanitarias :'',
-                materialesTanqueElevado : '',
-                materialesTanqueLavadero : '',
-                acabadosTanqueLavadero : '',
-                unidadesSanitarias : '',
-                nuevaUnidadSanitaria : {
-                    id : '',
-                    id_informacion : this.idinfo,
-                    nombre : '',
-                    estructura_viga : false,
-                    estructura_columna : false,
-                    panete_interno : false,
-                    panete_externo : false,
-                    estuco : false,
-                    pintura : false,
-                    cantidad_puertas : 0,
-                    cantidad_ventanas : 0,
-                    muros_enchapado : false,
-                    ventanas : false,
-                    puertas : false,
-                    observaciones : '',
-                    piso_deteriorado : false,
-                    id_estado_vivienda : null,
-                    id_tipo_muro : null,
-                    id_tipo_piso : null,
-                    id_tipo_cubierta : null,
-                    id_material_puertas : null,
-                    id_material_ventanas : null,
-                    id_tipo_unidad_sanitaria : null,
-                    tanque_elevado : false,
-                    tanque_lavadero : false,
-                    id_materiales_tanques_elevados : null,
-                    id_materiales_tanques_lavaderos : null,
-                    id_acabados_tanques_lavaderos : null,
-
-                },
-                unidadToDelete : '',
-                unidadToEdit :'',
-                loading : false,
-
-            }
-        },
-        methods :{
-            guardarUnidadSanitaria : function () {
-                this.$http.post('/vivienda/cocinas/guardarcocina',{cocina : this.nuevaCocina }).then((response)=>{
-                    if(response.body.estado == 'ok'){
-                        if(response.body.edicion){
-                            $("#modal-agregar-cocina").modal('hide');
-                            var index = this.cocinas.indexOf(this.cocinaToEdit);
-                            this.cocinas.splice(index,1);
-                            this.cocinas.splice(index,0,this.nuevaCocina);
-                            notificarOk('', 'Cocina editada correctamente');
-                            this.formReset();
-                        }else{
-                            this.nuevaCocina.id = response.body.id;
-                            this.cocinas.push(this.nuevaCocina);
-                            $("#modal-agregar-cocina").modal('hide');
-                            notificarOk('', 'Cocina agregada correctamente');
-                            this.formReset();
-                        }
-
-                    }else{
-                        notificarFail('', 'ERROR: ' + response.body.error);
-                    }
-                }, (error)=>{
-
-                });
-
-            },
-            editarUnidadSanitaria : function (unidad) {
-                this.nuevaUnidadSanitaria = JSON.parse(JSON.stringify(unidad));
-                this.unidadToEdit = unidad;
-                $("#modal-agregar-unidad-sanitaria").modal('show');
-            },
-            formReset : function(){
-                this.nuevaUnidadSanitaria = {
-                    id : '',
-                    id_informacion : this.idinfo,
-                    nombre : '',
-                    estructura_viga : false,
-                    estructura_columna : false,
-                    panete_interno : false,
-                    panete_externo : false,
-                    estuco : false,
-                    pintura : false,
-                    muros_enchapado : false,
-                    cantidad_puertas : 0,
-                    cantidad_ventanas : 0,
-                    ventanas : false,
-                    puertas : false,
-                    observaciones : '',
-                    piso_deteriorado : false,
-                    id_estado_vivienda : null,
-                    id_tipo_muro : null,
-                    id_tipo_piso : null,
-                    id_tipo_cubierta : null,
-                    id_material_puertas : null,
-                    id_material_ventanas : null,
-                    id_tipo_unidad_sanitaria : null,
-                    tanque_elevado : false,
-                    tanque_lavadero : false,
-                    id_materiales_tanques_elevados : null,
-                    id_materiales_tanques_lavaderos : null,
-                    id_acabados_tanques_lavaderos : null,
-
-                }
-            },
-            eliminarUnidadSanitaria : function () {
-                this.$http.post('/subsidios/vivienda/diagnostico/usanitaria/eliminar', {id : this.unidadToDelete.id}).then((response)=>{
-                    if(response.body.estado == 'ok'){
-                        this.unidadesSanitarias.splice(this.unidadesSanitarias.indexOf(this.unidadToDelete),1);
-                        notificarOk('', 'Unidad Sanitaria eliminada correctamente');
-                        $("#modal-confirm-delete-unidad-sanitaria").modal('hide');
-                    }else{
-                        notificarFail('', 'ERROR: ' + response.body.error);
-                        $("#modal-confirm-delete-unidad-sanitaria").modal('hide');
-                    }
-                },(error)=>{
-                    notificarFail('', 'ERROR: '+error.status+' '+ error.statusText);
-                    $("#modal-confirm-delete-unidad-sanitaria").modal('hide');
-                });
-            },
-            prepareToRemove : function (unidad) {
-                this.unidadToDelete = unidad;
-            }
-
-
-        },
-        created() {
-            this.$http.post('/subsidios/vivienda/diagnostico/usanitaria/getselects').then((response)=>{
-               if(response.body.estado == 'ok'){
-                    this.tipoUnidadesSanitarias =  response.body.tipoUnidadesSanitarias;
-                    this.materialesTanqueElevado = response.body.materialesTanqueElevado;
-                    this.materialesTanqueLavadero = response.body.materialesTanqueLavadero;
-                    this.acabadosTanqueLavadero = response.body.acabadosTanqueLavadero;
-               }
-            }, (error)=>{
-                notificarFail('', 'ERROR: '+error.status+' '+ error.statusText);
-            });
-
-        },
-        mounted(){
-            this.$http.post('/subsidios/vivienda/diagnostico/usanitaria/getallunidades',{idInfo : this.idinfo}).then((responde)=>{
-                if(responde.body.estado == 'ok'){
-                    this.unidadesSanitarias = responde.body.unidadesSanitarias;
-                }
-            },(error)=>{
-                notificarFail('', 'ERROR: '+error.status+' '+ error.statusText);
-            });
-        }
-
-    });
-    Vue.component('table-cocinas',{
-            template : '#table-cocinas',
-            props : ['idinfo','tipomuro', 'tipopiso', 'tipocubierta','materialpuertas', 'materialventanas','estadovivienda'],
-            data : function(){
-                return{
-                    tipoMuro : '',
-                    tipoPiso : '',
-                    tipoCubierta : '',
-                    materialPuertas : '',
-                    materialVentanas : '',
-                    estadoVivienda : '',
-                    tiposMeson : '',
-                    elementosCocina : '',
-                    cocinas : '',
-                    nuevaCocina : {
-                        id : '',
-                        id_informacion : this.idinfo,
-                        nombre : '',
-                        estructura_viga : false,
-                        estructura_columna : false,
-                        panete_interno : false,
-                        panete_externo : false,
-                        estuco : false,
-                        pintura : false,
-                        cantidad_puertas : 0,
-                        cantidad_ventanas : 0,
-                        muros_enchapado : false,
-                        ventanas : false,
-                        puertas : false,
-                        observaciones : '',
-                        piso_deteriorado : false,
-                        id_estado_vivienda : null,
-                        id_tipo_muro : null,
-                        id_tipo_piso : null,
-                        id_tipo_cubierta : null,
-                        id_material_puertas : null,
-                        id_material_ventanas : null,
-                        id_tipo_meson : null,
-                        id_elemento_cocina : null,
-                        estufa : false,
-                        meson : false,
-                        lavaplato : false,
-
-                    },
-                    cocinaToDelete : '',
-                    cocinaToEdit :'',
                     loading : false,
+                    nuevaMano: {
+                        id : '',
+                        jornal_vendido : 0,
+                        actividad_jornal_vendido : '',
+                        jornal_contratado : 0,
+                        actividad_jornal_contratado : '',
+                        id_mes : '',
+                        id_info_productivo : this.idinfo,
+                        mes : ''
+                    },
+                    manosObra: '',
+                    meses : [
+                        {
+                            id : 1,
+                            mes : 'Enero'
+
+                        },
+                        {
+                            id : 2,
+                            mes : 'Febrero'
+
+                        },
+                        {
+                            id : 3,
+                            mes : 'Marzo'
+
+                        },
+                        {
+                            id : 4,
+                            mes : 'Abril'
+
+                        },
+                        {
+                            id : 5,
+                            mes : 'Mayo'
+
+                        },
+                        {
+                            id : 6,
+                            mes : 'Junio'
+
+                        },
+                        {
+                            id : 7,
+                            mes : 'Julio'
+
+                        },
+                        {
+                            id : 8,
+                            mes : 'Agosto'
+
+                        },
+                        {
+                            id : 9,
+                            mes : 'Septiembre'
+
+                        },
+                        {
+                            id : 10,
+                            mes : 'Octubre'
+
+                        },
+                        {
+                            id : 11,
+                            mes : 'Noviembre'
+
+                        },
+                        {
+                            id : 12,
+                            mes : 'Diciembre'
+
+                        }
+
+                    ],
+                    mesToRemove : '',
+
+
+
+
+
 
                 }
             },
-            methods :{
-                guardarCocina : function () {
-                    this.$http.post('/vivienda/cocinas/guardarcocina',{cocina : this.nuevaCocina }).then((response)=>{
+
+
+
+            methods : {
+                mesSelected : function (mes) {
+                    this.nuevaMano.mes = mes
+                },
+                prepareToRemove : function (mes) {
+                    this.mesToRemove = mes;
+                },
+                formReset : function () {
+                    this.nuevaMano = {
+                        id : '',
+                        jornal_vendido : 0,
+                        actividad_jornal_vendido : '',
+                        jornal_contratado : 0,
+                        actividad_jornal_contratado : '',
+                        id_mes : '',
+                        id_info_productivo : this.idinfo,
+                        mes : ''
+                    }
+                },
+
+                guardarManoObra : function () {
+                    this.loading = true;
+                    this.$http.post('/subsidios/productivos/diagnostico/guardarmanoobra',{idInfo : this.idinfo, mano : this.nuevaMano }).then((response)=>{
+                        this.loading = false;
                         if(response.body.estado == 'ok'){
-                            if(response.body.edicion){
-                                $("#modal-agregar-cocina").modal('hide');
-                                var index = this.cocinas.indexOf(this.cocinaToEdit);
-                                this.cocinas.splice(index,1);
-                                this.cocinas.splice(index,0,this.nuevaCocina);
-                                notificarOk('', 'Cocina editada correctamente');
-                                this.formReset();
-                            }else{
-                                this.nuevaCocina.id = response.body.id;
-                                this.cocinas.push(this.nuevaCocina);
-                                $("#modal-agregar-cocina").modal('hide');
-                                notificarOk('', 'Cocina agregada correctamente');
-                                this.formReset();
-                            }
+
+                            this.nuevaMano.id = response.body.id;
+                            this.manosObra.push(this.nuevaMano);
+                            $("#modal-agregar-mano-obra").modal('hide');
+                            notificarOk('', 'Mano de Obra agregada correctamente');
+                            this.formReset();
 
                         }else{
-                            notificarFail('', 'ERROR: ' + response.body.error);
+                            notificarFail('', 'Error:  ' + response.body.error);
                         }
-                    }, (error)=>{
 
+                    },(error)=>{
+                        this.loading = false;
+                        notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
                     });
 
                 },
-                editarCocina : function (cocina) {
-                    this.nuevaCocina = JSON.parse(JSON.stringify(cocina));
-                    this.cocinaToEdit = cocina;
-                    $("#modal-agregar-cocina").modal('show');
-                },
-                formReset : function(){
-                    this.nuevaCocina = {
-                        id : '',
-                        id_informacion : this.idinfo,
-                        nombre : '',
-                        estructura_viga : false,
-                        estructura_columna : false,
-                        panete_interno : false,
-                        panete_externo : false,
-                        estuco : false,
-                        pintura : false,
-                        muros_enchapado : false,
-                        cantidad_puertas : 0,
-                        cantidad_ventanas : 0,
-                        ventanas : false,
-                        puertas : false,
-                        observaciones : '',
-                        piso_deteriorado : false,
-                        id_estado_vivienda : null,
-                        id_tipo_muro : null,
-                        id_tipo_piso : null,
-                        id_tipo_cubierta : null,
-                        id_material_puertas : null,
-                        id_material_ventanas : null,
-                        id_tipo_meson : null,
-                        id_elemento_cocina : null,
-                        estufa : false,
-                        meson : false,
-                        lavaplato : false,
 
-                    }
-                },
-                eliminarCocina : function () {
-                    this.$http.post('/vivienda/cocinas/eliminarcocina', {id : this.cocinaToDelete.id}).then((response)=>{
+                eliminarMes : function () {
+                    this.loading = true;
+                    this.$http.post('/subsidios/productivos/diagnostico/borrarmanoobra',{mes : this.mesToRemove.id}).then((response)=>{
+                        this.loading = false;
                         if(response.body.estado == 'ok'){
-                            this.cocinas.splice(this.cocinas.indexOf(this.cocinaToDelete),1);
-                            notificarOk('', 'Cocina eliminada correctamente');
-                            $("#modal-confirm-delete-cocina").modal('hide');
+                            $("#modal-confirm-delete-mano-obra").modal('hide');
+                            notificarOk('', 'Mano de Obra removida correctamente');
+                            this.manosObra.splice(this.manosObra.indexOf(this.mesToRemove),1);
                         }else{
-                            notificarFail('', 'ERROR: ' + response.body.error);
-                            $("#modal-confirm-delete-habitacion").modal('hide');
+                            $("#modal-confirm-delete-mano-obra").modal('hide');
+                            notificarFail('', 'Error: ' + response.body.error);
                         }
                     },(error)=>{
-                        notificarFail('', 'ERROR: '+error.status+' '+ error.statusText);
-                        $("#modal-confirm-delete-habitacion").modal('hide');
+                        $("#modal-confirm-delete-beneficiario").modal('hide');
+                        notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                        this.loading = false;
                     });
-                },
-                prepareToRemove : function (cocina) {
-                    this.cocinaToDelete = cocina;
+
                 }
-
-
-            },
-            created() {
-                this.$http.post('/vivienda/cocinas/getselectscocina').then((response)=>{
-                    if(response.body.estado == 'ok'){
-                        this.tiposMeson =  response.body.tiposMeson;
-                        this.elementosCocina = response.body.elementosCocina;
-                    }
-                }, (error)=>{
-                    notificarFail('', 'ERROR: '+error.status+' '+ error.statusText);
-                });
 
             },
             mounted(){
-                this.$http.post('/vivienda/cocinas/getallcocinas',{idInfo : this.idinfo}).then((responde)=>{
-                    if(responde.body.estado == 'ok'){
-                        this.cocinas = responde.body.cocinas;
-                    }
+                this.$http.post('/subsidios/productivos/diagnostico/getmanoobra',{idInfo: this.idinfo}).then((response)=>{
+                    this.manosObra = response.body.data;
                 },(error)=>{
-                    notificarFail('', 'ERROR: '+error.status+' '+ error.statusText);
+                    notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
                 });
-            }
+            },
+
 
         });
+
 
     var app = new Vue({
             el : '#app',
             data : {
 
-                idInfoVivienda : '',
-                idPredio : '',
-                infoVivienda : {
-                    id:'',
-                    fechaEncuesta: '',
-                    consecutivo : '',
-                    respondePropietario: '',
-                    programaSocial:'',
-                    numeroFamiliasVivienda: '',
-                    idPredio : '',
+                idInfoProductivo : '{{$info->id}}',
+                idPredio : '{{$info->id_predio}}',
+                infoProductivo : {
+                    id:'{{$info->id}}',
+                    fechaEncuesta: '{{$info->fecha_encuesta}}',
+                    consecutivo : '{{$info->consecutivo}}',
+                    respondePropietario: '{{$info->responde_propietario}}',
+                    programaSocial:'{{$info->beficiarios_prog_inv_social}}',
+                    numeroFamiliasVivienda: '{{$info->no_familias_vivienda}}',
+                    idPredio : '{{$info->id_predio}}',
                     idDistancioRio: '',
                     idEstadoVivienda :'',
                     observacionesObrasRealizar:'',
@@ -943,7 +602,7 @@
 
                 generalidades:{
                     id: '',
-                    idInformacion: this.idInfoVivienda,
+                    idInformacion: this.idInfoProductivo,
                     fechaViveVereda:'',
                     fechaViveVivienda : '',
                     idTipoVehiculo : '',
@@ -951,7 +610,8 @@
                     idEstadoVia:'',
                     idTiempoRecorrido:'',
                     idTipologiaFamilia:'',
-                    editado : false
+                    editado : false,
+                    id_tipo_proyecto: '',
                 },
                 idVereda :'',
                 departamentos : '',
@@ -968,17 +628,18 @@
                 tipoCubierta: '',
                 materialPuertas : '',
                 materialVentanas : '',
-                estadoVivienda : ''
+                estadoVivienda : '',
+                tipoProyectos : ''
 
             },
             methods:{
 
-                guardarGeneral : function () {
+                guardarGeneral : function () {// ok revision
                     var infoToSend ={
                         generalidades : this.generalidades,
-                        infoVivienda : this.infoVivienda,
+                        infoProductivo : this.infoProductivo,
                     };
-                    this.$http.post('/vivienda/guardargeneralidades', infoToSend).then((response)=>{
+                    this.$http.post('/subsidios/productivos/diagnostico/guardargeneralidades', infoToSend).then((response)=>{
                         if(response.body.estado == 'ok'){
                             notificarOk('', 'Datos guardados Correctamente');
                             this.generalidades.id = response.body.idGeneralidades;
@@ -992,11 +653,7 @@
                     });
 
                 },
-                getDepartamentos : function () {
-                    this.$http.post('/getdepartamentos').then((response)=>{
-                        this.departamentos = response.body.data
-                    })
-                },
+
                 getTipoVehiculo: function () {
                     this.$http.post('/gettipovehiculo').then((response)=>{
                         this.tiposVehiculos = response.body.data
@@ -1028,7 +685,7 @@
 
             },
             created(){
-                this.getDepartamentos();
+
                 this.getTipoVehiculo();
                 this.getViaAcceso();
                 this.getEstadoVias();
@@ -1047,28 +704,20 @@
                     notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
                 });
 
-                this.$http.post('/vivienda/getselectsgenericos').then((response)=>{
-                    if(response.body.estado == 'ok'){
-                        this.tipoMuro = response.body.tipoMuro;
-                        this.tipoPiso = response.body.tipoPiso;
-                        this.tipoCubierta = response.body.tipoCubierta;
-                        this.materialPuertas = response.body.materialPuertas;
-                        this.materialVentanas = response.body.materialVentanas;
-                        this.estadoVivienda = response.body.estadoVivienda;
-
-                    }else{
-                        notificarFail('', 'Error al cargar informacion de Habitaciones' + response.body.error);
-                    }
+                this.$http.post('/getselectstipoproyectos').then((response)=>{
+                    this.tipoProyectos = response.body.data;
                 }, (error)=>{
-                    notificarFail('', 'ERROR: '+error.status+' '+ error.statusText);
-                })
+                    notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                });
+
+
 
             },
-            mounted(){
-                this.$http.post('/vivienda/getgeneralidades', {_token: this.token, idInfo : this.idInfoVivienda}).then((response)=>{
+            mounted(){//ok revision
+                this.$http.post('/subsidios/productivos/diagnostico/getgeneralidades', {_token: this.token, idInfo : this.idInfoProductivo}).then((response)=>{
                     if(response.body.generalidades != null){
                         this.generalidades.id = response.body.generalidades.id;
-                        this.generalidades.idInformacion = response.body.generalidades.id_informacion;
+                        this.generalidades.idProductivo = response.body.generalidades.id_info_productivo;
                         this.generalidades.fechaViveVereda = response.body.generalidades.fecha_vive_vereda;
                         this.generalidades.fechaViveVivienda = response.body.generalidades.fecha_vive_vivienda;
                         this.generalidades.idTipoVehiculo = response.body.generalidades.id_tipo_vehiculo;
@@ -1076,6 +725,7 @@
                         this.generalidades.idEstadoVia = response.body.generalidades.id_estado_via;
                         this.generalidades.idTiempoRecorrido = response.body.generalidades.id_tiempo_recorrido;
                         this.generalidades.idTipologiaFamilia = response.body.generalidades.id_tipologia_familia;
+                        this.generalidades.id_tipo_proyecto = response.body.generalidades.id_tipo_proyecto;
                     }
 
                 },(response)=>{
@@ -1098,7 +748,7 @@
 
                 switch (e.target.id){
                     case 'fecha_encuesta':
-                        app.infoVivienda.fechaEncuesta = $(this).val();
+                        app.infoProductivo.fechaEncuesta = $(this).val();
                         break;
                     case 'fecha_vereda':
                         app.generalidades.fechaViveVereda = $(this).val();
@@ -1116,8 +766,6 @@
         })
     </script>
 @endsection
-@include('vivienda.parts.form_predio')
-@include('vivienda.parts.table_beneficiarios')
-@include('vivienda.parts.table_p_cargo')
-@include('vivienda.parts.table_habitaciones')
-@include('vivienda.parts.table_cocinas')
+@include('subsidios_productivos.diagnostico.parts.form_predio')
+@include('subsidios_productivos.diagnostico.parts.table_beneficiarios')
+@include('subsidios_productivos.diagnostico.parts.table_mano_obra')
