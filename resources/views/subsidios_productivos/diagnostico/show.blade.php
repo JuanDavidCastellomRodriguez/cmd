@@ -65,7 +65,7 @@
                         <potreros :idinfo="idInfoProductivo" ></potreros>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="cocinas">
-
+                        <cultivos :idinfo="idInfoProductivo"></cultivos>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="u_sanitarias">
 
@@ -726,6 +726,281 @@
 
 
         });
+        Vue.component('cultivos',{
+            template : '#cultivos',
+            props : ['idinfo'],
+            data : function () {
+                return {
+
+                    loading : false,
+                    cultivos : [],
+                    cultivoToRemove : '',
+                    meses : [
+                        {
+                            id : 1,
+                            mes : 'Enero'
+
+                        },
+                        {
+                            id : 2,
+                            mes : 'Febrero'
+
+                        },
+                        {
+                            id : 3,
+                            mes : 'Marzo'
+
+                        },
+                        {
+                            id : 4,
+                            mes : 'Abril'
+
+                        },
+                        {
+                            id : 5,
+                            mes : 'Mayo'
+
+                        },
+                        {
+                            id : 6,
+                            mes : 'Junio'
+
+                        },
+                        {
+                            id : 7,
+                            mes : 'Julio'
+
+                        },
+                        {
+                            id : 8,
+                            mes : 'Agosto'
+
+                        },
+                        {
+                            id : 9,
+                            mes : 'Septiembre'
+
+                        },
+                        {
+                            id : 10,
+                            mes : 'Octubre'
+
+                        },
+                        {
+                            id : 11,
+                            mes : 'Noviembre'
+
+                        },
+                        {
+                            id : 12,
+                            mes : 'Diciembre'
+
+                        }
+
+                    ],
+                    nuevoCultivo : {
+                        descripcion_cultivo : '',
+                        nombre_producto : '',
+                        fecha_establecimiento_cultivo : '',
+                        fecha_renovacion : '',
+                        id_info_productivo : this.idinfo,
+                        id_unidad_producto : '',
+                        id_sitio_venta : '',
+                        id :'',
+                        actividades : {
+                            preparacion : [],
+                            siembra : [],
+                            deshierbado : [],
+                            abonado : [],
+                            cosecha : []
+                        }, // actividad - meses
+
+                    },
+                    detalleCultivo : {
+                        semilla : {
+                            variedad : '',
+                            id_procedencia_semilla : '',
+                            certificado_ica :'',
+                            densidad :'',
+                            id_cultivo :'',
+                            id :'',
+
+                        },
+                        plagas : [],
+                        componentes : {
+                            prepasiembra : {
+
+                            },
+                            establecimiento : {
+
+                            },
+                            mantenimiento : {
+
+                            }
+
+
+                        },
+                        ventas : {
+
+                        }
+                    },
+                    unidadesProducto : '',
+                    sitiosVenta : '',
+                    cultivoToEdit : '',
+
+
+
+                }
+            },
+
+
+
+            methods : {
+                coberturaSelected : function (id, nombre) {
+                    this.nuevoPotrero.tipoCobertura = nombre;
+                    this.$http.post('/getselectssubtipocobertura',{id : id}).then((response)=>{
+                        this.subtipoCobertura = response.body.data;
+                    },(error)=>{
+                        notificarFail('', 'Error al obtener los Tipos de Cobertura ' + error.status+' '+ error.statusText);
+                    });
+                },
+                subcoberturaSelected : function (nombre) {
+                    this.nuevoPotrero.subtipoCobertura = nombre;
+
+                },
+                fuenteSelected : function (nombre) {
+                    this.nuevoPotrero.fuente = nombre;
+
+                },
+                prepareToRemove : function (cultivo) {
+                    this.cultivoToRemove = cultivo;
+                },
+                formReset : function () {
+                    this.nuevoCultivo = {
+                        descripcion_cultivo : '',
+                            nombre_producto : '',
+                            fecha_establecimiento_cultivo : '',
+                            fecha_renovacion : '',
+                            id_info_productivo : this.idinfo,
+                            id_unidad_producto : '',
+                            id_sitio_venta : '',
+                            id :'',
+                            actividades : {
+                            preparacion : [],
+                                siembra : [],
+                                deshierbado : [],
+                                abonado : [],
+                                cosecha : []
+                        }
+
+                    }
+                },
+                prepareToEdit : function (cultivo) {
+                  this.nuevoCultivo = JSON.parse( JSON.stringify( cultivo ));
+                  this.cultivoToEdit = cultivo;
+
+                },
+
+
+                guardarCultivo : function () {
+                    this.loading = true;
+                    this.$http.post('/subsidios/productivos/diagnostico/guardarcultivo',{cultivo : this.nuevoCultivo }).then((response)=>{
+                        this.loading = false;
+                        if(response.body.estado == 'ok'){
+                            if(response.body.updated){
+                                //this.cultivoToEdit = response.body.cultivo
+                                index = this.cultivos.indexOf(this.cultivoToEdit);
+                                this.cultivos.splice(index,1);
+                                this.cultivos.splice(index,0,response.body.cultivo);
+                                $("#modal-agregar-cultivo").modal('hide');
+                                notificarOk('', 'Cultivo editado correctamente');
+                                this.formReset();
+                            }else{
+                                this.cultivos.push(response.body.cultivo);
+                                $("#modal-agregar-cultivo").modal('hide');
+                                notificarOk('', 'Cultivo agregado correctamente');
+                                this.formReset();
+                            }
+
+
+                        }else{
+                            notificarFail('', 'Error:  ' + response.body.error);
+                        }
+
+                    },(error)=>{
+                        this.loading = false;
+                        notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                    });
+
+                },
+
+                eliminarCultivo : function () {
+                    this.loading = true;
+                    this.$http.post('/subsidios/productivos/diagnostico/borrarcultivo',{potrero : this.cultivoToRemove.id}).then((response)=>{
+                        this.loading = false;
+                        if(response.body.estado == 'ok'){
+                            $("#modal-confirm-delete-cultivo").modal('hide');
+                            notificarOk('', 'Potrero borrado correctamente');
+                            this.potreros.splice(this.potreros.indexOf(this.potreroToRemove),1);
+                        }else{
+                            $("#modal-confirm-delete-cultivo").modal('hide');
+                            notificarFail('', 'Error: ' + response.body.error);
+                        }
+                    },(error)=>{
+                        $("#modal-confirm-delete-cultivo").modal('hide');
+                        notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                        this.loading = false;
+                    });
+
+                }
+
+            },
+            mounted(){
+                this.$http.post('/subsidios/productivos/diagnostico/getcultivos',{idInfo: this.idinfo}).then((response)=>{
+                    this.cultivos = response.body.data;
+                },(error)=>{
+                    notificarFail('', 'Cultivos: Error al obtener los Cultivos ' + error.status+' '+ error.statusText);
+                });
+
+                this.$http.post('/getselectsunidadproducto').then((response)=>{
+                    this.unidadesProducto = response.body.data;
+                },(error)=>{
+                    notificarFail('', 'Cultivos: Error al obtener la unidad de los productos ' + error.status+' '+ error.statusText);
+                });
+
+                this.$http.post('/getselectssitioventa').then((response)=>{
+                    this.sitiosVenta = response.body.data;
+                },(error)=>{
+                    notificarFail('', 'Cultivos: Error al obtener los sitios de venta ' + error.status+' '+ error.statusText);
+                });
+
+                var component = this;
+                $('#fecha_establecimiento').datepicker({
+                    orientation: 'auto top',
+                    language : 'es',
+                    todayBtn : 'linked',
+                    format: 'yyyy-mm-dd'
+                }).on('changeDate', function(e) {
+
+                    component.nuevoCultivo.fecha_establecimiento_cultivo = e.target.value;
+                    //console.log(component.nuevoBeneficiario.fecha_nacimiento)
+
+                });
+                $('#fecha_renovacion').datepicker({
+                    orientation: 'auto top',
+                    language : 'es',
+                    todayBtn : 'linked',
+                    format: 'yyyy-mm-dd'
+                }).on('changeDate', function(e) {
+
+                    component.nuevoCultivo.fecha_renovacion = e.target.value;
+                    //console.log(component.nuevoBeneficiario.fecha_nacimiento)
+
+                });
+            },
+
+
+        });
 
 
     var app = new Vue({
@@ -918,3 +1193,4 @@
 @include('subsidios_productivos.diagnostico.parts.table_beneficiarios')
 @include('subsidios_productivos.diagnostico.parts.table_mano_obra')
 @include('subsidios_productivos.diagnostico.parts.table_potreros')
+@include('subsidios_productivos.diagnostico.cultivos.table_cultivos')

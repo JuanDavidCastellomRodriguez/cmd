@@ -28,6 +28,7 @@ use App\Municipio;
 use App\NivelEducativo;
 use App\OpcionTenenciaTierra;
 use App\SistemaEliminacionAguasGrise;
+use App\SitioVenta;
 use App\SubtipoCobertura;
 use App\TiemposRecorrido;
 use App\TipoCobertura;
@@ -44,6 +45,7 @@ use App\TiposVehiculo;
 use App\TiposViasAcceso;
 use App\TipoTenenciaTierra;
 use App\TipoUnidadesSanitaria;
+use App\UnidadProducto;
 use App\Vereda;
 use Illuminate\Http\Request;
 
@@ -357,6 +359,38 @@ class SelectsController extends Controller
             ]);
         }
     }
+    public function getSelectsSitioVenta(){
+            try{
+                return response()->json([
+                    'estado' => 'ok',
+                    'data'=> SitioVenta::all()
+
+
+                ]);
+
+            }catch (\Exception $ee){
+                return response()->json([
+                    'estado' => 'fail',
+                    'error' => $ee->getMessage(),
+                ]);
+            }
+        }
+    public function getSelectsUnidadProducto(){
+                try{
+                    return response()->json([
+                        'estado' => 'ok',
+                        'data'=> UnidadProducto::all()
+
+
+                    ]);
+
+                }catch (\Exception $ee){
+                    return response()->json([
+                        'estado' => 'fail',
+                        'error' => $ee->getMessage(),
+                    ]);
+                }
+            }
 
 
 
