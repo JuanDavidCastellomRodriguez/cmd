@@ -798,6 +798,12 @@
                         }
 
                     ],
+                    nuevaSemilla : {
+                        variedad : '',
+                        densidad : '',
+                        certificado_ica : false,
+                        id_procedencia_semilla : ''
+                    },
                     nuevoCultivo : {
                         descripcion_cultivo : '',
                         nombre_producto : '',
@@ -813,10 +819,11 @@
                             deshierbado : [],
                             abonado : [],
                             cosecha : []
-                        }, // actividad - meses
+                        }, // semillas
+                        semillas : []
 
                     },
-                    detalleCultivo : {
+                    nuevoDetalleCultivo : {
                         semilla : {
                             variedad : '',
                             id_procedencia_semilla : '',
@@ -847,6 +854,10 @@
                     unidadesProducto : '',
                     sitiosVenta : '',
                     cultivoToEdit : '',
+                    cultivoToDetalle : '',
+                    agregandoPlaga : false,
+                    agregandoSemilla : false,
+                    procedenciaSemilla : '',
 
 
 
@@ -878,20 +889,21 @@
                 formReset : function () {
                     this.nuevoCultivo = {
                         descripcion_cultivo : '',
-                            nombre_producto : '',
-                            fecha_establecimiento_cultivo : '',
-                            fecha_renovacion : '',
-                            id_info_productivo : this.idinfo,
-                            id_unidad_producto : '',
-                            id_sitio_venta : '',
-                            id :'',
-                            actividades : {
+                        nombre_producto : '',
+                        fecha_establecimiento_cultivo : '',
+                        fecha_renovacion : '',
+                        id_info_productivo : this.idinfo,
+                        id_unidad_producto : '',
+                        id_sitio_venta : '',
+                        id :'',
+                        actividades : {
                             preparacion : [],
-                                siembra : [],
-                                deshierbado : [],
-                                abonado : [],
-                                cosecha : []
-                        }
+                            siembra : [],
+                            deshierbado : [],
+                            abonado : [],
+                            cosecha : []
+                        }, // semillas
+                        semillas : []
 
                     }
                 },
@@ -900,37 +912,48 @@
                   this.cultivoToEdit = cultivo;
 
                 },
+                prepareToDetalle : function (cultivo) {
+                    //alert(cultivo.id)
+                    this.cultivoToDetalle = cultivo;
+
+
+                },
 
 
                 guardarCultivo : function () {
-                    this.loading = true;
-                    this.$http.post('/subsidios/productivos/diagnostico/guardarcultivo',{cultivo : this.nuevoCultivo }).then((response)=>{
-                        this.loading = false;
-                        if(response.body.estado == 'ok'){
-                            if(response.body.updated){
-                                //this.cultivoToEdit = response.body.cultivo
-                                index = this.cultivos.indexOf(this.cultivoToEdit);
-                                this.cultivos.splice(index,1);
-                                this.cultivos.splice(index,0,response.body.cultivo);
-                                $("#modal-agregar-cultivo").modal('hide');
-                                notificarOk('', 'Cultivo editado correctamente');
-                                this.formReset();
+                    if( this.nuevoCultivo.semillas.length > 0){
+                        this.loading = true;
+                        this.$http.post('/subsidios/productivos/diagnostico/guardarcultivo',{cultivo : this.nuevoCultivo }).then((response)=>{
+                            this.loading = false;
+                            if(response.body.estado == 'ok'){
+                                if(response.body.updated){
+                                    //this.cultivoToEdit = response.body.cultivo
+                                    index = this.cultivos.indexOf(this.cultivoToEdit);
+                                    this.cultivos.splice(index,1);
+                                    this.cultivos.splice(index,0,response.body.cultivo);
+                                    $("#modal-agregar-cultivo").modal('hide');
+                                    notificarOk('', 'Cultivo editado correctamente');
+                                    this.formReset();
+                                }else{
+                                    this.cultivos.push(response.body.cultivo);
+                                    $("#modal-agregar-cultivo").modal('hide');
+                                    notificarOk('', 'Cultivo agregado correctamente');
+                                    this.formReset();
+                                }
+
+
                             }else{
-                                this.cultivos.push(response.body.cultivo);
-                                $("#modal-agregar-cultivo").modal('hide');
-                                notificarOk('', 'Cultivo agregado correctamente');
-                                this.formReset();
+                                notificarFail('', 'Error:  ' + response.body.error);
                             }
 
+                        },(error)=>{
+                            this.loading = false;
+                            notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                        });
+                    }else{
+                        notificarFail('','Debe agregar al menos una semilla')
+                    }
 
-                        }else{
-                            notificarFail('', 'Error:  ' + response.body.error);
-                        }
-
-                    },(error)=>{
-                        this.loading = false;
-                        notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
-                    });
 
                 },
 
@@ -952,6 +975,38 @@
                         this.loading = false;
                     });
 
+                },
+                showAgregarPlaga : function (tipo) {
+                    //alert("ok!!")
+                    if(tipo == '1'){
+                        this.agregandoPlaga = true;
+                    }else{
+                        this.agregandoPlaga = false;
+                    }
+                },
+
+                showAgregarSemilla : function (tipo) {
+                    //alert("ok!!")
+                    if(tipo == '1'){
+                        this.agregandoSemilla = true;
+                    }else{
+                        this.agregandoSemilla = false;
+                    }
+                },
+                agregarSemilla : function () {
+                    if(this.nuevaSemilla.variedad != '' && this.nuevaSemilla.densidad != '' && this.nuevaSemilla.id_procedencia_semilla != '' ){
+                        this.nuevoCultivo.semillas.push(this.nuevaSemilla);
+                        this.nuevaSemilla = {
+                            variedad : '',
+                            densidad : '',
+                            certificado_ica : false,
+                            id_procedencia_semilla : ''
+
+                        }
+                        this.agregandoSemilla = false;
+                    }else{
+                        notificarFail('', 'Todos los campos son requeridos')
+                    }
                 }
 
             },
@@ -973,6 +1028,12 @@
                 },(error)=>{
                     notificarFail('', 'Cultivos: Error al obtener los sitios de venta ' + error.status+' '+ error.statusText);
                 });
+                this.$http.post('/getselectsprocedenciasemilla').then((response)=>{
+                    this.procedenciaSemilla = response.body.data;
+                },(error)=>{
+                    notificarFail('', 'Cultivos: Error al obtener los sitios de venta ' + error.status+' '+ error.statusText);
+                });
+
 
                 var component = this;
                 $('#fecha_establecimiento').datepicker({
@@ -1001,6 +1062,369 @@
 
 
         });
+
+        Vue.component('detalle-cultivo',{
+            template : '#detalle-cultivo',
+            props : ['idcultivo'],
+            data : function () {
+                return {
+
+                    loading : false,
+                    meses : [
+                        {
+                            id : 1,
+                            mes : 'Enero'
+
+                        },
+                        {
+                            id : 2,
+                            mes : 'Febrero'
+
+                        },
+                        {
+                            id : 3,
+                            mes : 'Marzo'
+
+                        },
+                        {
+                            id : 4,
+                            mes : 'Abril'
+
+                        },
+                        {
+                            id : 5,
+                            mes : 'Mayo'
+
+                        },
+                        {
+                            id : 6,
+                            mes : 'Junio'
+
+                        },
+                        {
+                            id : 7,
+                            mes : 'Julio'
+
+                        },
+                        {
+                            id : 8,
+                            mes : 'Agosto'
+
+                        },
+                        {
+                            id : 9,
+                            mes : 'Septiembre'
+
+                        },
+                        {
+                            id : 10,
+                            mes : 'Octubre'
+
+                        },
+                        {
+                            id : 11,
+                            mes : 'Noviembre'
+
+                        },
+                        {
+                            id : 12,
+                            mes : 'Diciembre'
+
+                        }
+
+                    ],
+
+                    plagas : [],
+                    detalles : [],
+                    insumos : '',
+                    ventas : [],
+
+                    ventas : [],
+                    nuevoDetalle : {
+                        id_componente_cultivo : '',
+                        id_cultivo : this.idcultivo,
+                        actividades : '',
+                        frecuencia : '',
+                        mano_obra : '',
+                        id_etapa : ''
+                    },
+                    nuevaPlaga : {
+                        caracteristicas_control : '',
+                        frecuencia : '',
+                        mano_obra : '',
+                        tipo_plaga : '',
+                        id_cultivo : this.idcultivo
+                    },
+                    nuevoInsumo : {
+                        insumo : '',
+                        cantidad : '',
+                        frecuencia : '',
+                        id_etapa : '',
+                        id_cultivo : this.idcultivo,
+                    },
+                    nuevaVenta : {
+                        cantidad_autoconsumo : '',
+                        cantidad_venta : '',
+                        cantidad_primera_calidad : '',
+                        cantidad_segunda_calidad : '',
+                        cantidad_tercera_calidad : '',
+                        id_mes : '',
+                        id_cultivo : this.idcultivo,
+
+                    },
+
+                    componentesCultivos : '',
+                    agregandoActividad : false,
+                    agregandoInsumo : false,
+                    agregandoPlaga : false,
+                    agregandoVenta : false,
+
+                }
+            },
+            watch : {
+                idcultivo : function () {
+                    this.$http.post('/subsidios/productivos/diagnostico/getdetallecultivo',{id : this.idcultivo}).then((response)=>{
+                        if(response.body.estado == 'ok'){
+                            this.plagas = response.body.plagas;
+                            this.insumos = response.body.insumos;
+                            this.detalles = response.body.detalle;
+                            this.ventas = response.body.ventas;
+
+                        }
+
+                    }, (error)=>{
+                        notificarFail('', 'Error al obtener los Detalles del Cultivo ' + error.status+' '+ error.statusText);
+                    });
+
+                }
+            },
+
+
+            methods : {
+                showAgregar : function (tipo,caso) {
+                    //alert("ok!!")
+                    if(tipo == 1){
+                        this.agregandoActividad = true;
+                        this.nuevoDetalle.id_etapa = caso;
+                    }else{
+                        this.agregandoActividad = false;
+                    }
+
+
+                },
+                showAgregarPlaga : function (tipo) {
+                    //alert("ok!!")
+                    if(tipo == 1){
+                        this.agregandoPlaga = true;
+                        this.nuevaPlaga.id_cultivo = this.idcultivo;
+
+                    }else{
+                        this.agregandoPlaga = false;
+                    }
+
+
+                },
+                showAgregarInsumo : function (tipo,caso) {
+                    //alert("ok!!")
+                    if(tipo == 1){
+                        this.agregandoInsumo = true;
+                        this.nuevoInsumo.id_etapa = caso;
+                    }else{
+                        this.agregandoInsumo = false;
+                    }
+
+
+                },
+
+                showAgregarVenta : function (tipo) {
+                    //alert("ok!!")
+                    if(tipo == 1){
+                        this.agregandoVenta = true;
+                        this.nuevaVenta.id_cultivo = this.idcultivo;
+                    }else{
+                        this.agregandoVenta = false;
+                    }
+
+
+                },
+                formReset :function () {
+                    
+                },
+                agregarInsumo : function () {
+                    this.loading = true;
+                    this.$http.post('/subsidios/productivos/diagnostico/guardarinsumocultivo',{insumo : this.nuevoInsumo}).then((response)=>{
+                        this.loading = false;
+                        if(response.body.estado == 'ok'){
+
+                            this.insumos.push(response.body.insumo);
+                            this.nuevoInsumo.insumo = '';
+                            this.nuevoInsumo.cantidad = '';
+                            this.nuevoInsumo.frecuencia = '';
+
+                            notificarOk('', 'Insumo creado correctamente');
+                        }
+                    },(error)=>{
+                        this.loading = false;
+                        notificarFail('', 'Error al guardar el insumo' + error.status+' '+ error.statusText);
+                    });
+
+                },
+                agregarActividad : function () {
+                    this.loading = true;
+                    this.$http.post('/subsidios/productivos/diagnostico/guardardetallecultivo',{detalle : this.nuevoDetalle}).then((response)=>{
+                        this.loading = false;
+                        if(response.body.estado == 'ok'){
+
+                            this.detalles.push(response.body.detalle);
+                            this.nuevoDetalle.id_componente_cultivo = '';
+                            this.nuevoDetalle.id_cultivo = this.idcultivo;
+                            this.nuevoDetalle.actividades = '';
+                            this.nuevoDetalle.frecuencia = '';
+                            this.nuevoDetalle.mano_obra = '';
+
+                            notificarOk('', 'Actividad creada correctamente');
+                        }
+                    },(error)=>{
+                        this.loading = false;
+                        notificarFail('', 'Error al guardar la actividad' + error.status+' '+ error.statusText);
+                    });
+                },
+                eliminarActividad : function (actividad) {
+                    this.$http.post('/subsidios/productivos/diagnostico/eliminardetallecultivo',{id : actividad.id}).then((response)=>{
+                        if(response.body.estado == 'ok'){
+                            this.detalles.splice(this.detalles.indexOf(actividad),1);
+                            notificarOk('','Actividad eliminada correctamente');
+                        }
+                    }, (error)=>{
+                        notificarFail('', 'Error al guardar la actividad' + error.status+' '+ error.statusText);
+                    });
+                },
+                eliminarInsumo : function (insumo) {
+                    this.$http.post('/subsidios/productivos/diagnostico/eliminarinsumocultivo',{id : insumo.id}).then((response)=>{
+                        if(response.body.estado == 'ok'){
+                            this.insumos.splice(this.insumos.indexOf(insumo),1);
+                            notificarOk('','Insumo eliminado correctamente');
+                        }
+                    }, (error)=>{
+                        notificarFail('', 'Error al guardar el insumo' + error.status+' '+ error.statusText);
+                    });
+
+                },
+                agregarPlaga : function () {
+                    this.loading = true;
+                    this.$http.post('/subsidios/productivos/diagnostico/guardarplagacultivo',{plaga : this.nuevaPlaga}).then((response)=>{
+                        this.loading = false;
+                        if(response.body.estado == 'ok'){
+
+                            this.plagas.push(response.body.plaga);
+                            this.nuevaPlaga = {
+                                caracteristicas_control : '',
+                                frecuencia : '',
+                                mano_obra : '',
+                                tipo_plaga : '',
+                                id_cultivo : this.idcultivo
+                            };
+
+                            notificarOk('', 'Plaga creada correctamente');
+                        }
+                    },(error)=>{
+                        this.loading = false;
+                        notificarFail('', 'Error al guardar la plaga' + error.status+' '+ error.statusText);
+                    });
+
+                },
+                eliminarPlaga : function (plaga) {
+                    this.$http.post('/subsidios/productivos/diagnostico/eliminarplagacultivo',{id : plaga.id}).then((response)=>{
+                        if(response.body.estado == 'ok'){
+                            this.plagas.splice(this.plagas.indexOf(plaga),1);
+                            notificarOk('','Plaga eliminada correctamente');
+                        }
+                    }, (error)=>{
+                        notificarFail('', 'Error al eliminar la plaga' + error.status+' '+ error.statusText);
+                    });
+                },
+
+                agregarVenta : function () {
+                    var totalProduccion = this.nuevaVenta.cantidad_autoconsumo + this.nuevaVenta.cantidad_venta;
+                    var totalCalidad = this.nuevaVenta.cantidad_primera_calidad + this.nuevaVenta.cantidad_segunda_calidad + this.nuevaVenta.cantidad_tercera_calidad;
+                    if(totalProduccion == totalCalidad ){
+                        this.loading = true;
+                        this.$http.post('/subsidios/productivos/diagnostico/guardarventacultivo',{venta : this.nuevaVenta}).then((response)=>{
+                            this.loading = false;
+                            if(response.body.estado == 'ok'){
+
+                                this.ventas.push(response.body.venta);
+                                this.nuevaVenta = {
+                                    cantidad_autoconsumo : '',
+                                    cantidad_venta : '',
+                                    cantidad_primera_calidad : '',
+                                    cantidad_segunda_calidad : '',
+                                    cantidad_tercera_calidad : '',
+                                    id_mes : '',
+                                    id_cultivo : this.idcultivo,
+                                };
+
+                                notificarOk('', 'Venta creada correctamente');
+                            }else{
+                                notificarFail('', 'Error:  ' + response.body.error);
+                            }
+                        },(error)=>{
+                            this.loading = false;
+                            notificarFail('', 'Error al guardar la venta' + error.status+' '+ error.statusText);
+                        });
+                    }else{
+                        notificarFail('','La suma de los campos de calidad del producto debe ser igual a la produccion total')
+                    }
+
+
+                },
+                eliminarVenta : function (venta) {
+                    this.$http.post('/subsidios/productivos/diagnostico/eliminarventacultivo',{id : venta.id}).then((response)=>{
+                        if(response.body.estado == 'ok'){
+                            this.ventas.splice(this.ventas.indexOf(venta),1);
+                            notificarOk('','Venta eliminada correctamente');
+                        }
+                    }, (error)=>{
+                        notificarFail('', 'Error al eliminar la venta' + error.status+' '+ error.statusText);
+                    });
+                },
+
+            },
+            mounted(){
+                this.$http.post('/getselectscomponentescultivos').then((response)=>{
+                    this.componentesCultivos = response.body.data;
+                },(error)=>{
+                    notificarFail('', 'Error al obtener los Componetes del Cultivo ' + error.status+' '+ error.statusText);
+                });
+
+                var componente = this;
+                $('#accordion').on('hide.bs.collapse', function () {
+                    //alert('esoo!!')
+                    componente.agregandoActividad = false;
+                    componente.agregandoInsumo = false;
+                    componente.nuevoDetalle = {
+                        id_componente_cultivo : '',
+                        id_cultivo : componente.idcultivo,
+                        actividades : '',
+                        frecuencia : '',
+                        mano_obra : '',
+                        id_etapa : ''
+                    };
+                    componente.nuevoInsumo = {
+                        insumo : '',
+                        cantidad : '',
+                        frecuencia : '',
+                        id_etapa : '',
+                        id_cultivo : componente.idcultivo,
+                    };
+
+                    // do something…
+                })
+            },
+
+
+        });
+
 
 
     var app = new Vue({
@@ -1194,3 +1618,4 @@
 @include('subsidios_productivos.diagnostico.parts.table_mano_obra')
 @include('subsidios_productivos.diagnostico.parts.table_potreros')
 @include('subsidios_productivos.diagnostico.cultivos.table_cultivos')
+@include('subsidios_productivos.diagnostico.cultivos.detalle.form_detalle')

@@ -48,6 +48,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/getselectstipofuentehidrica', 'SelectsController@getSelectsTipoFuentesHidricas');
     Route::post('/getselectssitioventa', 'SelectsController@getSelectsSitioVenta');
     Route::post('/getselectsunidadproducto', 'SelectsController@getSelectsUnidadProducto');
+    Route::post('/getselectsprocedenciasemilla', 'SelectsController@getSelectsProcedenciaSemilla');
+    Route::post('/getselectscomponentescultivos', 'SelectsController@getSelectsComponentesCultivos');
 
 
 
@@ -96,6 +98,15 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/subsidios/productivos/diagnostico/guardarpotrero', "InformacionLotesController@guardarPotrero");
     Route::post('/subsidios/productivos/diagnostico/getcultivos', "CultivosController@getCultivos");
     Route::post('/subsidios/productivos/diagnostico/guardarcultivo', "CultivosController@guardarCultivo");
+    Route::post('/subsidios/productivos/diagnostico/getdetallecultivo', "CultivosController@getDetalleCultivo");
+    Route::post('/subsidios/productivos/diagnostico/guardardetallecultivo', "CultivosController@guardarDetalleCultivo");
+    Route::post('/subsidios/productivos/diagnostico/eliminardetallecultivo', "CultivosController@eliminarDetalleCultivo");
+    Route::post('/subsidios/productivos/diagnostico/guardarinsumocultivo', "CultivosController@guardarInsumoCultivo");
+    Route::post('/subsidios/productivos/diagnostico/guardarplagacultivo', "CultivosController@guardarPlagaCultivo");
+    Route::post('/subsidios/productivos/diagnostico/eliminarplagacultivo', "CultivosController@eliminarPlagaCultivo");
+    Route::post('/subsidios/productivos/diagnostico/eliminarinsumocultivo', "CultivosController@eliminarInsumoCultivo");
+    Route::post('/subsidios/productivos/diagnostico/guardarventacultivo', "CultivosController@guardarVentaCultivo");
+    Route::post('/subsidios/productivos/diagnostico/eliminarventacultivo', "CultivosController@eliminarVentaCultivo");
 
 
     Route::get('/subsidios/productivos/visitas/{id}', "VisitasController@show");

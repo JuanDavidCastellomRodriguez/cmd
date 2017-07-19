@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\AplicacionInsumo;
+use App\ControlPlagasEnfermedades;
 use App\Cultivo;
+use App\DetalleCultivo;
 use App\MatrizCultivo;
+use App\ProductosVenta;
+use App\Semilla;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +21,7 @@ class CultivosController extends Controller
             $data = new Collection();
             foreach ($cultivos as $cultivo){
                 $cultivo->setAttribute('actividades',$this->actividadesCultivo($cultivo->id));
+                $cultivo->setAttribute('semillas',Semilla::where('id_cultivo',$cultivo->id)->get()->toArray());
                 $data->add($cultivo);
             }
 
@@ -36,6 +42,49 @@ class CultivosController extends Controller
         }
     }
 
+    public function getDetalleCultivo(Request $request){
+
+        try{
+            $insumos = AplicacionInsumo::where('id_cultivo',$request->id)->get()->toArray();
+            $plagas = ControlPlagasEnfermedades::where('id_cultivo',$request->id)->get()->toArray();
+            $detalle = DetalleCultivo::where('id_cultivo',$request->id)->get();
+            $ventas = ProductosVenta::where('id_cultivo',$request->id)->get();
+            $data = new Collection();
+            foreach ($detalle as $deta){
+                $deta->setAttribute('id_etapa',$deta->Componente->id_etapa);
+                $data->push($deta);
+            }
+
+            $dataVentas = new Collection();
+            foreach ($ventas as $venta){
+                $venta->setAttribute('mes',$venta->Mes->mes);
+                $dataVentas->push($venta);
+            }
+            return response()->json([
+                'estado' => 'ok',
+                'detalle' => $data,
+                'insumos' => $insumos,
+                'plagas' => $plagas,
+                'ventas'=>$dataVentas,
+
+
+            ],200);
+
+        }catch (\Exception $exception){
+            return response()->json([
+                'estado' => 'fail',
+                'error' => $exception->getMessage(),
+                'descripcion' => $exception->getTrace()
+
+
+            ],500);
+        }
+
+
+
+    }
+
+
     public function guardarCultivo(Request $request){
         $request =  json_decode($request->getContent());
         try{
@@ -53,6 +102,7 @@ class CultivosController extends Controller
                 $cultivo->id_sitio_venta = $request->cultivo->id_sitio_venta;
                 if($cultivo->save()){
                     MatrizCultivo::where('id_cultivo',$cultivo->id)->delete();
+                    Semilla::where('id_cultivo',$cultivo->id)->delete();
 
                     foreach ($request->cultivo->actividades->preparacion as $mes){
                         $actividad = new MatrizCultivo();
@@ -94,6 +144,17 @@ class CultivosController extends Controller
                         $actividad->save();
 
                     }
+
+                    foreach ($request->cultivo->semillas as $semilla){
+                        $nuevaSemilla = new Semilla();
+                        $nuevaSemilla->variedad = $semilla->variedad;
+                        $nuevaSemilla->densidad = $semilla->densidad;
+                        $nuevaSemilla->certificado_ica = $semilla->certificado_ica;
+                        $nuevaSemilla->id_procedencia_semilla = $semilla->id_procedencia_semilla;
+                        $nuevaSemilla->id_cultivo = $cultivo->id;
+                        $nuevaSemilla->save();
+                    }
+
 
 
                 }
@@ -150,6 +211,16 @@ class CultivosController extends Controller
 
                     }
 
+                    foreach ($request->cultivo->semillas as $semilla){
+                        $nuevaSemilla = new Semilla();
+                        $nuevaSemilla->variedad = $semilla->variedad;
+                        $nuevaSemilla->densidad = $semilla->densidad;
+                        $nuevaSemilla->certificado_ica = $semilla->certificado_ica;
+                        $nuevaSemilla->id_procedencia_semilla = $semilla->id_procedencia_semilla;
+                        $nuevaSemilla->id_cultivo = $cultivo->id;
+                        $nuevaSemilla->save();
+                    }
+
 
                 }
 
@@ -160,6 +231,7 @@ class CultivosController extends Controller
 
 
             $cultivo->setAttribute('actividades',$data);
+            $cultivo->setAttribute('semillas',Semilla::where('id_cultivo',$cultivo->id)->get()->toArray());
 
             return response()->json([
                 'estado' => 'ok',
@@ -175,6 +247,216 @@ class CultivosController extends Controller
 
         }catch (\Exception $exception){
             DB::rollback();
+            return response()->json([
+                'estado' => 'fail',
+                'error' => $exception->getMessage(),
+                'descripcion' => $exception->getTrace()
+
+
+            ],500);
+        }
+
+    }
+
+    public function guardarDetalleCultivo(Request $request){
+        try{
+            $request =  json_decode($request->getContent());
+            $detalle = new DetalleCultivo();
+            $detalle->id_componente_cultivo = $request->detalle->id_componente_cultivo;
+            $detalle->id_cultivo = $request->detalle->id_cultivo;
+            $detalle->actividades = $request->detalle->actividades;
+            $detalle->frecuencia = $request->detalle->frecuencia;
+            $detalle->mano_obra = $request->detalle->mano_obra;
+            $detalle->save();
+            $detalle->setAttribute('id_etapa',$detalle->Componente->id_etapa);
+            return response()->json([
+                'estado' => 'ok',
+                'detalle' => $detalle,
+
+            ],200);
+
+        }catch (\Exception $exception){
+            return response()->json([
+                'estado' => 'fail',
+                'error' => $exception->getMessage(),
+                'descripcion' => $exception->getTrace()
+
+
+            ],500);
+        }
+    }
+
+    public function eliminarDetalleCultivo(Request $request){
+        try{
+            DetalleCultivo::find($request->id)->delete();
+            return response()->json([
+                'estado' => 'ok',
+                'mensaje' => 'Actividad eliminada correctamente',
+
+            ],200);
+
+        }catch (\Exception $exception){
+            return response()->json([
+                'estado' => 'fail',
+                'error' => $exception->getMessage(),
+                'descripcion' => $exception->getTrace()
+
+
+            ],500);
+        }
+
+    }
+
+    public function guardarInsumoCultivo(Request $request){
+        try{
+            $request =  json_decode($request->getContent());
+            $insumo = new AplicacionInsumo();
+            $insumo->insumo = $request->insumo->insumo;
+            $insumo->cantidad = $request->insumo->cantidad;
+            $insumo->frecuencia = $request->insumo->frecuencia;
+            $insumo->id_cultivo = $request->insumo->id_cultivo;
+            $insumo->id_etapa = $request->insumo->id_etapa;
+            $insumo->save();
+            //$insumo->setAttribute('id_etapa',$detalle->Componente->id_etapa);
+            return response()->json([
+                'estado' => 'ok',
+                'insumo' => $insumo,
+
+            ],200);
+
+        }catch (\Exception $exception){
+            return response()->json([
+                'estado' => 'fail',
+                'error' => $exception->getMessage(),
+                'descripcion' => $exception->getTrace()
+
+
+            ],500);
+        }
+    }
+
+    public function eliminarInsumoCultivo(Request $request){
+        try{
+            AplicacionInsumo::find($request->id)->delete();
+            return response()->json([
+                'estado' => 'ok',
+                'mensaje' => 'Insumo eliminado correctamente',
+
+            ],200);
+
+        }catch (\Exception $exception){
+            return response()->json([
+                'estado' => 'fail',
+                'error' => $exception->getMessage(),
+                'descripcion' => $exception->getTrace()
+
+
+            ],500);
+        }
+
+    }
+
+    public function guardarPlagaCultivo(Request $request){
+        try{
+            $request =  json_decode($request->getContent());
+            $plaga = new ControlPlagasEnfermedades();
+            $plaga->caracteristicas_control = $request->plaga->caracteristicas_control;
+            $plaga->frecuencia = $request->plaga->frecuencia;
+            //$plaga->mano_obra = $request->plaga->mano_obra;
+            $plaga->tipo_plaga = $request->plaga->tipo_plaga;
+            $plaga->id_cultivo = $request->plaga->id_cultivo;
+            $plaga->save();
+            //$insumo->setAttribute('id_etapa',$detalle->Componente->id_etapa);
+            return response()->json([
+                'estado' => 'ok',
+                'plaga' => $plaga,
+
+            ],200);
+
+        }catch (\Exception $exception){
+            return response()->json([
+                'estado' => 'fail',
+                'error' => $exception->getMessage(),
+                'descripcion' => $exception->getTrace()
+
+
+            ],500);
+        }
+    }
+
+    public function eliminarPlagaCultivo(Request $request){
+        try{
+            ControlPlagasEnfermedades::find($request->id)->delete();
+            return response()->json([
+                'estado' => 'ok',
+                'mensaje' => 'Plaga eliminada correctamente',
+
+            ],200);
+
+        }catch (\Exception $exception){
+            return response()->json([
+                'estado' => 'fail',
+                'error' => $exception->getMessage(),
+                'descripcion' => $exception->getTrace()
+
+
+            ],500);
+        }
+
+    }
+
+    public function guardarVentaCultivo(Request $request){
+        try{
+
+            $request =  json_decode($request->getContent());
+            $mesExiste = ProductosVenta::where('id_mes',$request->venta->id_mes)->where('id_cultivo',$request->venta->id_cultivo)->get();
+            if($mesExiste->isEmpty()){
+                $venta = new ProductosVenta();
+                $venta->cantidad_autoconsumo = $request->venta->cantidad_autoconsumo;
+                $venta->cantidad_venta = $request->venta->cantidad_venta;
+                $venta->cantidad_primera_calidad = $request->venta->cantidad_primera_calidad;
+                $venta->cantidad_segunda_calidad = $request->venta->cantidad_segunda_calidad;
+                $venta->cantidad_tercera_calidad = $request->venta->cantidad_tercera_calidad;
+                $venta->id_mes = $request->venta->id_mes;
+                $venta->id_cultivo = $request->venta->id_cultivo;
+                $venta->save();
+                $venta->setAttribute('mes',$venta->Mes->mes);
+                //$insumo->setAttribute('id_etapa',$detalle->Componente->id_etapa);
+                return response()->json([
+                    'estado' => 'ok',
+                    'venta' => $venta,
+
+                ],200);
+            }else{
+                return response()->json([
+                    'estado' => 'fail',
+                    'error' => 'Mes ya existe en este cultivo',
+
+                ],200);
+            }
+
+
+        }catch (\Exception $exception){
+            return response()->json([
+                'estado' => 'fail',
+                'error' => $exception->getMessage(),
+                'descripcion' => $exception->getTrace()
+
+
+            ],500);
+        }
+    }
+
+    public function eliminarVentaCultivo(Request $request){
+        try{
+            ProductosVenta::find($request->id)->delete();
+            return response()->json([
+                'estado' => 'ok',
+                'mensaje' => 'Venta eliminada correctamente',
+
+            ],200);
+
+        }catch (\Exception $exception){
             return response()->json([
                 'estado' => 'fail',
                 'error' => $exception->getMessage(),

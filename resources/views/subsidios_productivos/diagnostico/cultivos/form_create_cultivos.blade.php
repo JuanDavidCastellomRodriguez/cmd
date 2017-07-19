@@ -82,6 +82,57 @@
                             </table>
 
                         </div>
+                        <div class="col-lg-12">
+                            <h4>Semillas
+                                <button type="button" v-if="!agregandoSemilla"v-on:click="showAgregarSemilla('1')" class="btn btn-sm btn-success">Agregar</button>
+                                <button type="button" v-if="agregandoSemilla" v-on:click="showAgregarSemilla('0')" class="btn btn-sm btn-danger">Cancelar</button>
+                            </h4>
+                            <div class="form" v-if="agregandoSemilla" style="font-size: 12px">
+                                <div class="form-group col-lg-2">
+                                    <label for="exampleInputName2">Variedad</label>
+                                    <input type="text" class="form-control" v-model="nuevaSemilla.variedad" >
+                                </div>
+                                <div class="form-group col-lg-5">
+                                    <label for="exampleInputEmail2">Densidad</label>
+                                    <input type="text" class="form-control" v-model="nuevaSemilla.densidad">
+                                </div>
+                                <div class="form-group col-lg-2">
+                                    <label for="exampleInputName2">Procedencia</label>
+                                    <select v-model="nuevaSemilla.id_procedencia_semilla" class="form-control" >
+                                        <option value="" disabled>Seleccione...</option>
+                                        <option v-for="procedencia in  procedenciaSemilla" :value="procedencia.id" >@{{ procedencia.procedencia_semilla }}</option>
+
+                                    </select>
+                                </div>
+                                <div class="form-group col-lg-2">
+                                    <label for="exampleInputEmail2">Semilla Certificada</label>
+                                    <div style="padding-top:10px;">
+                                        <input  type="checkbox" v-model="nuevaSemilla.certificado_ica"  >
+                                    </div>
+                                </div>
+                                <div class="form-group" style="text-align: right">
+
+                                    <button type="button" v-on:click="agregarSemilla()" style="margin-top: 24px;" class="btn btn-sm btn-success" >Agregar</button>
+                                </div>
+
+                            </div>
+                            <table style="font-size: 12px" class="table table-responsive">
+                                <tr>
+                                    <th>Variedad</th>
+                                    <th>Densidad</th>
+                                    <th>Procedencia</th>
+                                    <th>Certificada</th>
+                                </tr>
+                                <tr v-for="semilla in nuevoCultivo.semillas">
+                                    <td>@{{ semilla.variedad }}</td>
+                                    <td>@{{ semilla.densidad }}</td>
+                                    <td>@{{ semilla.id_procedencia_semilla }}</td>
+                                    <td>@{{ semilla.certificado_ica }}</td>
+                                </tr>
+
+                            </table>
+                        </div>
+
 
 
 
@@ -91,7 +142,7 @@
                 <div class="modal-footer">
                     <i  v-show="loading" class="fa fa-spinner fa-spin"></i>
                     <button type="button" class="btn btn-default" data-dismiss="modal"  v-on:click="formReset()" >Cancelar</button>
-                    <button type="submit"  class="btn btn-default " data-loading-text="<i class='fa fa-spinner fa-spin '></i> Guardando..."   id="btn-guardar">Agregar</button>
+                    <button type="submit"  class="btn btn-default " data-loading-text="<i class='fa fa-spinner fa-spin '></i> Guardando..."   id="btn-guardar">Guardar</button>
 
                 </div>
             </form>
@@ -118,32 +169,5 @@
     </div>
 </div>
 
-<div class="modal fade" tabindex="-1" role="dialog" id="modal-detalle-cultivo"name="modal-detalle-cultivo">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <form class="form" data-toggle="validator" v-on:submit.prevent="guardarDetalle()" >
-                <div class="modal-header">
-
-                    <h4 class="modal-title">Nuevo Cultivo</h4>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-
-
-
-
-
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <i  v-show="loading" class="fa fa-spinner fa-spin"></i>
-                    <button type="button" class="btn btn-default" data-dismiss="modal"  v-on:click="formReset()" >Cancelar</button>
-                    <button type="submit"  class="btn btn-default " data-loading-text="<i class='fa fa-spinner fa-spin '></i> Guardando..."   id="btn-guardar">Agregar</button>
-
-                </div>
-            </form>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-
+<detalle-cultivo :idcultivo="cultivoToDetalle.id"></detalle-cultivo>
 

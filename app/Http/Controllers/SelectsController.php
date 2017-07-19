@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\AcabadosTanque;
 use App\Campo;
+use App\ComponentesCultivo;
 use App\Comunicacione;
 use App\Departamento;
 use App\ElementosCocina;
@@ -27,6 +28,7 @@ use App\MetodosDisposicionBasura;
 use App\Municipio;
 use App\NivelEducativo;
 use App\OpcionTenenciaTierra;
+use App\ProcedenciasSemilla;
 use App\SistemaEliminacionAguasGrise;
 use App\SitioVenta;
 use App\SubtipoCobertura;
@@ -376,21 +378,55 @@ class SelectsController extends Controller
             }
         }
     public function getSelectsUnidadProducto(){
-                try{
-                    return response()->json([
-                        'estado' => 'ok',
-                        'data'=> UnidadProducto::all()
+        try{
+            return response()->json([
+                'estado' => 'ok',
+                'data'=> UnidadProducto::all()
 
 
-                    ]);
+            ]);
 
-                }catch (\Exception $ee){
-                    return response()->json([
-                        'estado' => 'fail',
-                        'error' => $ee->getMessage(),
-                    ]);
-                }
-            }
+        }catch (\Exception $ee){
+            return response()->json([
+                'estado' => 'fail',
+                'error' => $ee->getMessage(),
+            ]);
+        }
+    }
+    public function getSelectsProcedenciaSemilla(){
+        try{
+            return response()->json([
+                'estado' => 'ok',
+                'data'=> ProcedenciasSemilla::all()
+
+
+            ]);
+
+        }catch (\Exception $ee){
+            return response()->json([
+                'estado' => 'fail',
+                'error' => $ee->getMessage(),
+            ]);
+        }
+    }
+    public function getSelectsComponentesCultivos(){
+        try{
+            return response()->json([
+                'estado' => 'ok',
+                'data'=> ComponentesCultivo::all()
+
+
+            ]);
+
+        }catch (\Exception $ee){
+            return response()->json([
+                'estado' => 'fail',
+                'error' => $ee->getMessage(),
+            ]);
+        }
+    }
+
+
 
 
 
