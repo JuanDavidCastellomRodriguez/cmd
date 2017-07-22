@@ -71,10 +71,10 @@
 
                     </div>
                     <div role="tabpanel" class="tab-pane" id="s_publicos">
-                        Servicios Publicos
+                        <bovinos :idinfo="idInfoProductivo"  ></bovinos>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="e_menores">
-                        Servicios Publicos
+                        <especies :idinfo="idInfoProductivo" ></especies>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="cierre">
                         Cierre
@@ -1425,6 +1425,323 @@
 
         });
 
+        Vue.component('bovinos', {
+            template: '#bovinos',
+            props: ['idinfo'],
+            data: function () {
+                return {
+
+                    loading: false,
+                    nuevoBovino: {
+                        id_info_productivo: this.idinfo,
+                        id_raza: '',
+                        id_tipo_propiedad: '',
+                        id_tipo_bovino: '',
+                        cantidad: '',
+                    },
+                    bovinos: [],
+                    razas: '',
+                    TipoPropiedades: '',
+                    tipoBovino: '',
+                    bovinoToDelete : '',
+                    actividadesManejo : '',
+                    nuevoManejo : {
+                        cantidad : '',
+                        periodicidad : '',
+                        id_actividad_manejo : '',
+                        id_info_productivo : this.idinfo,
+                        producto_actividad : '',
+                    },
+                    manejoToDelete : '',
+                    manejoAnimales : [],
+                    ordenios : [],
+                    ordenioToDelete : '',
+                    nuevoOrdenio : {
+                        produccion_dia : '',
+                        cantidad_cuaja : '',
+                        cantidad_autoconsumo : '',
+                        cantidad_venta : '',
+                        id_info_productivo : this.idinfo,
+                        id_frecuencia_ordenio : '',
+                        id_unidades_ordenio : '',
+                    },
+                    frecuenciasOrdenios : '',
+                    unidadesOrdenios : '',
+
+
+                }
+            },
+
+            methods: {
+
+                formReset: function () {
+                    this.nuevoBovino = {
+                        id_info_productivo : this.idinfo,
+                        id_raza : '',
+                        id_tipo_propiedad : '',
+                        id_tipo_bovino : '',
+                        cantidad : '',
+                    };
+                    this.nuevoManejo = {
+                        cantidad : '',
+                        periodicidad : '',
+                        id_actividad_manejo : '',
+                        id_info_productivo : this.idinfo,
+                        producto_actividad : '',
+                    };
+                    this.nuevoOrdenio = {
+                        produccion_dia : '',
+                        cantidad_cuaja : '',
+                        cantidad_autoconsumo : '',
+                        cantidad_venta : '',
+                        id_info_productivo : this.idinfo,
+                        id_frecuencia_ordenio : '',
+                        id_unidades_ordenio : '',
+                    }
+                },
+                prepareToDelete : function (bovino) {
+                    this.bovinoToDelete = bovino
+                },
+                prepareToDeleteManejo : function (manejo) {
+                    this.manejoToDelete = manejo
+                },
+                prepareToDeleteOrdenio : function (ordenio) {
+                    this.ordenioToDelete = ordenio
+                },
+
+                guardarBovino: function () {
+                    this.loading = true;
+                    this.$http.post('/subsidios/productivos/diagnostico/guardarbovino', {bovino: this.nuevoBovino}).then((response) => {
+                        this.loading = false;
+                        if (response.body.estado == 'ok') {
+
+                            this.bovinos.push(response.body.bovino);
+                            $("#modal-agregar-bovino").modal('hide');
+                            this.formReset();
+
+
+                            notificarOk('', 'Bovinos creados correctamente');
+                        } else {
+                            notificarFail('', 'Error:  ' + response.body.error);
+                        }
+                    }, (error) => {
+                        this.loading = false;
+                        notificarFail('', 'Error al guardar los bovinos' + error.status + ' ' + error.statusText);
+                    });
+                },
+
+                eliminarBovino: function () {
+                    this.$http.post('/subsidios/productivos/diagnostico/eliminarbovino', {id: this.bovinoToDelete.id}).then((response) => {
+                        if (response.body.estado == 'ok') {
+                            this.bovinos.splice(this.bovinos.indexOf(this.bovinoToDelete), 1);
+                            notificarOk('', 'Bovino eliminado correctamente');
+                            $("#modal-confirm-delete-bovino").modal('hide');
+                        }
+                    }, (error) => {
+                        notificarFail('', 'Error al eliminar el bovino' + error.status + ' ' + error.statusText);
+                    });
+                },
+
+                guardarManejoBovino: function () {
+                    this.loading = true;
+                    this.$http.post('/subsidios/productivos/diagnostico/guardarmanejobovino', {manejo: this.nuevoManejo}).then((response) => {
+                        this.loading = false;
+                        if (response.body.estado == 'ok') {
+
+                            this.manejoAnimales.push(response.body.manejo);
+                            $("#modal-agregar-manejo-bovino").modal('hide');
+                            this.formReset();
+
+
+                            notificarOk('', 'Manejo de animales creado correctamente');
+                        } else {
+                            notificarFail('', 'Error:  ' + response.body.error);
+                        }
+                    }, (error) => {
+                        this.loading = false;
+                        notificarFail('', 'Error al guardar el manejo de animales' + error.status + ' ' + error.statusText);
+                    });
+                },
+
+                eliminarManejoBovino: function () {
+                    this.$http.post('/subsidios/productivos/diagnostico/eliminarmanejobovino', {id: this.manejoToDelete.id}).then((response) => {
+                        if (response.body.estado == 'ok') {
+                            this.manejoAnimales.splice(this.manejoAnimales.indexOf(this.manejoToDelete), 1);
+                            notificarOk('', 'Manejo de animales eliminado correctamente');
+                            $("#modal-confirm-delete-manejo-bovino").modal('hide');
+                        }
+                    }, (error) => {
+                        notificarFail('', 'Error al eliminar el manejo de animales' + error.status + ' ' + error.statusText);
+                    });
+                },
+
+                guardarOrdenioBovino: function () {
+                    this.loading = true;
+                    this.$http.post('/subsidios/productivos/diagnostico/guardarordeniobovino', {ordenio: this.nuevoOrdenio}).then((response) => {
+                        this.loading = false;
+                        if (response.body.estado == 'ok') {
+
+                            this.ordenios.push(response.body.ordenio);
+                            $("#modal-agregar-ordenio-bovino").modal('hide');
+                            this.formReset();
+
+
+                            notificarOk('', 'Registro de Ordeño creado correctamente');
+                        } else {
+                            notificarFail('', 'Error:  ' + response.body.error);
+                        }
+                    }, (error) => {
+                        this.loading = false;
+                        notificarFail('', 'Error al guardar el registro de ordeño' + error.status + ' ' + error.statusText);
+                    });
+                },
+
+
+
+
+
+                eliminarOrdenioBovino: function () {
+                    this.$http.post('/subsidios/productivos/diagnostico/eliminarordeniobovino', {id: this.ordenioToDelete.id}).then((response) => {
+                        if (response.body.estado == 'ok') {
+                            this.ordenios.splice(this.ordenios.indexOf(this.ordenioToDelete), 1);
+                            notificarOk('', 'Registro de ordeño eliminado correctamente');
+                            $("#modal-confirm-delete-ordenio-bovino").modal('hide');
+                        }
+                    }, (error) => {
+                        notificarFail('', 'Error al eliminar el registro de ordeño' + error.status + ' ' + error.statusText);
+                    });
+                },
+        },
+
+
+
+        mounted(){
+
+                this.$http.post('/getselectsbovinos').then((response)=>{
+                this.razas = response.body.razas;
+                this.TipoPropiedades = response.body.propiedades;
+                this.tipoBovino = response.body.tipos;
+                this.actividadesManejo = response.body.actividades;
+                this.frecuenciasOrdenios = response.body.frecuencia;
+                this.unidadesOrdenios = response.body.unidades;
+
+
+            },(error)=>{
+                notificarFail('', 'Error al obtener las razas de los bovinos ' + error.status+' '+ error.statusText);
+            });
+
+            this.$http.post('/subsidios/productivos/diagnostico/getbovinos', {id: this.idinfo}).then((response) => {
+                if (response.body.estado == 'ok') {
+                    this.bovinos = response.body.data;
+                    this.manejoAnimales = response.body.manejo;
+                    this.ordenios = response.body.ordenio;
+
+                }
+
+            }, (error) => {
+                notificarFail('', 'Error al obtener los bovinos ' + error.status + ' ' + error.statusText);
+            });
+
+        },
+
+
+
+        });
+
+        Vue.component('especies', {
+            template: '#especies',
+            props: ['idinfo'],
+            data: function () {
+                return {
+
+                    loading: false,
+                    aves : [],
+                    nuevaAve : {
+                        
+                    },
+                    aveToDelete : '',
+
+
+                }
+            },
+
+            methods: {
+
+                formReset: function () {
+
+                },
+                prepareToDeleteAve : function (ave) {
+                    this.aveToDelete = ave
+                },
+
+                guardarAveEspecies: function () {
+                    this.loading = true;
+                    this.$http.post('/subsidios/productivos/diagnostico/guardaraveespecies', {ave: this.nuevaAve}).then((response) => {
+                        this.loading = false;
+                        if (response.body.estado == 'ok') {
+
+                            this.aves.push(response.body.ave);
+                            $("#modal-agregar-ave-especies").modal('hide');
+                            this.formReset();
+
+
+                            notificarOk('', 'Registro de aves creado correctamente');
+                        } else {
+                            notificarFail('', 'Error:  ' + response.body.error);
+                        }
+                    }, (error) => {
+                        this.loading = false;
+                        notificarFail('', 'Error al guardar el registro de aves' + error.status + ' ' + error.statusText);
+                    });
+                },
+
+                eliminarAveEspecies: function () {
+                    this.$http.post('/subsidios/productivos/diagnostico/eliminaraveespecies', {id: this.aveToDelete.id}).then((response) => {
+                        if (response.body.estado == 'ok') {
+                            this.aves.splice(this.aves.indexOf(this.aveToDelete), 1);
+                            notificarOk('', 'Registro de aves eliminado correctamente');
+                            $("#modal-confirm-delete-ordenio-bovino").modal('hide');
+                        }
+                    }, (error) => {
+                        notificarFail('', 'Error al eliminar el registro de aves' + error.status + ' ' + error.statusText);
+                    });
+                },
+            },
+
+
+
+            mounted(){
+
+                this.$http.post('/getselectsbovinos').then((response)=>{
+                    this.razas = response.body.razas;
+                    this.TipoPropiedades = response.body.propiedades;
+                    this.tipoBovino = response.body.tipos;
+                    this.actividadesManejo = response.body.actividades;
+                    this.frecuenciasOrdenios = response.body.frecuencia;
+                    this.unidadesOrdenios = response.body.unidades;
+
+
+                },(error)=>{
+                    notificarFail('', 'Error al obtener las razas de los bovinos ' + error.status+' '+ error.statusText);
+                });
+
+                this.$http.post('/subsidios/productivos/diagnostico/getbovinos', {id: this.idinfo}).then((response) => {
+                    if (response.body.estado == 'ok') {
+                        this.bovinos = response.body.data;
+                        this.manejoAnimales = response.body.manejo;
+                        this.ordenios = response.body.ordenio;
+
+                    }
+
+                }, (error) => {
+                    notificarFail('', 'Error al obtener los bovinos ' + error.status + ' ' + error.statusText);
+                });
+
+            },
+
+
+
+        });
 
 
     var app = new Vue({
@@ -1619,3 +1936,5 @@
 @include('subsidios_productivos.diagnostico.parts.table_potreros')
 @include('subsidios_productivos.diagnostico.cultivos.table_cultivos')
 @include('subsidios_productivos.diagnostico.cultivos.detalle.form_detalle')
+@include('subsidios_productivos.diagnostico.bovinos.table_bovinos')
+@include('subsidios_productivos.diagnostico.especies_menores.table_especies_menores')

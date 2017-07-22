@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\AcabadosTanque;
+use App\ActividadManejoAnimale;
 use App\Campo;
 use App\ComponentesCultivo;
 use App\Comunicacione;
@@ -14,6 +15,7 @@ use App\EstadosCivile;
 use App\EstadosVia;
 use App\EstadosVivienda;
 use App\Fase;
+use App\FrecuenciaOrdenio;
 use App\FuenteEnergiaElectrica;
 use App\FuentesAgua;
 use App\Gas;
@@ -29,10 +31,12 @@ use App\Municipio;
 use App\NivelEducativo;
 use App\OpcionTenenciaTierra;
 use App\ProcedenciasSemilla;
+use App\Raza;
 use App\SistemaEliminacionAguasGrise;
 use App\SitioVenta;
 use App\SubtipoCobertura;
 use App\TiemposRecorrido;
+use App\TipoBovino;
 use App\TipoCobertura;
 use App\TipoCubierta;
 use App\TipoFuentesHidrica;
@@ -40,6 +44,7 @@ use App\TipologiasFamilia;
 use App\TipoMuro;
 use App\TipoPersonasCargo;
 use App\TipoPiso;
+use App\TipoPropiedade;
 use App\TipoProyecto;
 use App\TiposMesone;
 use App\TipoSubsidio;
@@ -47,6 +52,7 @@ use App\TiposVehiculo;
 use App\TiposViasAcceso;
 use App\TipoTenenciaTierra;
 use App\TipoUnidadesSanitaria;
+use App\UnidadesOrdenio;
 use App\UnidadProducto;
 use App\Vereda;
 use Illuminate\Http\Request;
@@ -414,6 +420,28 @@ class SelectsController extends Controller
             return response()->json([
                 'estado' => 'ok',
                 'data'=> ComponentesCultivo::all()
+
+
+            ]);
+
+        }catch (\Exception $ee){
+            return response()->json([
+                'estado' => 'fail',
+                'error' => $ee->getMessage(),
+            ]);
+        }
+    }
+
+    public function getSelectsBovinos(){
+        try{
+            return response()->json([
+                'estado' => 'ok',
+                'razas'=> Raza::all(),
+                'propiedades' => TipoPropiedade::all(),
+                'tipos' => TipoBovino::all(),
+                'actividades' => ActividadManejoAnimale::all(),
+                'frecuencia' => FrecuenciaOrdenio::all(),
+                'unidades' => UnidadesOrdenio::all(),
 
 
             ]);

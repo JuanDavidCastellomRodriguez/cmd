@@ -50,6 +50,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/getselectsunidadproducto', 'SelectsController@getSelectsUnidadProducto');
     Route::post('/getselectsprocedenciasemilla', 'SelectsController@getSelectsProcedenciaSemilla');
     Route::post('/getselectscomponentescultivos', 'SelectsController@getSelectsComponentesCultivos');
+    Route::post('/getselectsbovinos', 'SelectsController@getSelectsBovinos');
 
 
 
@@ -107,6 +108,13 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/subsidios/productivos/diagnostico/eliminarinsumocultivo', "CultivosController@eliminarInsumoCultivo");
     Route::post('/subsidios/productivos/diagnostico/guardarventacultivo', "CultivosController@guardarVentaCultivo");
     Route::post('/subsidios/productivos/diagnostico/eliminarventacultivo', "CultivosController@eliminarVentaCultivo");
+    Route::post('/subsidios/productivos/diagnostico/guardarbovino', "BovinosController@guardarBovino");
+    Route::post('/subsidios/productivos/diagnostico/getbovinos', "BovinosController@getBovinos");
+    Route::post('/subsidios/productivos/diagnostico/eliminarbovino', "BovinosController@eliminarBovino");
+    Route::post('/subsidios/productivos/diagnostico/eliminarmanejobovino', "BovinosController@eliminarManejoBovino");
+    Route::post('/subsidios/productivos/diagnostico/guardarmanejobovino', "BovinosController@guardarManejoBovino");
+    Route::post('/subsidios/productivos/diagnostico/guardarordeniobovino', "BovinosController@guardarOrdenioBovino");
+    Route::post('/subsidios/productivos/diagnostico/eliminarordeniobovino', "BovinosController@eliminarOrdenioBovino");
 
 
     Route::get('/subsidios/productivos/visitas/{id}', "VisitasController@show");
