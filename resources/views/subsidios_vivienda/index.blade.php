@@ -16,7 +16,7 @@
             <div class="col-lg-6 pull-right" style="text-align: right">
                 <form class="form-inline" style="display: inline-block; padding-top: 20px; ">
                     <div class="form-group">
-                        <label v-show="filtrado">Filtro:  @{{ $data.filtroActual }}   <span class="glyphicon glyphicon-remove" v-on:click="limpiarFiltro()" aria-hidden="true"></span> </label>
+                        <label v-show="filtrado" data-toggle="tooltip" data-placement="top" title="Limpiar Filtro" >Filtro:  @{{ $data.filtroActual }}    <span class="glyphicon glyphicon-remove red-text "  v-on:click="limpiarFiltro()"  aria-hidden="true"></span> </label>
                         <input type="text" required class="form-control" v-model="buscar" placeholder="Buscar">
                     </div>
                     <button type="submit" class="btn btn-default" v-on:click.prevent="buscarData()">Buscar</button>
@@ -69,9 +69,9 @@
                     <td>@{{ info.porcentaje_ejecucion+' %' }}</td>
                     <td>
 
-                        <a :href="'/vivienda/'+info.id_info_vivienda" v-if="info.id_info_vivienda != null" class="btn btn-sm btn-default" title="Ver Diagnostico" >Ver</a>
+                        <a :href="'/vivienda/'+info.id_info_vivienda" v-if="info.id_info_vivienda != null" class="btn btn-sm btn-default" title="Ver Diagnostico" >Editar</a>
                         <a  v-if="info.id_info_vivienda == null" v-on:click="nuevoDiagnostico.subsidio = info.id" class="btn btn-sm btn-default" data-toggle="modal" data-target="#modal-agregar-diagnostico" title="Ver Diagnostico" >Crear</a>
-                        <a :href="'/informes/getdiagnosticovivienda/'+info.id_info_vivienda" v-if="info.id_info_vivienda != null" class="btn btn-sm btn-default" title="Ver Diagnostico" >
+                        <a :href="'/informes/getdiagnosticovivienda/'+info.id_info_vivienda" target="_blank" v-if="info.id_info_vivienda != null" class="btn btn-sm btn-default" title="Ver Diagnostico" >
                             <span class="glyphicon glyphicon-print" aria-hidden="true"></span>
                         </a>
 
@@ -408,6 +408,8 @@
                     app.nuevoDiagnostico.fechaEncuesta = $(this).val();
                 });
                 this.buscarData();
+
+                $('[data-toggle="tooltip"]').tooltip();
 
 
 

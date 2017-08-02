@@ -42,7 +42,7 @@ class Subsidio extends Model
     }
 
     public function scopeBuscar($query, $data){
-        return $query->where('consecutivo','like','%'.$data.'%')
+        return $query->where('consecutivo','like',(int)$data.'%')
             ->orWhere('fecha_inicio', 'like', '%'.$data.'%')
             ->orWhereHas('Beneficiario',function ($query) use ($data){
                 $query->where('nombres', 'like','%'.$data.'%')

@@ -27,7 +27,7 @@
     <div class="container" id="app">
         <div class="row" style="margin-top: 10px;">
 
-            <h3>Levantamiento Informacion No @{{ infoVivienda.consecutivo }}</h3>
+            <h3>Levantamiento Información No @{{ infoVivienda.consecutivo }}</h3>
             <section class="col-lg-2 col-sm-4" id="seccion-menu-lateral">
                 <ul class="nav nav-tabs" role="tablist">
                     Informacion General
