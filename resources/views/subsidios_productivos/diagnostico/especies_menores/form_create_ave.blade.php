@@ -11,35 +11,35 @@
                     <div class="row">
                         <div class="form-group col-lg-4 col-sm-12 col-md-6 ">
                             <label for="exampleInputName2">Unidad de Medida</label>
-                            <select v-model="nuevoOrdenio.id_unidades_ordenio" class="form-control" >
+                            <select v-model="nuevaAve.id_unidades_ordenio" class="form-control" >
                                 <option value="" disabled>Seleccione...</option>
-                                <option v-for="unidad in unidadesOrdenios" :value="unidad.id" >@{{ unidad.unidades_ordenio }}</option>
+
                             </select>
                         </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6 ">
                             <label for="exampleInputName2">Frecuencia Ordeño</label>
-                            <select v-model="nuevoOrdenio.id_frecuencia_ordenio" class="form-control" >
+                            <select v-model="nuevaAve.id_frecuencia_ordenio" class="form-control" >
                                 <option value="" disabled>Seleccione...</option>
-                                <option v-for="frecuencia in frecuenciasOrdenios" :value="frecuencia.id" >@{{ frecuencia.frecuencia }}</option>
+
                             </select>
                         </div>
 
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Produccion Diaria</label>
-                            <input type="number" required class="form-control" id="exampleInputName2" v-model="nuevoOrdenio.produccion_dia">
+                            <input type="number" required class="form-control" id="exampleInputName2" v-model="nuevaAve.produccion_dia">
                         </div>
 
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Cantidad Autoconsumo</label>
-                            <input type="number" required class="form-control" id="exampleInputName2" v-model="nuevoOrdenio.cantidad_autoconsumo">
+                            <input type="number" required class="form-control" id="exampleInputName2" v-model="nuevaAve.cantidad_autoconsumo">
                         </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Cantidad Cuaja</label>
-                            <input type="number" required class="form-control" id="exampleInputName2" v-model="nuevoOrdenio.cantidad_cuaja">
+                            <input type="number" required class="form-control" id="exampleInputName2" v-model="nuevaAve.cantidad_cuaja">
                         </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Cantidad Venta</label>
-                            <input type="number" required class="form-control" id="exampleInputName2" v-model="nuevoOrdenio.cantidad_venta">
+                            <input type="number" required class="form-control" id="exampleInputName2" v-model="nuevaAve.cantidad_venta">
                         </div>
 
 

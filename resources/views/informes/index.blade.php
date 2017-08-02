@@ -15,7 +15,7 @@
                 <div class="form-group has-feedback col-lg-2 col-sm-6 col-md-3">
                     <label for="exampleInputName2">Orden de Servicio</label>
                     <select class="form-control" v-model="nuevaConsulta.ordenServicio" v-on:change="changeOrden($event.target.value)"  required>
-                        <option value="9999"  >Todas</option>
+                        <option value=""  >Seleccione...</option>
                         <option v-for="orden in ordenes" :value="orden.id">@{{ orden.consecutivo + orden.objeto  }}</option>
                     </select>
                     <span class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 25px;"></span>

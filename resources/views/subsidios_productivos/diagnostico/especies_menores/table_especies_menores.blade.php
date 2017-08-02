@@ -54,15 +54,7 @@
                                 <th>Cantidad</th>
                                 <th class="col-lg-1">Acciones</th>
                             </tr>
-                            <tr v-for="manejo in manejoAnimales">
-                                <td>@{{ manejo.actividad_manejo.nombre_actividad }}</td>
-                                <td>@{{ manejo.producto_actividad }}</td>
-                                <td>@{{ manejo.periodicidad }}</td>
-                                <td>@{{ manejo.cantidad }}</td>
-                                <td>
-                                    <button type="button" class="btn btn-default btn-sm" v-on:click="prepareToDeleteManejo(manejo)" data-toggle="modal" data-target="#modal-confirm-delete-manejo-bovino" >Eliminar</button>
-                                </td>
-                            </tr>
+                            
 
                         </table>
 
@@ -90,17 +82,6 @@
                                 <th>Cantidad Venta</th>
                                 <th class="col-lg-1">Acciones</th>
                             </tr>
-                            <tr v-for="ordenio in ordenios">
-                                <td>@{{ ordenio.unidad_ordenio.unidades_ordenio }}</td>
-                                <td>@{{ ordenio.frecuencia_ordenio.frecuencia }}</td>
-                                <td>@{{ ordenio.produccion_dia }}</td>
-                                <td>@{{ ordenio.cantidad_autoconsumo }}</td>
-                                <td>@{{ ordenio.cantidad_cuaja }}</td>
-                                <td>@{{ ordenio.cantidad_venta }}</td>
-                                <td>
-                                    <button type="button" class="btn btn-default btn-sm" v-on:click="prepareToDeleteOrdenio(ordenio)" data-toggle="modal" data-target="#modal-confirm-delete-ordenio-bovino" >Eliminar</button>
-                                </td>
-                            </tr>
 
                         </table>
                     </div>
@@ -127,17 +108,7 @@
                                 <th>Cantidad Venta</th>
                                 <th class="col-lg-1">Acciones</th>
                             </tr>
-                            <tr v-for="ordenio in ordenios">
-                                <td>@{{ ordenio.unidad_ordenio.unidades_ordenio }}</td>
-                                <td>@{{ ordenio.frecuencia_ordenio.frecuencia }}</td>
-                                <td>@{{ ordenio.produccion_dia }}</td>
-                                <td>@{{ ordenio.cantidad_autoconsumo }}</td>
-                                <td>@{{ ordenio.cantidad_cuaja }}</td>
-                                <td>@{{ ordenio.cantidad_venta }}</td>
-                                <td>
-                                    <button type="button" class="btn btn-default btn-sm" v-on:click="prepareToDeleteOrdenio(ordenio)" data-toggle="modal" data-target="#modal-confirm-delete-ordenio-bovino" >Eliminar</button>
-                                </td>
-                            </tr>
+
 
                         </table>
                     </div>
@@ -147,9 +118,8 @@
 
 
 
-        @include('subsidios_productivos.diagnostico.bovinos.form_create_bovino')
-        @include('subsidios_productivos.diagnostico.bovinos.form_create_manejo')
-        @include('subsidios_productivos.diagnostico.bovinos.form_create_ordenio')
+        @include('subsidios_productivos.diagnostico.especies_menores.form_create_ave')
+
     </div>
 
 </template>

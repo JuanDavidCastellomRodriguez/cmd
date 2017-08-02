@@ -23,7 +23,7 @@
                 </td>
             </tr>
         </table>
-        @{{ $data }}
+
         @include('vivienda.modals.form_create_persona_cargo')
     </div>
 </template>
