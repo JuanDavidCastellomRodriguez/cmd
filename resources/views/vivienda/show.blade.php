@@ -674,7 +674,7 @@
         mounted(){
             this.$http.post('/subsidios/vivienda/diagnostico/usanitaria/getallunidades',{id : this.idinfo, tipo_visita : 1}).then((responde)=>{
                 if(responde.body.estado == 'ok'){
-                    if(responde.body.data != ''){
+                    if(responde.body.data != null){
                         this.nuevaUnidadSanitaria = responde.body.data;
                     }
 
