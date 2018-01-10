@@ -150,7 +150,9 @@ class ViviendasController extends Controller
                 }
 
 
-
+                $info = InformacionVivienda::findOrFail($request->idInfo);
+                $info->id_predio = $predio->id;
+                $info->save();
 
                 $idPredio = $predio->id;
                 $idPropietario  = $propietario->id;
@@ -209,7 +211,7 @@ class ViviendasController extends Controller
 
         try{
             $predio = Predio::findOrFail($request->idPredio);
-            $propietario = PropietariosPredio::find($request->idPredio);
+            $propietario = PropietariosPredio::where('id_predio',$request->idPredio)->first();
             $tenencia = TenenciaTierra::where('id_informacion',$request->idInfo)->get()->first();
             return response()->json([
                 'estado'=> 'ok',
