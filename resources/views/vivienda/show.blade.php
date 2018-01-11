@@ -466,7 +466,7 @@
 
             },
             mounted(){
-                if(this.idpredio != ''){
+                if(this.idpredio != null){
                     this.$http.post('/vivienda/getpredio',{ idPredio : this.idpredio, idInfo : this.idinfo }).then((response)=>{
 
                         this.changeDepartamento(response.body.departamento, response.body.municipio);
@@ -480,15 +480,19 @@
                         this.predio.msnm = response.body.predio.msnm;
                         this.predio.idDepartamento = response.body.departamento;
 
-                        this.propietarioPredio.id = response.body.propietario.id;
-                        this.propietarioPredio.noCedula = response.body.propietario.no_cedula;
-                        this.propietarioPredio.nombres = response.body.propietario.nombres_propietario;
-                        this.propietarioPredio.apellidos = response.body.propietario.apellidos_propietario;
-                        this.propietarioPredio.telefono = response.body.propietario.no_telefonico;
-                        this.propietarioPredio.idPredio = response.body.propietario.id_predio;
+                        if(response.body.propietario != null){
+                            this.propietarioPredio.id = response.body.propietario.id;
+                            this.propietarioPredio.noCedula = response.body.propietario.no_cedula;
+                            this.propietarioPredio.nombres = response.body.propietario.nombres_propietario;
+                            this.propietarioPredio.apellidos = response.body.propietario.apellidos_propietario;
+                            this.propietarioPredio.telefono = response.body.propietario.no_telefonico;
+                            this.propietarioPredio.idPredio = response.body.propietario.id_predio;
+                        }
+
 
                         this.predioEditado = false;
                         this.tenenciaPredio = response.body.tenencia;
+                        console.log(response.body.tenencia);
 
 
                     },(response)=>{
@@ -674,7 +678,7 @@
         mounted(){
             this.$http.post('/subsidios/vivienda/diagnostico/usanitaria/getallunidades',{id : this.idinfo, tipo_visita : 1}).then((responde)=>{
                 if(responde.body.estado == 'ok'){
-                    if(responde.body.data != ''){
+                    if(responde.body.data != null){
                         this.nuevaUnidadSanitaria = responde.body.data;
                     }
 

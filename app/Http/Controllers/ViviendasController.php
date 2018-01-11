@@ -113,26 +113,46 @@ class ViviendasController extends Controller
                 $predio->msnm = $request->predio->msnm;
                 $predio->save();
 
-                $propietario = PropietariosPredio::findOrFail($request->propietario->id);
-                $propietario->no_cedula = $request->propietario->noCedula;
-                $propietario->nombres_propietario = $request->propietario->nombres;
-                $propietario->apellidos_propietario = $request->propietario->apellidos;
-                $propietario->no_telefonico = $request->propietario->telefono;
-                $propietario->id_predio = $predio->id;
-                $propietario->save();
+                if($request->propietario->id != ''){
+                    $propietario = PropietariosPredio::findOrFail($request->propietario->id);
+                    $propietario->no_cedula = $request->propietario->noCedula;
+                    $propietario->nombres_propietario = $request->propietario->nombres;
+                    $propietario->apellidos_propietario = $request->propietario->apellidos;
+                    $propietario->no_telefonico = $request->propietario->telefono;
+                    $propietario->id_predio = $predio->id;
+                    $propietario->save();
+                }else{
+                    $propietario = new PropietariosPredio();
+                    $propietario->no_cedula = $request->propietario->noCedula;
+                    $propietario->nombres_propietario = $request->propietario->nombres;
+                    $propietario->apellidos_propietario = $request->propietario->apellidos;
+                    $propietario->no_telefonico = $request->propietario->telefono;
+                    $propietario->id_predio = $predio->id;
+                    $propietario->save();
+                }
 
-                $tenencia = TenenciaTierra::find($request->tenencia->id);
-                $tenencia->area_predio_has = $request->tenencia->area_predio_has;
-                $tenencia->id_opcion = $request->tenencia->id_opcion;
-                $tenencia->id_tipo_tenencia_tierras = $request->tenencia->id_tipo_tenencia_tierras;
-                //if($request->tenencia->pdf){
-
-                //}
 
 
-                $tenencia->save();
+                if($request->tenencia->id != ''){
+                    $tenencia = TenenciaTierra::find($request->tenencia->id);
+                    $tenencia->area_predio_has = $request->tenencia->area_predio_has;
+                    $tenencia->id_opcion = $request->tenencia->id_opcion;
+                    $tenencia->id_tipo_tenencia_tierras = $request->tenencia->id_tipo_tenencia_tierras;
+                    $tenencia->save();
+                }else{
+                    $tenencia = new TenenciaTierra();
+                    $tenencia->area_predio_has = $request->tenencia->area_predio_has;
+                    //$tenencia->file = base64_encode(file_get_contents(($request->tenencia->file)->getRealPath()));
+                    $tenencia->id_opcion = $request->tenencia->id_opcion;
+                    $tenencia->id_tipo_tenencia_tierras = $request->tenencia->id_tipo_tenencia_tierras;
+                    $tenencia->id_informacion = $request->tenencia->id_informacion;
+                    $tenencia->save();
+                }
 
 
+                $info = InformacionVivienda::findOrFail($request->idInfo);
+                $info->id_predio = $predio->id;
+                $info->save();
 
                 $idPredio = $predio->id;
                 $idPropietario  = $propietario->id;
@@ -191,7 +211,7 @@ class ViviendasController extends Controller
 
         try{
             $predio = Predio::findOrFail($request->idPredio);
-            $propietario = PropietariosPredio::findOrFail($request->idPredio);
+            $propietario = PropietariosPredio::where('id_predio',$request->idPredio)->first();
             $tenencia = TenenciaTierra::where('id_informacion',$request->idInfo)->get()->first();
             return response()->json([
                 'estado'=> 'ok',
