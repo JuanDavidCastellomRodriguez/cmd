@@ -1,12 +1,12 @@
 
-<h3>Informacion Inicial</h3>
+<h3>Información Inicial</h3>
 <form v-on:submit.prevent="guardarGeneral()" class="form">
     <div class=" form-group col-lg-6 col-sm-12">
         <label for="exampleInputName2">Fecha Encuesta</label>
         <input type="text" name="fecha_encuesta" id="fecha_encuesta" class="form-control datepicker" required v-model="infoVivienda.fechaEncuesta">
     </div>
     <div class="form-group col-lg-6 col-sm-12">
-        <label for="exampleInputName2">Numero de familias que viven en la vivienda</label>
+        <label for="exampleInputName2">Número de familias que viven en la vivienda</label>
         <input type="number" required class="form-control" id="exampleInputName2" v-model.number="infoVivienda.numeroFamiliasVivienda">
     </div>
     <div class="form-group col-lg-6 col-sm-6">
@@ -44,14 +44,14 @@
         </select>
     </div>
     <div class="form-group col-lg-6 col-sm-12">
-        <label for="exampleInputName2">Via de Acceso</label>
+        <label for="exampleInputName2">Vía de Acceso</label>
         <select v-model="generalidades.idTipoViaAcceso" class="form-control">
             <option value="" disabled >Seleccione...</option>
             <option v-for="via in viasAcceso" :value="via.id">@{{ via.tipo_via_acceso }}</option>
         </select>
     </div>
     <div class="form-group col-lg-6 col-sm-12">
-        <label for="exampleInputName2">Estado de la Via</label>
+        <label for="exampleInputName2">Estado de la Vía</label>
         <select v-model="generalidades.idEstadoVia" class="form-control">
             <option value="" disabled >Seleccione...</option>
             <option v-for="estado in estadosVia" :value="estado.id" >@{{  estado.estado_via }}</option>

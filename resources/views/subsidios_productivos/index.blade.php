@@ -16,7 +16,7 @@
             <div class="col-lg-6 pull-right" style="text-align: right">
                 <form class="form-inline" style="display: inline-block; padding-top: 20px; ">
                     <div class="form-group">
-                        <label v-show="filtrado">Filtro:  @{{ $data.filtroActual }}   <span class="glyphicon glyphicon-remove" v-on:click="limpiarFiltro()" aria-hidden="true"></span> </label>
+                        <label v-show="filtrado" data-toggle="tooltip" data-placement="top" title="Limpiar Filtro">Filtro:  @{{ $data.filtroActual }}   <span class="glyphicon glyphicon-remove red-text" v-on:click="limpiarFiltro()" aria-hidden="true"></span> </label>
                         <input type="text" required class="form-control" v-model="buscar" placeholder="Buscar">
                     </div>
                     <button type="submit" class="btn btn-default" v-on:click.prevent="buscarData()">Buscar</button>
@@ -405,6 +405,8 @@
                     app.nuevoDiagnostico.fechaEncuesta = $(this).val();
                 });
                 this.buscarData();
+
+                $('[data-toggle="tooltip"]').tooltip();
 
 
 

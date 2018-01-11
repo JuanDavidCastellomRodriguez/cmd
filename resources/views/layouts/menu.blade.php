@@ -9,14 +9,18 @@
                 <span class="icon-bar"></span>
             </button>
 
-            <img src="{{asset('img/geopark.png')}} " alt="Logo Geopark" height="45">
-            <img src="{{asset('img/logouniminuto.png')}}" alt="Logo Uniminuto" height="50">
+            <a href="https://www.geo-park.com" target="_blank">
+                <img src="{{asset('img/geopark.png')}} " alt="Logo Geopark" height="45" >
+            </a>
+            <a href="https://www.minutodedios.org" target="_blank">
+                <img src="{{asset('img/logouniminuto.png')}}" alt="Logo Uniminuto" height="50">
+            </a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse"  id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="#">Link</a></li>
+                <!--<li><a href="#">Link</a></li>-->
                 <li><a href="{{url('/home')}}" style="padding: 6px 12px 6px 12px" class="btn btn-default  red geopark white-text">Inicio</a></li>
                 <li><a href="{{url('/subsidios/vivienda')}}" style="padding: 6px 12px 6px 12px" class="btn btn-default  red geopark white-text">Subsidios de Vivienda</a></li>
                 <li><a href="{{ url('/subsidios/productivos/')}}" class="btn btn-default red geopark white-text" style="padding: 6px 12px 6px 12px">Proyectos Productivos</a></li>

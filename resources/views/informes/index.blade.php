@@ -52,10 +52,16 @@
                             <i class="fa fa-spinner fa-spin"></i>
                         </label>
                     </button>
-
-
-
                 </div>
+
+                <div class="col-lg-2 col-sm-12 form-group form-inline" style="margin-top: 25px">
+                    <a class="btn btn-default" href="mapa/">Ver mapa
+                        <label v-show="loading" >
+                            <i class="fa fa-spinner fa-spin"></i>
+                        </label>
+                    </a>
+                </div>
+
             </form>
 
             <div class="col-lg-12" style="margin-top: 10px">

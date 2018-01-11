@@ -128,6 +128,9 @@ Route::group(['middleware' => ['auth']], function () {
 
 
     Route::resource('subsidios/informes', 'InformesController' );
+
+    Route::resource('subsidios/mapa/', 'MapaController' );
+
     Route::get('/informes/getdiagnosticovivienda/{id}', 'InformesController@reporteDiagnosticoVivienda');
 
     Route::post('/informes/getdatareport', 'InformesController@getDataReport');
@@ -156,6 +159,8 @@ Route::group(['middleware' => ['auth']], function () {
 
 
     Route::post('/campos/listabyfase', 'CamposController@getCamposByFase');
+
+    //Route::get('/mapa', ['as ' => 'mapa', 'uses' => 'GmapsController@index']);
 
 
 });

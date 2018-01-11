@@ -65,7 +65,7 @@
     @endforeach
 </table>
 <br>
-<h3 align="center">Fotografías</h3>
+<h3 align="center">Registro fotográfico</h3>
 <center>
     @foreach (@$info_vivienda->Fotografias as $fotografia)
 

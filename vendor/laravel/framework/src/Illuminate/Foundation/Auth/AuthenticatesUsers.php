@@ -100,14 +100,6 @@ trait AuthenticatesUsers
 
         $this->clearLoginAttempts($request);
 
-        if($request->ajax()){
-            $this->authenticated($request, $this->guard()->user());
-            return response()->json([
-                'estado' => 'ok',
-                'mensaje'=> 'Bienvenido ',
-            ]);
-        }
-
         return $this->authenticated($request, $this->guard()->user())
                 ?: redirect()->intended($this->redirectPath());
     }
@@ -132,13 +124,6 @@ trait AuthenticatesUsers
      */
     protected function sendFailedLoginResponse(Request $request)
     {
-        if($request->ajax()){
-            return response()->json([
-                'estado' => 'fail',
-                'mensaje'=> 'Usuario o Contraseña incorrectos ',
-            ]);
-        }
-
         return redirect()->back()
             ->withInput($request->only($this->username(), 'remember'))
             ->withErrors([
