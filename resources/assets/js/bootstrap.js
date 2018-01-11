@@ -18,7 +18,11 @@ require('bootstrap-sass');
 
 window.Vue = require('vue');
 require('vue-resource');
+<<<<<<< HEAD
 window.VueGoogleMaps = require('vue2-google-maps');
+=======
+window.VueGoogleMaps = required('vue2-google-maps');
+>>>>>>> 403564469f7667842b8fbc1fc979599ca8a0facc
 
 /**
  * We'll register a HTTP interceptor to attach the "CSRF" header to each of
