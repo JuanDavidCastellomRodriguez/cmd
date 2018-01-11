@@ -1,7 +1,7 @@
 @extends('layouts.apps')
-@section('estilos')
+@section('scripts')
 
-    <script src=”https://maps.googleapis.com/maps/api/js?key=[AIzaSyDmD3YqZKd6m90rBacZXYIm6kYxjaOrUjc]” ></script>
+    <script src=”{{ URL::asset('https://maps.googleapis.com/maps/api/js?key=[AIzaSyDmD3YqZKd6m90rBacZXYIm6kYxjaOrUjc]') }}” ></script>
 
 @endsection
 
@@ -68,9 +68,3 @@
         </div>
 
     </div>
-
-@endsection
-
-@section('scripts')
-
-@endsection
