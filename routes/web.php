@@ -51,6 +51,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/getselectsprocedenciasemilla', 'SelectsController@getSelectsProcedenciaSemilla');
     Route::post('/getselectscomponentescultivos', 'SelectsController@getSelectsComponentesCultivos');
     Route::post('/getselectsbovinos', 'SelectsController@getSelectsBovinos');
+    Route::post('/getselectsespecies', 'SelectsController@getSelectsEspeciesMenores');
 
 
 
@@ -115,6 +116,18 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/subsidios/productivos/diagnostico/guardarmanejobovino', "BovinosController@guardarManejoBovino");
     Route::post('/subsidios/productivos/diagnostico/guardarordeniobovino', "BovinosController@guardarOrdenioBovino");
     Route::post('/subsidios/productivos/diagnostico/eliminarordeniobovino', "BovinosController@eliminarOrdenioBovino");
+    Route::post('/subsidios/productivos/diagnostico/cierre/agregarimagenes', 'ProductivosController@agregarFotos');
+    Route::post('/subsidios/productivos/diagnostico/cierre/todasimagenes', 'ProductivosController@todasImagenes');
+    Route::post('/subsidios/productivos/diagnostico/cierre/borrarimagen', 'ProductivosController@borrarImagen');
+    Route::post('/subsidios/productivos/diagnostico/especies/todaslasespecies', 'ProductivosController@getDataOtrasEspecies');
+    Route::post('/subsidios/productivos/diagnostico/especies/guardaraveespecies', 'ProductivosController@guardarAvesEspecies');
+    Route::post('/subsidios/productivos/diagnostico/especies/eliminaraveespecies', 'ProductivosController@eliminarAvesEspecies');
+    Route::post('/subsidios/productivos/diagnostico/especies/guardarcerdoespecies', 'ProductivosController@guardarCerdoEspecies');
+    Route::post('/subsidios/productivos/diagnostico/especies/eliminarcerdoespecies', 'ProductivosController@eliminarCerdoEspecies');
+    Route::post('/subsidios/productivos/diagnostico/especies/guardarpecesespecies', 'ProductivosController@guardarPecesEspecies');
+    Route::post('/subsidios/productivos/diagnostico/especies/eliminarpecesespecies', 'ProductivosController@eliminarPecesEspecies');
+    Route::post('/subsidios/productivos/diagnostico/especies/guardarotrasespecies', 'ProductivosController@guardarOtrasEspecies');
+    Route::post('/subsidios/productivos/diagnostico/especies/eliminarotrasespecies', 'ProductivosController@eliminarOtrasEspecies');
 
 
     Route::get('/subsidios/productivos/visitas/{id}', "VisitasController@show");

@@ -30,5 +30,8 @@ class InformacionVivienda extends Model
     public function PersonasCargo(){
         return $this->hasMany('App\PersonasCargo','id_informacion','id');
     }
+    public function Subsidio(){
+        return $this->belongsTo('App\Subsidio','id','id_info_vivienda');
+    }
 
 }

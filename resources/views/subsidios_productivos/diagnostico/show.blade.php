@@ -27,19 +27,19 @@
     <div class="container" id="app">
         <div class="row" style="margin-top: 10px;">
 
-            <h3>Visita de Diagnostico No @{{ infoProductivo.consecutivo }}</h3>
+            <h3>Visita de Diagnostico (Proyecto Productivo) No <b>@{{ infoProductivo.consecutivo }}</b></h3>
+            <p><b>Beneficiario: </b> @{{ infoProductivo.beneficiario.nombre +' ('+ infoProductivo.beneficiario.documento +')' }} </p>
             <section class="col-lg-2 col-sm-4" id="seccion-menu-lateral">
                 <ul class="nav nav-tabs" role="tablist">
                     Informacion General
-                    <li role="presentation" class="active" ><a  class="red geopark white-text" href="#predio" aria-controls="predio" role="tab" data-toggle="tab" >Predio<span class="glyphicon glyphicon-asterisk red-text" v-bind:class="{'white-text' : predioEditado}" aria-hidden="true"></span> </a></li>
-                    <li role="presentation"><a  class="red geopark white-text" href="#general" aria-controls="general" role="tab" data-toggle="tab" >General<span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span> </a></li>
+                    <li role="presentation" class="active" ><a  class="red geopark white-text" href="#predio" aria-controls="predio" role="tab" data-toggle="tab" >Predio  </a></li>
+                    <li role="presentation"><a  class="red geopark white-text" href="#general" aria-controls="general" role="tab" data-toggle="tab" >General </a></li>
                     <li role="presentation"><a class="red geopark white-text" href="#habitantes" aria-controls="habitantes" role="tab" data-toggle="tab">Unidad Familiar</a></li>
 
                     <li>Informacion Especifica</li>
                     <li role="presentation"><a class="red geopark white-text" href="#p-cargos" aria-controls="p-cargos" role="tab" data-toggle="tab">Mano de Obra</a></li>
                     <li role="presentation"><a class="red geopark white-text" href="#habitaciones" aria-controls="habitaciones" role="tab" data-toggle="tab">Potreros</a></li>
                     <li role="presentation"><a  class="red geopark white-text" href="#cocinas" aria-controls="cocinas" role="tab" data-toggle="tab">Cultivos</a></li>
-                    <li role="presentation"><a  class="red geopark white-text" href="#u_sanitarias" aria-controls="u_sanitarias" role="tab" data-toggle="tab">Ventas</a></li>
                     <li role="presentation"><a  class="red geopark white-text" href="#s_publicos" aria-controls="s_publicos" role="tab" data-toggle="tab">Bovinos</a></li>
                     <li role="presentation"><a  class="red geopark white-text" href="#e_menores" aria-controls="e_menores" role="tab" data-toggle="tab">Especies Menores</a></li>
                     Informacion Final
@@ -67,9 +67,6 @@
                     <div role="tabpanel" class="tab-pane" id="cocinas">
                         <cultivos :idinfo="idInfoProductivo"></cultivos>
                     </div>
-                    <div role="tabpanel" class="tab-pane" id="u_sanitarias">
-
-                    </div>
                     <div role="tabpanel" class="tab-pane" id="s_publicos">
                         <bovinos :idinfo="idInfoProductivo"  ></bovinos>
                     </div>
@@ -77,7 +74,7 @@
                         <especies :idinfo="idInfoProductivo" ></especies>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="cierre">
-                        Cierre
+                        <cierre :idinfo="idInfoProductivo" ></cierre>
                     </div>
                 </div>
             </section>
@@ -1654,12 +1651,35 @@
             data: function () {
                 return {
 
+                    TipoProducciones : [],
+                    TipoCorrales : [],
+                    EstadoCorrales : [],
+                    TipoAves : [],
+                    TipoPeces : [],
+                    TiposReproduccion : [],
                     loading: false,
                     aves : [],
-                    nuevaAve : {
+                    cerdos : [],
+                    peces: [],
+                    otras : [],
 
+                    nuevaAve : {
+                        id_info_productivo : this.idinfo
                     },
+                    nuevoCerdo : {
+                        id_info_productivo : this.idinfo
+                    },
+                    nuevoPeces : {
+                        id_info_productivo : this.idinfo
+                    },
+                    nuevaOtras:{
+                        id_info_productivo : this.idinfo
+                    },
+                    images:[],
                     aveToDelete : '',
+                    cerdoToDelete : '',
+                    pecesToDelete : '',
+                    otraToDelete : '',
 
 
                 }
@@ -1668,17 +1688,28 @@
             methods: {
 
                 formReset: function () {
-
+                    this.nuevaAve = {
+                        id_info_productivo : this.idinfo
+                    };
+                    this.nuevoCerdo = {
+                        id_info_productivo : this.idinfo
+                    };
+                    this.nuevoPeces = {
+                        id_info_productivo : this.idinfo
+                    };
+                    this.nuevaOtras= {
+                        id_info_productivo : this.idinfo
+                    };
                 },
+                //Aves
                 prepareToDeleteAve : function (ave) {
                     this.aveToDelete = ave
                 },
-
                 guardarAveEspecies: function () {
                     this.loading = true;
-                    this.$http.post('/subsidios/productivos/diagnostico/guardaraveespecies', {ave: this.nuevaAve}).then((response) => {
+                    this.$http.post('/subsidios/productivos/diagnostico/especies/guardaraveespecies', this.nuevaAve).then((response) => {
                         this.loading = false;
-                        if (response.body.estado == 'ok') {
+                        if (response.body.estado === 'ok') {
 
                             this.aves.push(response.body.ave);
                             $("#modal-agregar-ave-especies").modal('hide');
@@ -1694,47 +1725,159 @@
                         notificarFail('', 'Error al guardar el registro de aves' + error.status + ' ' + error.statusText);
                     });
                 },
-
                 eliminarAveEspecies: function () {
-                    this.$http.post('/subsidios/productivos/diagnostico/eliminaraveespecies', {id: this.aveToDelete.id}).then((response) => {
-                        if (response.body.estado == 'ok') {
+                    this.$http.post('/subsidios/productivos/diagnostico/especies/eliminaraveespecies', {id: this.aveToDelete.id}).then((response) => {
+                        if (response.body.estado === 'ok') {
                             this.aves.splice(this.aves.indexOf(this.aveToDelete), 1);
                             notificarOk('', 'Registro de aves eliminado correctamente');
-                            $("#modal-confirm-delete-ordenio-bovino").modal('hide');
+                            $("#modal-confirm-delete-ave-especies").modal('hide');
                         }
                     }, (error) => {
                         notificarFail('', 'Error al eliminar el registro de aves' + error.status + ' ' + error.statusText);
                     });
                 },
+
+                //Cerdos
+                guardarCerdoEspecies: function () {
+                    this.loading = true;
+                    this.$http.post('/subsidios/productivos/diagnostico/especies/guardarcerdoespecies', this.nuevoCerdo).then((response) => {
+                        this.loading = false;
+                        if (response.body.estado === 'ok') {
+
+                            this.cerdos.push(response.body.cerdo);
+                            $("#modal-agregar-cerdo-especies").modal('hide');
+                            this.formReset();
+
+
+                            notificarOk('', 'Registro de cerdos creado correctamente');
+                        } else {
+                            notificarFail('', 'Error:  ' + response.body.error);
+                        }
+                    }, (error) => {
+                        this.loading = false;
+                        notificarFail('', 'Error al guardar el registro de cerdos' + error.status + ' ' + error.statusText);
+                    });
+                },
+                eliminarCerdoEspecies: function () {
+                    this.$http.post('/subsidios/productivos/diagnostico/especies/eliminarcerdoespecies', {id: this.cerdoToDelete.id}).then((response) => {
+                        if (response.body.estado === 'ok') {
+                            this.cerdos.splice(this.cerdos.indexOf(this.cerdoToDelete), 1);
+                            notificarOk('', 'Registro de cerdos eliminado correctamente');
+                            $("#modal-confirm-delete-cerdo-especies").modal('hide');
+                        }
+                    }, (error) => {
+                        notificarFail('', 'Error al eliminar el registro de cerdos' + error.status + ' ' + error.statusText);
+                    });
+                },
+                prepareToDeleteCerdo : function (cerdo) {
+                    this.cerdoToDelete = cerdo
+                },
+
+                //Peces
+                guardarPecesEspecies: function () {
+                    this.loading = true;
+                    this.$http.post('/subsidios/productivos/diagnostico/especies/guardarpecesespecies', this.nuevoPeces).then((response) => {
+                        this.loading = false;
+                        if (response.body.estado === 'ok') {
+
+                            this.peces.push(response.body.peces);
+                            $("#modal-agregar-peces-especies").modal('hide');
+                            this.formReset();
+
+
+                            notificarOk('', 'Registro de peces creado correctamente');
+                        } else {
+                            notificarFail('', 'Error:  ' + response.body.error);
+                        }
+                    }, (error) => {
+                        this.loading = false;
+                        notificarFail('', 'Error al guardar el registro de cerdos' + error.status + ' ' + error.statusText);
+                    });
+                },
+                eliminarPecesEspecies: function () {
+                    this.$http.post('/subsidios/productivos/diagnostico/especies/eliminarpecesespecies', {id: this.pecesToDelete.id}).then((response) => {
+                        if (response.body.estado === 'ok') {
+                            this.peces.splice(this.peces.indexOf(this.pecesToDelete), 1);
+                            notificarOk('', 'Registro de peces eliminado correctamente');
+                            $("#modal-confirm-delete-peces-especies").modal('hide');
+                        }
+                    }, (error) => {
+                        notificarFail('', 'Error al eliminar el registro de peces' + error.status + ' ' + error.statusText);
+                    });
+                },
+                prepareToDeletePeces : function (peces) {
+                    this.pecesToDelete = peces
+                },
+
+                //Otras
+                guardarOtrasEspecies: function () {
+                    this.loading = true;
+                    this.$http.post('/subsidios/productivos/diagnostico/especies/guardarotrasespecies', this.nuevaOtras).then((response) => {
+                        this.loading = false;
+                        if (response.body.estado === 'ok') {
+
+                            this.otras.push(response.body.otras);
+                            $("#modal-agregar-otras-especies").modal('hide');
+                            this.formReset();
+
+
+                            notificarOk('', 'Registro de otras especies creado correctamente');
+                        } else {
+                            notificarFail('', 'Error:  ' + response.body.error);
+                        }
+                    }, (error) => {
+                        this.loading = false;
+                        notificarFail('', 'Error al guardar el registro de otras especies' + error.status + ' ' + error.statusText);
+                    });
+                },
+                eliminarOtrasEspecies: function () {
+                    this.$http.post('/subsidios/productivos/diagnostico/especies/eliminarotrasespecies', {id: this.otrasToDelete.id}).then((response) => {
+                        if (response.body.estado === 'ok') {
+                            this.otras.splice(this.otras.indexOf(this.otrasToDelete), 1);
+                            notificarOk('', 'Registro de otras especies eliminado correctamente');
+                            $("#modal-confirm-delete-otras-especies").modal('hide');
+                        }
+                    }, (error) => {
+                        notificarFail('', 'Error al eliminar el registro de otras especies' + error.status + ' ' + error.statusText);
+                    });
+                },
+                prepareToDeleteOtras : function (otras) {
+                    this.otrasToDelete = otras
+                },
+
+
+
             },
 
 
 
             mounted(){
 
-                this.$http.post('/getselectsbovinos').then((response)=>{
-                    this.razas = response.body.razas;
-                    this.TipoPropiedades = response.body.propiedades;
-                    this.tipoBovino = response.body.tipos;
-                    this.actividadesManejo = response.body.actividades;
-                    this.frecuenciasOrdenios = response.body.frecuencia;
-                    this.unidadesOrdenios = response.body.unidades;
+                this.$http.post('/getselectsespecies').then((response)=>{
+                    this.TipoProducciones = response.body.tipo_produccion;
+                    this.TipoCorrales = response.body.tipo_corral;
+                    this.EstadoCorrales = response.body.estado_corral;
+                    this.TipoAves = response.body.tipo_aves;
+                    this.TipoPeces = response.body.tipo_peces;
+                    this.TiposReproduccion = response.body.tipos_reproduccion;
+
 
 
                 },(error)=>{
-                    notificarFail('', 'Error al obtener las razas de los bovinos ' + error.status+' '+ error.statusText);
+                    notificarFail('', 'Error al obtener las opciones del formulario ' + error.status+' '+ error.statusText);
                 });
 
-                this.$http.post('/subsidios/productivos/diagnostico/getbovinos', {id: this.idinfo}).then((response) => {
-                    if (response.body.estado == 'ok') {
-                        this.bovinos = response.body.data;
-                        this.manejoAnimales = response.body.manejo;
-                        this.ordenios = response.body.ordenio;
+                this.$http.post('/subsidios/productivos/diagnostico/especies/todaslasespecies', {id: this.idinfo}).then((response) => {
+                    if (response.body.estado === 'ok') {
+                        this.aves = response.body.aves;
+                        this.cerdos = response.body.cerdos;
+                        this.peces = response.body.peces;
+                        this.otras = response.body.otras;
 
                     }
 
                 }, (error) => {
-                    notificarFail('', 'Error al obtener los bovinos ' + error.status + ' ' + error.statusText);
+                    notificarFail('', 'Error al obtener los datos de las especies ' + error.status + ' ' + error.statusText);
                 });
 
             },
@@ -1743,6 +1886,81 @@
 
         });
 
+        Vue.component('cierre', {
+            template : '#form-cierre',
+            props : ['idinfo'],
+            data : function () {
+                return {
+                    image: [],
+                    loading :false,
+                    images :[],
+                    subirMas : false,
+
+
+                }
+            },
+            methods: {
+                onFileChange(e) {
+                    var files = e.target.files || e.dataTransfer.files;
+                    if (!files.length)
+                        return;
+                    for(var i = 0; i < files.length; i++){
+                        this.createImage(files[i]);
+
+                    }
+
+                },
+                createImage(file) {
+                    var reader = new FileReader();
+                    var vm = this;
+                    reader.onload = (e) => {
+                        vm.image.push(e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                },
+                upload(){
+                    if(this.image.length > 0){
+                        this.loading = true;
+                        this.$http.post('/subsidios/productivos/diagnostico/cierre/agregarimagenes',{images: this.image, id : this.idinfo, tipo : 2 }).then(response => {
+                            this.loading = false;
+                        for(index in response.body.fotos){
+                            this.images.push(response.body.fotos[index]);
+                            console.log(index)
+                        }
+                        this.image = []
+                        notificarOk('', 'Imagen(es) Subidas')
+                        this.subirMas = false;
+                    });
+                    }else{
+                        notificarFail("", "Ningun Archivo Seleccionado")
+                    }
+
+                },
+                deleteImage(img){
+                    this.image.splice(this.image.indexOf(img),1);
+                },
+                deleteImages(img){
+                    this.$http.post('/subsidios/productivos/diagnostico/cierre/borrarimagen',{id : img.id}).then((response)=>{
+                        if(response.body.estado == 'ok'){
+                        this.images.splice(this.images.indexOf(img),1);
+
+                        notificarOk("", "Imagen borrada del Servidor");
+                    }
+
+                },(error)=>{
+
+                    })
+                }
+            },
+            mounted(){
+                this.$http.post('/subsidios/productivos/diagnostico/cierre/todasimagenes', {id :this.idinfo, tipo : 2 }).then((response)=>{
+                    this.images = response.body.data;
+            }, (error)=>{
+
+                });
+
+            }
+        });
 
     var app = new Vue({
             el : '#app',
@@ -1758,6 +1976,10 @@
                     programaSocial:'{{$info->beficiarios_prog_inv_social}}',
                     numeroFamiliasVivienda: '{{$info->no_familias_vivienda}}',
                     idPredio : '{{$info->id_predio}}',
+                    beneficiario : {
+                        nombre : "{{ $info->Subsidio->Beneficiario->nombres .' '.$info->Subsidio->Beneficiario->apellidos}}",
+                        documento : "{{ $info->Subsidio->Beneficiario->no_cedula }}"
+                    },
                     idDistancioRio: '',
                     idEstadoVivienda :'',
                     observacionesObrasRealizar:'',
@@ -1938,3 +2160,4 @@
 @include('subsidios_productivos.diagnostico.cultivos.detalle.form_detalle')
 @include('subsidios_productivos.diagnostico.bovinos.table_bovinos')
 @include('subsidios_productivos.diagnostico.especies_menores.table_especies_menores')
+@include('subsidios_productivos.diagnostico.parts.form_cierre')

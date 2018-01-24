@@ -11,6 +11,8 @@ use App\Departamento;
 use App\ElementosCocina;
 use App\ElementosSanitario;
 use App\ElementosSanitariosInstalado;
+use App\EspeciePece;
+use App\EstadoInstalacione;
 use App\EstadosCivile;
 use App\EstadosVia;
 use App\EstadosVivienda;
@@ -26,6 +28,7 @@ use App\MaterialesTanquesElevado;
 use App\MaterialesTanquesLavadero;
 use App\MaterialesVentana;
 use App\MediosComunicaciones;
+use App\MetodoReproduccione;
 use App\MetodosDisposicionBasura;
 use App\Municipio;
 use App\NivelEducativo;
@@ -36,14 +39,17 @@ use App\SistemaEliminacionAguasGrise;
 use App\SitioVenta;
 use App\SubtipoCobertura;
 use App\TiemposRecorrido;
+use App\TipoAve;
 use App\TipoBovino;
 use App\TipoCobertura;
+use App\TipoCorrale;
 use App\TipoCubierta;
 use App\TipoFuentesHidrica;
 use App\TipologiasFamilia;
 use App\TipoMuro;
 use App\TipoPersonasCargo;
 use App\TipoPiso;
+use App\TipoProduccione;
 use App\TipoPropiedade;
 use App\TipoProyecto;
 use App\TiposMesone;
@@ -442,6 +448,29 @@ class SelectsController extends Controller
                 'actividades' => ActividadManejoAnimale::all(),
                 'frecuencia' => FrecuenciaOrdenio::all(),
                 'unidades' => UnidadesOrdenio::all(),
+
+
+            ]);
+
+        }catch (\Exception $ee){
+            return response()->json([
+                'estado' => 'fail',
+                'error' => $ee->getMessage(),
+            ]);
+        }
+    }
+
+    public function getSelectsEspeciesMenores(Request $request){
+        try{
+            return response()->json([
+                'estado' => 'ok',
+                'tipo_produccion'=> TipoProduccione::all(),
+                'tipo_corral' => TipoCorrale::all(),
+                'estado_corral' => EstadoInstalacione::all(),
+                'tipo_aves' => TipoAve::all(),
+                'tipo_peces' => EspeciePece::all(),
+                'tipos_reproduccion' => MetodoReproduccione::all(),
+
 
 
             ]);
