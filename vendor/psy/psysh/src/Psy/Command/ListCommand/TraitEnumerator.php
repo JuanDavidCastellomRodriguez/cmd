@@ -3,7 +3,7 @@
 /*
  * This file is part of Psy Shell.
  *
- * (c) 2012-2017 Justin Hileman
+ * (c) 2012-2015 Justin Hileman
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -11,21 +11,13 @@
 
 namespace Psy\Command\ListCommand;
 
-use Psy\VarDumper\Presenter;
 use Symfony\Component\Console\Input\InputInterface;
 
 /**
  * Trait Enumerator class.
- *
- * @deprecated Nothing should use this anymore
  */
 class TraitEnumerator extends Enumerator
 {
-    public function __construct(Presenter $presenter)
-    {
-        @trigger_error('TraitEnumerator is no longer used', E_USER_DEPRECATED);
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -38,7 +30,7 @@ class TraitEnumerator extends Enumerator
 
         // only list traits when no Reflector is present.
         //
-        // @todo make a NamespaceReflector and pass that in for commands like:
+        // TODO: make a NamespaceReflector and pass that in for commands like:
         //
         //     ls --traits Foo
         //

@@ -45,7 +45,7 @@ class AddRequestFormatsListenerTest extends \PHPUnit_Framework_TestCase
     public function testRegisteredEvent()
     {
         $this->assertEquals(
-            array(KernelEvents::REQUEST => array('onKernelRequest', 1)),
+            array(KernelEvents::REQUEST => 'onKernelRequest'),
             AddRequestFormatsListener::getSubscribedEvents()
         );
     }

@@ -3,7 +3,7 @@
 /*
  * This file is part of Psy Shell.
  *
- * (c) 2012-2017 Justin Hileman
+ * (c) 2012-2015 Justin Hileman
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -37,33 +37,19 @@ class ErrorException extends \ErrorException implements Exception
         }
 
         switch ($severity) {
-            case E_STRICT:
-                $type = 'Strict error';
-                break;
-
-            case E_NOTICE:
-            case E_USER_NOTICE:
-                $type = 'Notice';
-                break;
-
             case E_WARNING:
             case E_CORE_WARNING:
             case E_COMPILE_WARNING:
             case E_USER_WARNING:
-                $type = 'Warning';
+                $type = 'warning';
                 break;
 
-            case E_DEPRECATED:
-            case E_USER_DEPRECATED:
-                $type = 'Deprecated';
-                break;
-
-            case E_RECOVERABLE_ERROR:
-                $type = 'Recoverable fatal error';
+            case E_STRICT:
+                $type = 'Strict error';
                 break;
 
             default:
-                $type = 'Error';
+                $type = 'error';
                 break;
         }
 

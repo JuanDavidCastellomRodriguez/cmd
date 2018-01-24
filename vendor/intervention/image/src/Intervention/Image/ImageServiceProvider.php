@@ -40,9 +40,7 @@ class ImageServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        if (method_exists($this->provider, 'boot')) {
-            return $this->provider->boot();
-        }
+        return $this->provider->boot();
     }
 
     /**
@@ -80,6 +78,6 @@ class ImageServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        return ['image'];
+        return array('image');
     }
 }

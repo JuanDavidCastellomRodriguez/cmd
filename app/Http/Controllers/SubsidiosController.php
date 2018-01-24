@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Predio;
 use App\Subsidio;
+use App\InformacionVivienda;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,12 +17,18 @@ class SubsidiosController extends Controller
         //return $subsidios->total();
         $data = new Collection();
         $pagination = "";
+        $puntos = "";
+
         if($subsidios->total() > 0){
             foreach ($subsidios as $subs){
+
+                //$puntos = $puntos.'{ position: { lat:'.$subs->InformacionVivienda->Predio->latitud.', lng:'.$subs->InformacionVivienda->Predio->latitud .'}},';
 
                 $data->add([
                     'vereda' => $subs->Vereda->vereda."(".$subs->Vereda->Municipio->municipio.")",
                     'beneficiario' => $subs->Beneficiario->nombres." ". $subs->Beneficiario->apellidos." (".$subs->Beneficiario->no_cedula.")",
+                    'predio' => $subs->InformacionVivienda->id_predio,
+                    'nombre_predio' => $subs->InformacionVivienda->Predio,
                     'id' => $subs->id,
                     //'campo'=> $subs->Vereda->Campo
                     'consecutivo' => $subs->consecutivo,
@@ -35,8 +43,6 @@ class SubsidiosController extends Controller
                     'porcentaje_ejecucion' => $subs->porcentaje_ejecucion,
                     'entregado' => $subs->entregado,
                     'obras_en_construccion' => $subs->obras_en_construccion,
-
-
 
                 ]);
 
@@ -150,5 +156,47 @@ class SubsidiosController extends Controller
 
 
     }
+
+    public function obtenerDatosMapa(Request $request){
+    //public function obtenerDatosMapa(){
+        //$subsidios = Predio::where('id_vereda',$request->vereda)->Buscar($request->buscar)-get();
+
+        //$subsidios = Predio::where('id_vereda',$request->vereda)->first();
+
+        //$subsidios = Subsidio::where('id_tipo_subsidio',$request)->Buscar($request->buscar)->get();
+        //$subsidios = Subsidio::Buscar($request->buscar)->get();
+        //return $subsidios->total();
+
+        $subsidios = Subsidio::with(['InformacionVivienda.Predio']);
+
+        if($request->fase != ''){
+            $subsidios->where('id_fase',$request->fase);
+        }
+        if($request->tipoSubsidio != ''){
+            $subsidios->where('id_tipo_subsidio',$request->tipoSubsidio);
+        }
+        if($request->campo != ''){
+            $subsidios->whereHas('Vereda',function ($query) use ($request){
+                $query->where('id_campo',$request->campo);
+            });
+        }
+        if($request->vereda != ''){
+            $subsidios->where('id_vereda',$request->vereda);
+        }
+
+
+        return response()->json([
+            'estado' => 'ok',
+            'data' => $subsidios,
+
+            //'data' =>$this->tabularInfo($subsidios,$request->campo) ,
+            //'data' =>$subsidios->InformacionVivienda()->getResults(),
+            //'cocinas' => Cocina::where('id_informacion', $request->idInfo)->where('id_tipo_visita',$request->tipo_visita)->get()->first(),
+            //'data' => Subsidio::where('id_tipo_subsidio', $request->tipoSubsidio)->get(),
+            //'data' => $subsidios,
+        ]);
+
+    }
+
 
 }

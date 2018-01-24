@@ -62,13 +62,13 @@ class PolygonShape extends \Intervention\Image\AbstractShape
      */
     private function formatPoints($points)
     {
-        $ipoints = [];
+        $ipoints = array();
         $count = 1;
 
         foreach ($points as $key => $value) {
             if ($count%2 === 0) {
                 $y = $value;
-                $ipoints[] = ['x' => $x, 'y' => $y];
+                $ipoints[] = array('x' => $x, 'y' => $y);
             } else {
                 $x = $value;
             }

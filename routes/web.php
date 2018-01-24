@@ -122,6 +122,9 @@ Route::group(['middleware' => ['auth']], function () {
 
 
     Route::post('/subsidios/getinfo','SubsidiosController@getSubsidios');
+    Route::post('/subsidios/getinfomapa','SubsidiosController@obtenerDatosMapa');
+
+
     Route::post('/subsidios/guardarsubsidio','SubsidiosController@guardarSubsidio');
 
     Route::post('/beneficiarios/buscarbeneficiario', 'BeneficiariosController@buscarBeneficiarioPorCedula');
@@ -159,8 +162,6 @@ Route::group(['middleware' => ['auth']], function () {
 
 
     Route::post('/campos/listabyfase', 'CamposController@getCamposByFase');
-
-    //Route::get('/mapa', ['as ' => 'mapa', 'uses' => 'GmapsController@index']);
 
 
 });

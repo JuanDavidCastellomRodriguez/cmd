@@ -12,7 +12,7 @@ class ChecksumCommand extends AbstractCommand
      */
     public function execute($image)
     {
-        $colors = [];
+        $colors = array();
 
         $size = $image->getSize();
 

@@ -27,9 +27,9 @@ class TrimCommand extends ResizeCommand
 
         // define borders to trim away
         if (is_null($away)) {
-            $away = ['top', 'right', 'bottom', 'left'];
+            $away = array('top', 'right', 'bottom', 'left');
         } elseif (is_string($away)) {
-            $away = [$away];
+            $away = array($away);
         }
 
         // lower border names

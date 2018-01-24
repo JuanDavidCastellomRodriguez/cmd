@@ -21,6 +21,7 @@
     </tr>
 </table>
 <br>
+<h4 v-if="subsidios.length == 0">No hay datos para mostrar</h4>
 <h3 align="center">PERSONAS QUE HABITAN LA VIVIENDA</h3>
 <table align="center" width="90%">
     <tr>
@@ -65,7 +66,7 @@
     @endforeach
 </table>
 <br>
-<h3 align="center">Registro fotográfico</h3>
+<h3 align="center">Fotografías</h3>
 <center>
     @foreach (@$info_vivienda->Fotografias as $fotografia)
 

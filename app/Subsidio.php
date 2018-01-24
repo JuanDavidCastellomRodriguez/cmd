@@ -55,4 +55,13 @@ class Subsidio extends Model
     public function Campos(){
         return $this->hasManyThrough('App\Campo','App\Vereda','id_subsidio', 'id_campo','id');
     }
+
+
+
+
+    public function Predios(){
+        //return $this->hasManyThrough('App\InformacionVivienda', 'App\Predio', 'id', 'id_predio', 'id');
+        //return $this->hasOne('App\InformacionVivienda', 'id_predio', 'id');
+        //return $this->hasOne('App\Predio', 'id_vereda', 'id');
+    }
 }
