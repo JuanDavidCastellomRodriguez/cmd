@@ -14,4 +14,7 @@ class InformacionProductivos extends Model
     public function getConsecutivoAttribute($value){
         return str_pad($value, 5, "0", STR_PAD_LEFT);
     }
+    public function Subsidio(){
+        return $this->belongsTo('App\Subsidio','id','id_info_productivo');
+    }
 }

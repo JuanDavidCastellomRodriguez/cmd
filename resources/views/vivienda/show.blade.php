@@ -27,7 +27,8 @@
     <div class="container" id="app">
         <div class="row" style="margin-top: 10px;">
 
-            <h3>Levantamiento Información No @{{ infoVivienda.consecutivo }}</h3>
+            <h3>Levantamiento Información (Subsidios de Vivienda) No <b> @{{ infoVivienda.consecutivo }}</b></h3>
+            <p><b>Beneficiario: </b> @{{ infoVivienda.beneficiario.nombre +' ('+ infoVivienda.beneficiario.documento +')' }} </p>
             <section class="col-lg-2 col-sm-4" id="seccion-menu-lateral">
                 <ul class="nav nav-tabs" role="tablist">
                     Informacion General
@@ -964,6 +965,10 @@
                     fechaEncuesta: '{{ $info->fecha_encuesta }}',
                     consecutivo : '{{$info->consecutivo}}',
                     respondePropietario: '{{$info->responde_propietario}}',
+                    beneficiario : {
+                        nombre : "{{ $info->Subsidio->Beneficiario->nombres .' '.$info->Subsidio->Beneficiario->apellidos}}",
+                        documento : "{{ $info->Subsidio->Beneficiario->no_cedula }}"
+                    },
                     programaSocial:'{{$info->beficiarios_prog_inv_social}}',
                     numeroFamiliasVivienda: '{{$info->no_familias_vivienda}}',
                     idPredio : '{{$info->id_predio}}',

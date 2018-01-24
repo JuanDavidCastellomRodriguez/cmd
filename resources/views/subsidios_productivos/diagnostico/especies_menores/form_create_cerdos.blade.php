@@ -1,64 +1,59 @@
-<div class="modal fade" tabindex="-1" role="dialog" id="modal-agregar-ave-especies"name="modal-agregar-ave-especies">
+<div class="modal fade" tabindex="-1" role="dialog" id="modal-agregar-cerdo-especies"name="modal-agregar-cerdo-especies">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <form class="form" data-toggle="validator" v-on:submit.prevent="guardarAveEspecies()" >
+            <form class="form" data-toggle="validator" v-on:submit.prevent="guardarCerdoEspecies()" >
                 <div class="modal-header">
 
-                    <h4 class="modal-title">Nuevas Aves</h4>
+                    <h4 class="modal-title">Nuevos Cerdos</h4>
                 </div>
 
                 <div class="modal-body">
                     <div class="row">
                         <div class="form-group col-lg-4 col-sm-12 col-md-6 ">
-                            <label for="exampleInputName2">Tipo Producción</label>
-                            <select v-model="nuevaAve.id_tipo_produccione" class="form-control"  required>
+                            <label for="exampleInputName2">Tipo Produccion</label>
+                            <select v-model="nuevoCerdo.id_tipo_produccion" class="form-control" >
                                 <option value="" disabled>Seleccione...</option>
                                 <option v-for="item in TipoProducciones" :value="item.id">@{{ item.tipo_produccion }}</option>
-                            </select>
-                        </div>
-                        <div class="form-group col-lg-4 col-sm-12 col-md-6 ">
-                            <label for="exampleInputName2">Tipo Ave</label>
-                            <select v-model="nuevaAve.id_tipo_ave" class="form-control" required>
-                                <option value="" disabled>Seleccione...</option>
-                                <option v-for="item in TipoAves" :value="item.id">@{{ item.tipo_ave }}</option>
-                            </select>
-                        </div>
 
+                            </select>
+                        </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Tipo Corral</label>
-                            <select v-model="nuevaAve.id_tipo_corral" class="form-control" required >
+                            <select v-model="nuevoCerdo.id_tipo_corral" class="form-control" >
                                 <option value="" disabled>Seleccione...</option>
                                 <option v-for="item in TipoCorrales" :value="item.id">@{{ item.tipo_corral }}</option>
                             </select>
                         </div>
 
-
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Estado Instalación</label>
-                            <select v-model="nuevaAve.id_estado_instalaciones" class="form-control" required>
+                            <select v-model="nuevoCerdo.id_estado_instalaciones" class="form-control" >
                                 <option value="" disabled>Seleccione...</option>
                                 <option v-for="item in EstadoCorrales" :value="item.id">@{{ item.estado_instalaciones }}</option>
                             </select>
                         </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
-                            <label for="exampleInputName2">Cantidad Polluelos</label>
-                            <input type="number" required class="form-control" id="exampleInputName2" v-model="nuevaAve.cantidad_polluelos" required>
+                            <label for="exampleInputName2">Metodo de Reproducción</label>
+                            <select v-model="nuevoCerdo.id_metodo_reproduccion" class="form-control" >
+                                <option value="" disabled>Seleccione...</option>
+                                <option v-for="item in TiposReproduccion" :value="item.id">@{{ item.metodo_reproduccion }}</option>
+                            </select>
                         </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
-                            <label for="exampleInputName2">Cantidad Ponedoras</label>
-                            <input type="number" required class="form-control" id="exampleInputName2" v-model="nuevaAve.cantidad_ponedoras" required>
+                            <label for="exampleInputName2">Cantidad Animales</label>
+                            <input type="number" required class="form-control" id="exampleInputName2" v-model="nuevoCerdo.cantidad_animales">
                         </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
-                            <label for="exampleInputName2">Cantidad Huevos</label>
-                            <input type="number" required class="form-control" id="exampleInputName2" v-model="nuevaAve.cantidad_huevos" required>
+                            <label for="exampleInputName2">Cantidad Producidos (Kg)</label>
+                            <input type="number" required class="form-control" id="exampleInputName2" v-model="nuevoCerdo.kg_producidos">
                         </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
-                            <label for="exampleInputName2">Cantidad Comida</label>
-                            <input type="number" required class="form-control" id="exampleInputName2" v-model="nuevaAve.kg_comida" required>
+                            <label for="exampleInputName2">Cantidad Comida (Kg)</label>
+                            <input type="number" required class="form-control" id="exampleInputName2" v-model="nuevoCerdo.kg_comida">
                         </div>
                         <div class="form-group col-sm-12">
                             <label for="exampleInputName2">Observaciones</label>
-                            <textarea type="number" required class="form-control" id="exampleInputName2" v-model="nuevaAve.observaciones" required></textarea>
+                            <textarea type="number" required class="form-control" rows="5" id="exampleInputName2" v-model="nuevoCerdo.observaciones"></textarea>
                         </div>
 
 
@@ -77,7 +72,7 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-<div class="modal fade" id="modal-confirm-delete-ave-especies" tabindex="-1" role="dialog" aria-labelledby="modal-confirm-delete-ave-especies">
+<div class="modal fade" id="modal-confirm-delete-cerdo-especies" tabindex="-1" role="dialog" aria-labelledby="modal-confirm-delete-cerdo-especies">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -85,12 +80,12 @@
                 <h4 class="modal-title" id="exampleModalLabel">Confirme</h4>
             </div>
             <div class="modal-body">
-                <label for="">¿Esta seguro que desea quitar este registro de aves?</label>
+                <label for="">¿Esta seguro que desea quitar este registro de cerdos?</label>
             </div>
             <div class="modal-footer">
                     <i  v-show="loading" class="fa fa-spinner fa-spin"></i>
                 <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
-                <button type="button" class="btn btn-default" v-on:click="eliminarAveEspecies()">Si</button>
+                <button type="button" class="btn btn-default" v-on:click="eliminarCerdoEspecies()">Si</button>
             </div>
         </div>
     </div>
