@@ -15,6 +15,9 @@ class Predio extends Model
         return $this->hasOne('App\InformacionVivienda','id','id_predio');
     }
 
+    public function PropietariosPredio(){
+        return $this->hasOne('App\PropietariosPredio','id_predio','id');
+    }
 
 
 }

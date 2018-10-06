@@ -15,4 +15,6 @@ class HabitantesVivienda extends Model
 
         return $this->hasOne('App\Habitante', 'id', 'id_habitante');
     }
+
+    
 }

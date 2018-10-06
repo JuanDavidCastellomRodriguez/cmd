@@ -1,12 +1,15 @@
 <template id="form-cierre">
     <div>
         <h2>Cierre</h2>
-        <form >
+        <form v-on:submit.prevent="guardarObs()" class="form">
             <div class="row">
                 <div class="col-sm-12">
                     <label for="observaciones">Observaciones del proyecto que se pretende desarrollar</label>
-                    <textarea class="form-control" rows="10"></textarea>
+                    <textarea class="form-control" rows="10" v-model="obs"></textarea>
                 </div>
+            </div>
+            <div class="row" style="text-align: right; margin: 20px 3px 0 0">
+                <button type="submit"  class="btn btn-default " data-loading-text="<i class='fa fa-spinner fa-spin '></i> Guardando..." id="btn-guardar">Guardar</button>
             </div>
 
         </form>
@@ -50,6 +53,27 @@
                 <div class="col-md-2" style="margin-top: 10px">
                     <button class="btn btn-default" @click="upload">Subir Imagenes</button>
                     <i  v-show="loading" class="fa fa-spinner fa-spin"></i>
+                </div>
+            </div>
+
+        </div>
+        <div class="row"> 
+
+            <div class="checkbox" style="margin-left: 20px;">
+                <h3>Registro de Archivos del Beneficio</h3>
+                <label>
+                    <input type="checkbox" v-model="subirMasArchivos"> ¿Subir archivos?
+                </label>
+            </div>
+            <div v-show="subirMasArchivos">
+                <div class="col-md-12" >
+                    <div class="col-md-12">
+                        <input type="file" id="archivo" name="archivo" @change="procesarFiles"  ref="files" multiple class="form-control" accept=".xlsx,.xls,image/*,.doc, .docx,.ppt, .pptx,.txt,.pdf" style="margin-bottom: 10px;">    
+                    </div>
+                </div>
+                <div class="col-md-2" style="margin-top: 10px">
+                    <button class="btn btn-default" @click="subirArchivos">Subir Archivos</button>
+                    <i v-show="loading" class="fa fa-spinner fa-spin"></i>
                 </div>
             </div>
 

@@ -9,6 +9,8 @@ use App\DetalleCultivo;
 use App\MatrizCultivo;
 use App\ProductosVenta;
 use App\Semilla;
+use App\Subsidio;
+use App\InformacionProductivos;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,16 +20,37 @@ class CultivosController extends Controller
     public function getCultivos(Request $request){
         try{
             $cultivos = Cultivo::where('id_info_productivo',$request->idInfo)->get();
-            $data = new Collection();
-            foreach ($cultivos as $cultivo){
-                $cultivo->setAttribute('actividades',$this->actividadesCultivo($cultivo->id));
-                $cultivo->setAttribute('semillas',Semilla::where('id_cultivo',$cultivo->id)->get()->toArray());
-                $data->add($cultivo);
+            $bandera = 0;
+            $infoProductivo = '';
+            if (count($cultivos) == 0) {
+                $bandera = 1;
+                $subsidio = Subsidio::where('id_beneficiario', $request->id)
+                                ->where('id_info_productivo', '<', $request->idInfo)
+                                ->orderBy('created_at', 'desc')->first();
+                $infoProductivo = InformacionProductivos::where('id', $subsidio->id_info_productivo)->first();
+                $cultivos = Cultivo::where('id_info_productivo',$infoProductivo->id)->get();              
+                $data = new Collection();
+                foreach ($cultivos as $cultivo){                    
+                    $cultivo->setAttribute('actividades',$this->actividadesCultivo($cultivo->id));
+                    $cultivo->setAttribute('semillas',Semilla::where('id_cultivo',$cultivo->id)->select('variedad', 'densidad', 'certificado_ica', 'otra_procedencia')->get()->toArray());
+                    $cultivo->id = '';
+                    $cultivo->id_info_productivo = $request->idInfo;
+                    $data->add($cultivo);
+                }
+            }else {
+                $data = new Collection();
+                foreach ($cultivos as $cultivo){
+                    $cultivo->setAttribute('actividades',$this->actividadesCultivo($cultivo->id));
+                    $cultivo->setAttribute('semillas',Semilla::where('id_cultivo',$cultivo->id)->get()->toArray());
+                    $data->add($cultivo);
+                }
             }
 
             return response()->json([
                 'estado' => 'ok',
                 'data' => $data,
+                'bandera' => $bandera,
+                'infoProductivo' => $infoProductivo
 
 
             ]);
@@ -82,6 +105,98 @@ class CultivosController extends Controller
 
 
 
+    }
+
+    public function guardarCultivoAnterior(Request $request)
+    {
+        $request =  json_decode($request->getContent());
+        try {
+            DB::beginTransaction();
+            $cultivo = new Cultivo();
+            $cultivo->descripcion_cultivo = $request->cultivo->descripcion_cultivo;
+            $cultivo->nombre_producto = $request->cultivo->nombre_producto;
+            $cultivo->fecha_establecimiento_cultivo = $request->cultivo->fecha_establecimiento_cultivo;
+            $cultivo->fecha_renovacion = $request->cultivo->fecha_renovacion;
+            $cultivo->id_info_productivo = $request->cultivo->id_info_productivo;
+            $cultivo->id_unidad_producto = $request->cultivo->id_unidad_producto;
+            $cultivo->id_sitio_venta = $request->cultivo->id_sitio_venta;
+            if($cultivo->save()){
+                foreach ($request->cultivo->actividades->preparacion as $mes){
+                    $actividad = new MatrizCultivo();
+                    $actividad->id_actividad_cultivo = 1;
+                    $actividad->id_cultivo = $cultivo->id;
+                    $actividad->id_mes = $mes;
+                    $actividad->save();
+
+                }
+                foreach ($request->cultivo->actividades->siembra as $mes){
+                    $actividad = new MatrizCultivo();
+                    $actividad->id_actividad_cultivo = 2;
+                    $actividad->id_cultivo = $cultivo->id;
+                    $actividad->id_mes = $mes;
+                    $actividad->save();
+
+                }
+                foreach ($request->cultivo->actividades->deshierbado as $mes){
+                    $actividad = new MatrizCultivo();
+                    $actividad->id_actividad_cultivo = 3;
+                    $actividad->id_cultivo = $cultivo->id;
+                    $actividad->id_mes = $mes;
+                    $actividad->save();
+
+                }
+                foreach ($request->cultivo->actividades->abonado as $mes){
+                    $actividad = new MatrizCultivo();
+                    $actividad->id_actividad_cultivo = 4;
+                    $actividad->id_cultivo = $cultivo->id;
+                    $actividad->id_mes = $mes;
+                    $actividad->save();
+
+                }
+                foreach ($request->cultivo->actividades->cosecha as $mes){
+                    $actividad = new MatrizCultivo();
+                    $actividad->id_actividad_cultivo = 5;
+                    $actividad->id_cultivo = $cultivo->id;
+                    $actividad->id_mes = $mes;
+                    $actividad->save();
+
+                }
+
+                foreach ($request->cultivo->semillas as $semilla){
+                    $nuevaSemilla = new Semilla();
+                    $nuevaSemilla->variedad = $semilla->variedad;
+                    $nuevaSemilla->densidad = $semilla->densidad;
+                    $nuevaSemilla->certificado_ica = $semilla->certificado_ica;
+                    $nuevaSemilla->otra_procedencia = $semilla->otra_procedencia;
+                    $nuevaSemilla->id_cultivo = $cultivo->id;
+                    $nuevaSemilla->save();
+                }
+
+
+            }
+            DB::commit();
+            $data = $this->actividadesCultivo($cultivo->id);
+
+
+            $cultivo->setAttribute('actividades',$data);
+            $cultivo->setAttribute('semillas',Semilla::where('id_cultivo',$cultivo->id)->get()->toArray());
+            return response()->json([
+                'estado' => 'ok',
+                //'id' => $cultivo->id,
+                //'actividades' => $data,
+                'cultivo' => $cultivo
+
+            ]);
+
+        }catch (\Exception $e) {
+            return response()->json([
+                'estado' => 'fail',
+                'error' => $e->getMessage(),
+                'descripcion' => $e->getTrace()
+
+
+            ],500);
+        }                       
     }
 
 
@@ -150,7 +265,7 @@ class CultivosController extends Controller
                         $nuevaSemilla->variedad = $semilla->variedad;
                         $nuevaSemilla->densidad = $semilla->densidad;
                         $nuevaSemilla->certificado_ica = $semilla->certificado_ica;
-                        $nuevaSemilla->id_procedencia_semilla = $semilla->id_procedencia_semilla;
+                        $nuevaSemilla->otra_procedencia = $semilla->otra_procedencia;
                         $nuevaSemilla->id_cultivo = $cultivo->id;
                         $nuevaSemilla->save();
                     }
@@ -216,7 +331,7 @@ class CultivosController extends Controller
                         $nuevaSemilla->variedad = $semilla->variedad;
                         $nuevaSemilla->densidad = $semilla->densidad;
                         $nuevaSemilla->certificado_ica = $semilla->certificado_ica;
-                        $nuevaSemilla->id_procedencia_semilla = $semilla->id_procedencia_semilla;
+                        $nuevaSemilla->otra_procedencia = $semilla->otra_procedencia;
                         $nuevaSemilla->id_cultivo = $cultivo->id;
                         $nuevaSemilla->save();
                     }
@@ -509,4 +624,25 @@ class CultivosController extends Controller
 
         return $data;
     }
+
+     public function borrarSemilla(Request $request)
+     {
+         try {
+            $semilla = Semilla::where('id', $request)->delete(); 
+            return response()->json([
+                'estado' => 'ok',
+                'mensaje' => 'Semilla eliminada correctamente',
+
+            ],200);
+
+         } catch (\Exception $e) {
+             return response()->json([
+                'estado' => 'fail',
+                'error' => $e->getMessage(),
+                'descripcion' => $e->getTrace()
+
+
+            ],500);
+         }
+     }
 }

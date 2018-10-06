@@ -26,6 +26,7 @@ class BeneficiariosController extends Controller
         $nuevoBeneficiario->no_cedula = $beneficiario->no_cedula;
         $nuevoBeneficiario->nombres = $beneficiario->nombres;
         $nuevoBeneficiario->apellidos = $beneficiario->apellidos;
+        $nuevoBeneficiario->no_celular = $beneficiario->no_celular;
         $nuevoBeneficiario->fecha_nacimiento = $beneficiario->fecha_nacimiento;
         if($nuevoBeneficiario->save()){
             return $nuevoBeneficiario->id;

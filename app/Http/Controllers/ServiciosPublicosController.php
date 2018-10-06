@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Comunicaciones;
 use App\ServiciosPublico;
+use App\Subsidio;
+use App\InformacionVivienda;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
@@ -11,7 +13,7 @@ class ServiciosPublicosController extends Controller
 {
     public function getAllServicios(Request $request){
         try{
-            $servicio = ServiciosPublico::where('id_informacion', $request->id)->first();
+            $servicio = ServiciosPublico::where('id_informacion', $request->idInfo)->first();
             $data = "";
             if(!Empty($servicio)){
 
@@ -27,23 +29,33 @@ class ServiciosPublicosController extends Controller
                     'id_gas' => $servicio->id_gas,
                     'id_fuente_energia_electrica' => $servicio->id_fuente_energia_electrica,
                 ];
+                $bandera = 0;
+                $info= '';
             }else{
+                $subsidio = Subsidio::where('id_beneficiario', $request->id)
+                                    ->where('id_info_vivienda', '<', $request->idInfo)
+                                    ->orderBy('created_at', 'desc')->first();
+                $info = InformacionVivienda::where('id', $subsidio->id_info_vivienda)->first();
+                $servicio = ServiciosPublico::where('id_informacion', $info->id)->first();
+                $bandera = 1;
                 $data =[
-                    'id'=> '',
-                    "comunicaciones" => [],
-                    'id_informacion' => $request->id,
-                    'id_fuente_agua' => '',
-                    'tratamiento_agua' => false,
-                    'id_sistemas_tratamiento_aguas' => '',
-                    'id_metodo_disposicion_basura' => '',
-                    'id_gas' => '',
-                    'id_fuente_energia_electrica' => '',
+                    'id'=> $servicio->id,
+                    "comunicaciones" => $servicio->Comunicaciones->pluck('id_medio_comunicacion'),
+                    'id_informacion' => $servicio->id_informacion,
+                    'id_fuente_agua' => $servicio->id_fuente_agua,
+                    'tratamiento_agua' => $servicio->tratamiento_agua,
+                    'id_sistemas_tratamiento_aguas' => $servicio->id_sistemas_tratamiento_aguas,
+                    'id_metodo_disposicion_basura' => $servicio->id_metodo_disposicion_basura,
+                    'id_gas' => $servicio->id_gas,
+                    'id_fuente_energia_electrica' => $servicio->id_fuente_energia_electrica,
                 ];
             }
             //return $servicios->Comunicaciones;
             return response()->json([
                 'estado' => 'ok',
                 'data' =>$data,
+                'bandera' => $bandera,
+                'infoVivienda' => $info
 
             ]);
 

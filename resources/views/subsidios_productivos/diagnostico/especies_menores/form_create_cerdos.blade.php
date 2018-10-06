@@ -11,15 +11,15 @@
                     <div class="row">
                         <div class="form-group col-lg-4 col-sm-12 col-md-6 ">
                             <label for="exampleInputName2">Tipo Produccion</label>
-                            <select v-model="nuevoCerdo.id_tipo_produccion" class="form-control" >
+                            <select required="required" v-model="nuevoCerdo.id_tipo_produccion" class="form-control" >
                                 <option value="" disabled>Seleccione...</option>
-                                <option v-for="item in TipoProducciones" :value="item.id">@{{ item.tipo_produccion }}</option>
+                                <option v-for="item in tipoProduccionCerdo" :value="item.id">@{{ item.tipo_produccion }}</option>
 
                             </select>
                         </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Tipo Corral</label>
-                            <select v-model="nuevoCerdo.id_tipo_corral" class="form-control" >
+                            <select required="required" v-model="nuevoCerdo.id_tipo_corral" class="form-control" >
                                 <option value="" disabled>Seleccione...</option>
                                 <option v-for="item in TipoCorrales" :value="item.id">@{{ item.tipo_corral }}</option>
                             </select>
@@ -27,33 +27,33 @@
 
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Estado Instalación</label>
-                            <select v-model="nuevoCerdo.id_estado_instalaciones" class="form-control" >
+                            <select required="required" v-model="nuevoCerdo.id_estado_instalaciones" class="form-control" >
                                 <option value="" disabled>Seleccione...</option>
                                 <option v-for="item in EstadoCorrales" :value="item.id">@{{ item.estado_instalaciones }}</option>
                             </select>
                         </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Metodo de Reproducción</label>
-                            <select v-model="nuevoCerdo.id_metodo_reproduccion" class="form-control" >
+                            <select required="required" v-model="nuevoCerdo.id_metodo_reproduccion" class="form-control" >
                                 <option value="" disabled>Seleccione...</option>
                                 <option v-for="item in TiposReproduccion" :value="item.id">@{{ item.metodo_reproduccion }}</option>
                             </select>
                         </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Cantidad Animales</label>
-                            <input type="number" required class="form-control" id="exampleInputName2" v-model="nuevoCerdo.cantidad_animales">
+                            <input type="number" required="required" class="form-control" id="exampleInputName2" v-model="nuevoCerdo.cantidad_animales">
                         </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Cantidad Producidos (Kg)</label>
-                            <input type="number" required class="form-control" id="exampleInputName2" v-model="nuevoCerdo.kg_producidos">
+                            <input type="number" required="required" class="form-control" id="exampleInputName2" v-model="nuevoCerdo.kg_producidos">
                         </div>
-                        <div class="form-group col-lg-4 col-sm-12 col-md-6">
+                        <!--<div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Cantidad Comida (Kg)</label>
                             <input type="number" required class="form-control" id="exampleInputName2" v-model="nuevoCerdo.kg_comida">
-                        </div>
+                        </div>-->
                         <div class="form-group col-sm-12">
                             <label for="exampleInputName2">Observaciones</label>
-                            <textarea type="number" required class="form-control" rows="5" id="exampleInputName2" v-model="nuevoCerdo.observaciones"></textarea>
+                            <textarea type="number" required="required" class="form-control" rows="5" id="exampleInputName2" v-model="nuevoCerdo.observaciones"></textarea>
                         </div>
 
 

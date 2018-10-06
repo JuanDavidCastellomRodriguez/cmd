@@ -1,5 +1,6 @@
 
 <h3>Información Inicial</h3>
+
 <form v-on:submit.prevent="guardarGeneral()" class="form">
     <div class=" form-group col-lg-6 col-sm-12">
         <label for="exampleInputName2">Fecha Encuesta</label>
@@ -21,6 +22,13 @@
             <label><input type="checkbox" v-model="infoVivienda.programaSocial" name="programasocial">Si</label>
         </div>
     </div>
+    <div class="col-lg-12 col-sm-6">
+    <p v-if="bandera == 1"><strong>Nota.</strong>La informacion de este mensaje hacia abajo fue tomada de la <strong>Informacion General del Beneficio No @{{ viviendaAnterior.consecutivo }}</strong> del beneficiario <strong>@{{ infoVivienda.beneficiario.nombre }} CC. @{{ infoVivienda.beneficiario.documento }}.</strong>Por favor verifica la validez de la informacion, y si es correcta Guarda, sino Limpia y rellene con nueva informacion.</p>
+</div>
+<button v-if="bandera == 1" type="button" class="btn btn-default" @click="resetInicial()" style="margin-left: 86%;">
+    Limpiar
+    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+</button>
     <div class="form-group col-lg-6 col-sm-12">
         <label for="exampleInputName2">Tipo de Familia</label>
         <select v-model="generalidades.idTipologiaFamilia" class="form-control">
@@ -64,8 +72,21 @@
             <option v-for="tiempo in tiemposRecorrido" :value="tiempo.id">@{{ tiempo.tiempo_recorrido }}</option>
         </select>
     </div>
+    <div class="form-group col-lg-6 col-sm-12">
+        <label for="exampleInputName2">El subsidio adquirido, se relaciona con:</label>
+        <select v-model="generalidades.relacion_otro" class="form-control">
+            <option value="" disabled >Seleccione...</option>
+            <option id="1" value="1">Subsidio de Vivienda</option>
+            <option id="2" value="2">Subsidio Productivo</option>
+            <option id="3" value="3">Ninguno</option>
+        </select>
+    </div>
+    <div class="form-group col-lg-6 col-sm-12" v-if="generalidades.relacion_otro != 3">
+        <label for="exampleInputName2">Valor del otro subsidio:</label>
+        <input type="textarea" class="form-control" v-model="generalidades.descripcion_relacion">
+    </div>
     <div class="form-group col-lg-12 btns-forms">
         <button type="submit"  class="btn btn-default " data-loading-text="<i class='fa fa-spinner fa-spin '></i> Guardando..." id="btn-guardar">Guardar</button>
-        <button type="button" class="btn btn-default">Siguiente</button>
+        <!--<button type="button" class="btn btn-default">Siguiente</button>-->
     </div>
 </form>

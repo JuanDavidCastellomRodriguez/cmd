@@ -10,7 +10,7 @@
                     <div class="row">
                         <div class="form-group col-lg-4 col-sm-12 col-md-6 ">
                             <label for="exampleInputName2">Mes</label>
-                            <select v-model="nuevaMano.id_mes" class="form-control" v-on:change="mesSelected($event.target[$event.target.selectedIndex].text)">
+                            <select required="required" v-model="nuevaMano.id_mes" class="form-control" v-on:change="mesSelected($event.target[$event.target.selectedIndex].text)">
                                 <option value="" disabled>Seleccione...</option>
                                 <option v-for="mes in meses" :value="mes.id" >@{{mes.mes}}</option>
 
@@ -19,20 +19,20 @@
                         <div class="col-lg-12"></div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Cantidad Jornal Vendido</label>
-                            <input type="number" required class="form-control" id="exampleInputName2" v-model="nuevaMano.jornal_vendido">
+                            <input type="number" required="required" class="form-control" id="exampleInputName2" v-model="nuevaMano.jornal_vendido">
                         </div>
                         <div class="form-group col-lg-12">
-                            <label for="exampleInputName2">Actividad Jornal Vendio</label>
-                            <textarea  required class="form-control" id="exampleInputName2" v-model="nuevaMano.actividad_jornal_vendido"></textarea>
+                            <label for="exampleInputName2">Actividad Jornal Vendido</label>
+                            <textarea  required="required" class="form-control" id="exampleInputName2" v-model="nuevaMano.actividad_jornal_vendido"></textarea>
                         </div>
 
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Cantidad Jornal Comprado</label>
-                            <input type="number" required class="form-control" id="exampleInputName2" v-model="nuevaMano.jornal_contratado">
+                            <input type="number" required="required" class="form-control" id="exampleInputName2" v-model="nuevaMano.jornal_contratado">
                         </div>
                         <div class="form-group col-lg-12">
                             <label for="exampleInputName2">Actividad Jornal Comprado</label>
-                            <textarea  required class="form-control" id="exampleInputName2" v-model="nuevaMano.actividad_jornal_contratado"></textarea>
+                            <textarea required="required" class="form-control" id="exampleInputName2" v-model="nuevaMano.actividad_jornal_contratado"></textarea>
                         </div>
 
 

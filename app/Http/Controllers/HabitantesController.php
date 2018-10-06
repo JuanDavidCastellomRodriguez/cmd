@@ -7,24 +7,82 @@ use App\Habitante;
 use App\HabitantesVivienda;
 use App\InformacionProductivos;
 use App\InformacionVivienda;
+use App\Subsidio;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use League\Flysystem\Exception;
 
 class HabitantesController extends Controller
 {
+    public function beneficiarioAnterior(Request $request)
+    {
+        if ($request->tipo == 1) {
+            $enlace = new HabitantesVivienda();
+            $enlace->id_habitante = $request->id;
+            $enlace->id_informacion = $request->idInfo;
+            $enlace->save();
+
+            $bandera = 0;
+        } else if ($request->tipo == 2) {
+            $enlace = new HabitantesVivienda();
+            $enlace->id_habitante = $request->id;
+            $enlace->id_productivo = $request->idInfo;
+            $enlace->save();
+
+            $bandera = 0;
+        }
+        
+
+        return response()->json([
+                'data'=> $enlace,
+                'bandera' => $bandera
+            ]); 
+    }
     public function getHabitantes(Request  $request){
-        if($request->tipoSubsidio == 1){
+        if($request->tipoSubsidio == 1){            
             $info = InformacionVivienda::find($request->idInfo)->HabitantesViviendas->all();
+            $bandera = 0;
+            $idPredio = '';
+            if (count($info) == 0) {
+                $bandera = 1;
+                $info_vivienda = Subsidio::where('id_beneficiario', $request->id)
+                                    ->where('id_info_vivienda', '<', $request->idInfo)
+                                    ->orderBy('created_at', 'desc')->first();
+                $idPredio = InformacionVivienda::where('id', $info_vivienda->id_info_vivienda)->first();
+                $info2 = HabitantesVivienda::where('id_informacion', $idPredio->id)->get();
+                for ($i=0; $i < count($info2); $i++) { 
+                    $info[$i] = Habitante::where('id', $info2[$i]->id_habitante)->first();
+                }
+                
+            }
+            
             //$data = InformacionVivienda::find($request->idInfo)->with(['HabitantesViviendas'])->get();
             return response()->json([
-                'data'=> $info
+                'data'=> $info,
+                'bandera' => $bandera,
+                'infoVivienda' =>$idPredio
             ]);
         }else{
             $info = InformacionProductivos::find($request->idInfo)->HabitantesViviendas->all();
+            $bandera = 0;
+            $infoProductivo = '';
+            if (count($info) == 0) {
+                $bandera = 1;
+                $subsidio = Subsidio::where('id_beneficiario', $request->id)
+                                    ->where('id_info_productivo', '<', $request->idInfo)
+                                    ->orderBy('created_at', 'desc')->first();
+                $infoProductivo = InformacionProductivos::where('id', $subsidio->id_info_productivo)->first();
+                $habitantes = HabitantesVivienda::where('id_productivo', $infoProductivo->id)->get();
+                for ($i=0; $i < count($habitantes); $i++) { 
+                    $info[$i] = Habitante::where('id', $habitantes[$i]->id_habitante)->first();
+                }
+                
+            }
             //$data = InformacionVivienda::find($request->idInfo)->with(['HabitantesViviendas'])->get();
             return response()->json([
-                'data'=> $info
+                'data'=> $info,
+                'bandera' => $bandera,
+                'infoProductivo' =>$infoProductivo
             ]);
         }
 
@@ -66,8 +124,12 @@ class HabitantesController extends Controller
                 $habitante->ocupacion = $request->habitante->ocupacion;
                 $habitante->id_estado_civil = $request->habitante->id_estado_civil;
                 $habitante->id_nivel_educativo = $request->habitante->id_nivel_educativo;
+                $habitante->estudia = $request->habitante->estudia;
+                $habitante->descripcion_estudio = $request->habitante->descripcion_estudio;
                 $habitante->id_genero = $request->habitante->id_genero;
                 $habitante->cabeza_hogar = $request->habitante->cabeza_hogar;
+                $habitante->id_tipo_persona_a_cargo = $request->habitante->id_tipo_persona_a_cargo;
+                $habitante->id_parentesco = $request->habitante->id_parentesco;
                 $habitante->save();
 
                 $habitanteVivienda = new HabitantesVivienda();
@@ -94,8 +156,12 @@ class HabitantesController extends Controller
                 $habitante->ocupacion = $request->habitante->ocupacion;
                 $habitante->id_estado_civil = $request->habitante->id_estado_civil;
                 $habitante->id_nivel_educativo = $request->habitante->id_nivel_educativo;
+                $habitante->estudia = $request->habitante->estudia;
+                $habitante->descripcion_estudio = $request->habitante->descripcion_estudio;
                 $habitante->id_genero = $request->habitante->id_genero;
                 $habitante->cabeza_hogar = $request->habitante->cabeza_hogar;
+                $habitante->id_tipo_persona_a_cargo = $request->habitante->id_tipo_persona_a_cargo;
+                $habitante->id_parentesco = $request->habitante->id_parentesco;
                 $habitante->save();
 
                 $verificaHabitante = HabitantesVivienda::where('id_habitante', $request->habitante->id)->get();
@@ -116,11 +182,12 @@ class HabitantesController extends Controller
 
                 $idHabitante = $habitante->id;
             }
-
+            $bandera = 0;
             return response()->json([
                 'estado' => 'ok',
                 'habitante' => Habitante::find($idHabitante),
-                'yaEsHabitante' => $existeOtroPrograma
+                'yaEsHabitante' => $existeOtroPrograma,
+                'bandera' => $bandera
 
             ]);
 

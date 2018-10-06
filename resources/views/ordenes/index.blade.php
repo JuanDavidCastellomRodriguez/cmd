@@ -13,7 +13,7 @@
                 </button>
 
             </div>
-            <div class="col-lg-6 pull-right" style="text-align: right">
+            <!--<div class="col-lg-6 pull-right" style="text-align: right">
                 <form class="form-inline" style="display: inline-block; padding-top: 20px; padding-bottom: 10px; ">
                     <div class="form-group">
                         <label v-show="filtrado">Filtro:  @{{ $data.filtroActual }}   <span class="glyphicon glyphicon-remove" v-on:click="limpiarFiltro()" aria-hidden="true"></span> </label>
@@ -21,7 +21,7 @@
                     </div>
                     <button type="submit" class="btn btn-default" v-on:click.prevent="buscarData()">Buscar</button>
                 </form>
-            </div>
+            </div>-->
             <div class="col-lg-6" style="padding-left: 0">
 
                 <nav v-if="pagination.last_page > 1">

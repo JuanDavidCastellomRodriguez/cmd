@@ -13,12 +13,12 @@
                 <div id="tab-aves" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
                     <div class="panel-body">
                         <button style="margin-bottom: 10px" type="button"  class="btn btn-sm btn-success" data-toggle="modal" data-target="#modal-agregar-ave-especies" >Agregar</button>
+                        <p v-if="banderaA == 1"><strong>Nota.</strong>La informacion de las aves fue tomada del <strong>Levantamiento de informacion Beneficio No @{{ infoProductivo.consecutivo }}</strong> del beneficiario <strong>@{{ nombre }} CC. @{{ documento }}.</strong>Por favor verifica su validez, y si es correcta Guarda, sino agrega nueva informacion.</p>
                         <table style="font-size: 12px" class="table table-responsive">
                             <tr>
                                 <th>Tipo</th>
-                                <th>Ponedoras</th>
-                                <th>Polluelos</th>
-                                <th>Huevos</th>
+                                <th>Cantidad</th>
+                                <th>Produccion</th>
                                 <th>Comida(Kg)</th>
                                 <th>Tipo Produccion</th>
                                 <th>Tipo Corral</th>
@@ -26,16 +26,20 @@
                                 <th class="col-lg-1">Acciones</th>
                             </tr>
                             <tr v-for="ave in aves">
-                                <td>@{{ ave.tipo_ave.tipo_ave }}</td>
-                                <td>@{{ ave.cantidad_ponedoras }}</td>
+                                <td>@{{ ave.id_tipo_aves }}</td>
                                 <td>@{{ ave.cantidad_polluelos }}</td>
-                                <td>@{{ ave.cantidad_huevos }}</td>
+                                <td>@{{ ave.produccion }}</td>
                                 <td>@{{ ave.kg_comida }}</td>
-                                <td>@{{ ave.tipo_produccion.tipo_produccion }}</td>
+                                <td v-if="ave.id_produccion_aves == 1">Gallina ponedora</td>
+                                <td v-else-if="ave.id_produccion_aves == 2">Pollo engorde</td>
                                 <td>@{{ ave.tipo_corral.tipo_corral }}</td>
                                 <td>@{{ ave.estado_instalacion.estado_instalaciones }}</td>
-                                <td>
+                                <td v-if="banderaA == 0">
                                     <button type="button" class="btn btn-default btn-sm" v-on:click="prepareToDeleteAve(ave)" data-toggle="modal" data-target="#modal-confirm-delete-ave-especies" >Eliminar</button>
+                                </td>
+                                <td v-if="banderaA == 1">
+                                    <button type="button" class="btn btn-default btn-sm" v-on:click="guardarAvesAnterior(ave)" >Guardar</button>
+                                    <button type="button" class="btn btn-default btn-sm" v-on:click="borrarTemporalAves(ave)" >Eliminar</button>
                                 </td>
                             </tr>
 
@@ -54,6 +58,7 @@
                 <div id="tab-cerdos" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
                     <div class="panel-body">
                         <button style="margin-bottom: 10px" type="button"  class="btn btn-sm btn-success" data-toggle="modal" data-target="#modal-agregar-cerdo-especies" >Agregar</button>
+                        <p v-if="banderaC == 1"><strong>Nota.</strong>La informacion de las aves fue tomada del <strong>Levantamiento de informacion Beneficio No @{{ infoProductivo.consecutivo }}</strong> del beneficiario <strong>@{{ nombre }} CC. @{{ documento }}.</strong>Por favor verifica su validez, y si es correcta Guarda, sino agrega nueva informacion.</p>
                         <table style="font-size: 12px" class="table table-responsive">
                             <tr>
                                 <th>Metodo Reproducción</th>
@@ -62,8 +67,6 @@
                                 <th>Estado Corral</th>
                                 <th>Cantidad Animales</th>
                                 <th>Kg Producidos</th>
-                                <th>Kg Comida</th>
-                                <th class="col-lg-1">Acciones</th>
                             </tr>
                             <tr v-for="cerdo in cerdos">
                                 <td>@{{ cerdo.metodo_reproduccion.metodo_reproduccion }}</td>
@@ -72,9 +75,12 @@
                                 <td>@{{ cerdo.estado_instalacion.estado_instalaciones }}</td>
                                 <td>@{{ cerdo.cantidad_animales }}</td>
                                 <td>@{{ cerdo.kg_producidos }}</td>
-                                <td>@{{ cerdo.kg_comida }}</td>
-                                <td>
+                                <td v-if="banderaC == 0">
                                     <button type="button" class="btn btn-default btn-sm" v-on:click="prepareToDeleteCerdo(cerdo)" data-toggle="modal" data-target="#modal-confirm-delete-cerdo-especies" >Eliminar</button>
+                                </td>
+                                <td v-if="banderaC == 1">
+                                    <button type="button" class="btn btn-default btn-sm" v-on:click="guardarCerdoAnterior(cerdo)" >Guardar</button>
+                                    <button type="button" class="btn btn-default btn-sm" v-on:click="borrarTemporalCerdo(cerdo)" >Eliminar</button>
                                 </td>
                             </tr>
 
@@ -94,6 +100,7 @@
                 <div id="tab-peces" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
                     <div class="panel-body">
                         <button style="margin-bottom: 10px" type="button"  class="btn btn-sm btn-success" data-toggle="modal" data-target="#modal-agregar-peces-especies" >Agregar</button>
+                        <p v-if="banderaP == 1"><strong>Nota.</strong>La informacion de las aves fue tomada del <strong>Levantamiento de informacion Beneficio No @{{ infoProductivo.consecutivo }}</strong> del beneficiario <strong>@{{ nombre }} CC. @{{ documento }}.</strong>Por favor verifica su validez, y si es correcta Guarda, sino agrega nueva informacion.</p>
                         <table style="font-size: 12px" class="table table-responsive">
                             <tr>
                                 <th>Tipo Produccion</th>
@@ -111,8 +118,12 @@
                                 <td>@{{ pez.kg_producidos }}</td>
                                 <td>@{{ pez.kg_comida }}</td>
                                 <td>@{{ pez.observaciones }}</td>
-                                <td>
+                                <td v-if="banderaP == 0">
                                     <button type="button" class="btn btn-default btn-sm" v-on:click="prepareToDeletePeces(pez)" data-toggle="modal" data-target="#modal-confirm-delete-peces-especies" >Eliminar</button>
+                                </td>
+                                <td v-if="banderaP == 1">
+                                    <button type="button" class="btn btn-default btn-sm" v-on:click="guardarPezAnterior(pez)" >Guardar</button>
+                                    <button type="button" class="btn btn-default btn-sm" v-on:click="borrarTemporalPez(pez)" >Eliminar</button>
                                 </td>
                             </tr>
                         </table>
@@ -130,6 +141,7 @@
                 <div id="tab-otros" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
                     <div class="panel-body">
                         <button style="margin-bottom: 10px" type="button"  class="btn btn-sm btn-success" data-toggle="modal" data-target="#modal-agregar-otras-especies" >Agregar</button>
+                        <p v-if="banderaO == 1"><strong>Nota.</strong>La informacion de las aves fue tomada del <strong>Levantamiento de informacion Beneficio No @{{ infoProductivo.consecutivo }}</strong> del beneficiario <strong>@{{ nombre }} CC. @{{ documento }}.</strong>Por favor verifica su validez, y si es correcta Guarda, sino agrega nueva informacion.</p>
                         <table style="font-size: 12px" class="table table-responsive">
                             <tr>
                                 <th>Especie</th>
@@ -141,8 +153,12 @@
                                 <td>@{{ otra.especie }}</td>
                                 <td>@{{ otra.cantidad_animales }}</td>
                                 <td>@{{ otra.observaciones }}</td>
-                                <td>
+                                <td v-if="banderaO == 0">
                                     <button type="button" class="btn btn-default btn-sm" v-on:click="prepareToDeleteOtras(otra)" data-toggle="modal" data-target="#modal-confirm-delete-otras-especies" >Eliminar</button>
+                                </td>
+                                <td v-if="banderaO == 1">
+                                    <button type="button" class="btn btn-default btn-sm" v-on:click="guardarOtraAnterior(otra)" >Guardar</button>
+                                    <button type="button" class="btn btn-default btn-sm" v-on:click="borrarTemporalOtra(otra)" >Eliminar</button>
                                 </td>
                             </tr>
 

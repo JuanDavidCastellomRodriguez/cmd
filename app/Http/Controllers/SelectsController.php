@@ -34,6 +34,8 @@ use App\Municipio;
 use App\NivelEducativo;
 use App\OpcionTenenciaTierra;
 use App\ProcedenciasSemilla;
+use App\TipoProduccionAve;
+use App\Parentesco;
 use App\Raza;
 use App\SistemaEliminacionAguasGrise;
 use App\SitioVenta;
@@ -61,7 +63,10 @@ use App\TipoUnidadesSanitaria;
 use App\UnidadesOrdenio;
 use App\UnidadProducto;
 use App\Vereda;
+use App\TipoVisita;
+use App\TipoMejoramiento;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SelectsController extends Controller
 {
@@ -73,6 +78,22 @@ class SelectsController extends Controller
             'data' => $departamentos
         ]);
     }
+    public function getMunicipiosByCampo(Request $request)
+    {
+        $municipios =  DB::table('veredas')
+                        ->join('municipios', 'veredas.id_municipio', 'municipios.id')
+                        ->where('veredas.id_campo', '=', $request->id)
+                        ->select('municipios.id', 'municipios.municipio')
+                        ->distinct()
+                        ->get();
+
+        //dd($veredas);        
+        
+        return response()->json([
+            'estado' => 'ok',
+            'data' => $municipios,
+        ]);
+    }
     public function getMunicipios(Request $request){
         $municipios =  Municipio::where('id_departamento',$request->id)->get(['id','municipio']);
         return response()->json([
@@ -82,7 +103,7 @@ class SelectsController extends Controller
     }
 
     public function getVeredas(Request $request){
-        $veredas =  Vereda::where('id_municipio',$request->id)->get(['id','vereda']);
+        $veredas =  Vereda::where('id_municipio',$request->id)->get(['id','vereda']);        
         return response()->json([
             'estado' => 'ok',
             'data' => $veredas,
@@ -103,6 +124,14 @@ class SelectsController extends Controller
             'estado' => 'ok',
             'data' => $veredas,
         ]);
+    }
+
+    public function getVeredasAll(){
+        $veredas = Vereda::paginate(10);
+        foreach ($veredas as $vereda){
+            $veredasAll = $vereda->Municipio;
+        }
+        return $veredas;
     }
 
 
@@ -464,7 +493,8 @@ class SelectsController extends Controller
         try{
             return response()->json([
                 'estado' => 'ok',
-                'tipo_produccion'=> TipoProduccione::all(),
+                'tipo_produccion_ave'=> TipoProduccionAve::all(),
+                'tipo_produccion_cerdo'=> TipoProduccione::all(),
                 'tipo_corral' => TipoCorrale::all(),
                 'estado_corral' => EstadoInstalacione::all(),
                 'tipo_aves' => TipoAve::all(),
@@ -483,6 +513,40 @@ class SelectsController extends Controller
         }
     }
 
+    public function getSelectsTipoVisita(){
+
+        try{
+            return response()->json([
+                'estado' => 'ok',
+                'tipovisita' =>  TipoVisita::all(),
+                'tipomejora' => TipoMejoramiento::all(),
+
+            ]);
+
+        }catch (\Exception $ee){
+            return response()->json([
+                'estado' => 'fail',
+                'error' => $ee->getMessage(),
+            ]);
+        }
+    }
+
+    public function parentesco (Request $request)
+    {
+        try {
+            return response()->json([
+                'estado' => 'ok',
+                'parentesco' => Parentesco::all()
+
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'estado' => 'fail',
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
 
 
 

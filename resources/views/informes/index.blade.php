@@ -6,13 +6,13 @@
 @endsection
 @section('content')
     <div class="container" id="app">
-        <div class="row" style="margin-top: 10px;">
+        <div class="row" style="margin-top: 60px;">
 
-            <h3>Subsidios</h3>
+            <h3>Informes de Beneficios</h3>
 
             <form class="form" v-on:submit.prevent="consultarDatos()" style="margin-bottom: 20px">
 
-                <div class="form-group has-feedback col-lg-2 col-sm-6 col-md-3">
+                <div class="form-group has-feedback col-lg-2 col-sm-3 col-md-2">
                     <label for="exampleInputName2">Orden de Servicio</label>
                     <select class="form-control" v-model="nuevaConsulta.ordenServicio" v-on:change="changeOrden($event.target.value)"  required>
                         <option value=""  >Seleccione...</option>
@@ -20,7 +20,7 @@
                     </select>
                     <span class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 25px;"></span>
                 </div>
-                <div class="form-group has-feedback col-lg-2 col-sm-6 col-md-3">
+                <div class="form-group has-feedback col-lg-2 col-sm-3 col-md-2">
                     <label for="exampleInputName2">Fase</label>
                     <select class="form-control" v-model="nuevaConsulta.fase"  id="fase" required>
                         <option value="9999"  >Todos</option>
@@ -29,23 +29,38 @@
                     <span class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 25px;"></span>
                 </div>
 
-                <div class="form-group has-feedback col-lg-2 col-sm-6 col-md-3">
-                    <label for="exampleInputName2">Tipo Subsidio</label>
+                <div class="form-group has-feedback col-lg-2 col-sm-3 col-md-2">
+                    <label for="exampleInputName2">Tipo de Beneficio</label>
                     <select class="form-control" v-model="nuevaConsulta.tipo"   required>
                         <option value="9999"  >Todos</option>
                         <option v-for="tipo in tiposSubsidio" :value="tipo.id">@{{ tipo.tipo_subsidio  }}</option>
                     </select>
                     <span class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 25px;"></span>
                 </div>
-                <div class="form-group has-feedback col-lg-2 col-sm-6 col-md-3">
+                <div class="form-group has-feedback col-lg-2 col-sm-3 col-md-2">
                     <label for="exampleInputName2">Campos</label>
-                    <select class="form-control" v-model="nuevaConsulta.campo" id="campo"  required>
+                    <select class="form-control" v-model="nuevaConsulta.campo" id="campo"  required @change="getMunicipioByCampo($event.target.value)">
                         <option value="9999"  >Todos</option>
                         <option v-for="campo in campos" :value="campo.id">@{{ campo.nombre_campo  }}</option>
                     </select>
                     <span class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 25px;"></span>
                 </div>
-
+                <div class="form-group has-feedback col-lg-2 col-sm-3 col-md-2">
+                    <label for="exampleInputName2">Municipio</label>
+                    <select class="form-control" v-model="nuevaConsulta.municipio" id="municipio"  required @change="getVeredaByMunicipio($event.target.value)">
+                        <option value="9999"  >Todos</option>
+                        <option v-for="municipio in municipios" :value="municipio.id">@{{ municipio.municipio  }}</option>
+                    </select>
+                    <span class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 25px;"></span>
+                </div>
+                <div class="form-group has-feedback col-lg-2 col-sm-3 col-md-2">
+                    <label for="exampleInputName2">Vereda</label>
+                    <select class="form-control" v-model="nuevaConsulta.vereda" id="vereda"  required>
+                        <option value="9999"  >Todos</option>
+                        <option v-for="vereda in veredas" :value="vereda.id">@{{ vereda.vereda  }}</option>
+                    </select>
+                    <span class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 25px;"></span>
+                </div>
                 <div class="col-lg-2 col-sm-12 form-group form-inline" style="margin-top: 25px">
                     <button class="btn btn-default " type="submit" >Consultar
                         <label v-show="loading" >
@@ -53,15 +68,15 @@
                         </label>
                     </button>
                 </div>
-                <div class="col-lg-2 col-sm-12 form-group form-inline" style="margin-top: 25px">
-                    <a href="mapa/" class="btn btn-default " type="submit" >Ver Mapa
-                        <label v-show="loading" >
-                            <i class="fa fa-spinner fa-spin"></i>
-                        </label>
-                    </a>
-                </div>
+
+
 
             </form>
+            <!--<div class="col-lg-2 col-sm-12 form-group form-inline" style="margin-top: 25px">
+                    <button class="btn btn-default " type="submit" @click="pruebaExcel">Exportar excel
+                        
+                    </button>
+                </div>-->
 
             <div class="col-lg-12" style="margin-top: 10px">
 
@@ -69,13 +84,16 @@
                     <label for="exampleInputName2">Ver grafico por:</label>
                     <select class="form-control" v-model="vistas" required>
                         <option value="1">Inversion Total</option>
-                        <option value="2">Subsidio Asignados</option>
-                        <option value="3">Subsidio Asignados</option>
-                        <option value="4">Subsidio Concertados</option>
-                        <option value="5">Subsidio Entregados</option>
+                        <option value="2">Beneficios Asignados</option>
+                        <!--<option value="3">Subsidio Asignados</option>-->
+                        <!--<option value="4">Beneficios Concertados</option>-->
+                        <option value="5">Beneficios Entregados</option>
                         <option value="6">Presupuesto Asignado</option>
                         <option value="8">Presupuesto Ejecutado</option>
                         <option value="7">Asignado Vs Ejecutado</option>
+                        <option value="9">Tipo de mejoramiento de vivienda</option>
+                        <option value="10">Estado de la vivienda</option>
+                        <!--<option value="11">Tipo de proyecto productivo</option>-->
                     </select>
                     <span class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 25px;"></span>
                 </div>
@@ -94,7 +112,7 @@
                     <th>Bloque</th>
                     <th>Fase</th>
                     <th>Vereda</th>
-                    <th>Subsidios</th>
+                    <th>Beneficio</th>
                     <th>Concertados</th>
                     <th>Entregados</th>
                     <th>Obra en construccion</th>
@@ -154,6 +172,7 @@
         });
         Vue.http.headers.common['X-CSRF-TOKEN'] = $("#token").attr("value");
         var app = new Vue({
+            
             el : '#app',
             data : {
                 subsidios : '',
@@ -163,6 +182,10 @@
                     campo : '9999',
                     tipo : '9999',
                     fase : '9999',
+                    municipio: '9999',
+                    vereda: '9999',
+                    municipio: '9999',
+                    vereda: '9999'
                 },
                 ordenes : '',
                 fases : '',
@@ -180,7 +203,9 @@
                 subsidiosBloqueFaseVereda: '',
                 datosGrafico : '',
                 camposGrafico : [],
-                subsidiosBloqueOVereda: ''
+                subsidiosBloqueOVereda: '',
+                municipios: '',
+                veredas: ''
 
 
 
@@ -226,6 +251,12 @@
                         case '8' :
                             app.subsidiosByEjecutado()
                             break;
+                        case '9' :
+                            app.subsidiosByTipomejoramiento()
+                            break;
+                        case '10' :
+                            app.subsidiosByEstadovivienda()
+                            break;
                         default : '0'
                             break;
                     }
@@ -233,29 +264,46 @@
 
             },
             methods:{
-
+                pruebaExcel: function () {
+                    this.$http.post('/exportExcel').then((response)=>{
+                        notificarOk("Excel generado...")
+                    }, (error)=>{
+                       notificarFail("Error"+ error) 
+                    });
+                },
 
                 subsidiosByValor : function () {
                     var data = [];
                     for(item in this.subsidiosTabulados){
                         data.push({
-                            'country' : this.subsidiosTabulados[item].item,
+                            'country' : this.subsidiosTabulados[item].vereda,
                             'visits' : this.subsidiosTabulados[item].valor,
                         })
                     }
                     this.dibujarSerial(data, "Grafico Presupuesto Asignado")
+
+                    this.$http.post('/exportExcel', {data: data, op: 2}).then((response)=>{
+                        notificarOk("Excel generado...")
+                    },(error)=>{
+                        notificarFail("Error"+ error) 
+                    });
 
                 },
                 subsidiosByEjecutado : function () {
                     var data = [];
                     for(item in this.subsidiosTabulados){
                         data.push({
-                            'country' : this.subsidiosTabulados[item].item,
+                            'country' : this.subsidiosTabulados[item].vereda,
                             'visits' : this.subsidiosTabulados[item].ejecutado,
                         })
                     }
                     this.dibujarSerial(data, "Grafico Presupuesto Ejecutado")
 
+                    this.$http.post('/exportExcel', {data: data, op: 2}).then((response)=>{
+                        notificarOk("Excel generado...")
+                    },(error)=>{
+                        notificarFail("Error"+ error) 
+                    });
                 },
 
                 subsidiosByAsignados(){
@@ -285,20 +333,33 @@
 
 
                     this.dibujarPie(data, "Grafico Subsidios Asignados")
+
+                    this.$http.post('/exportExcel', {data: data, op: 1}).then((response)=>{
+                        notificarOk("Excel generado...")
+                    },(error)=>{
+                        notificarFail("Error"+ error) 
+                    });
                     //this.pie = true
                 },
                 subsidiosByEntregados(){
+                    //console.log(this.subsidiosTabulados);
                     this.hiddenGraphics();
                     var data = [];
                     var p = Object.keys(this.subsidios);
                     for(item in this.subsidiosTabulados){
                         data.push({
-                            'country' : this.subsidiosTabulados[item].item,
+                            'country' : this.subsidiosTabulados[item].vereda,
                             'visits' : this.subsidiosTabulados[item].entregado,
                         })
                     }
 
                     this.dibujarPie(data, "Grafico Subsidios Entregados")
+
+                    this.$http.post('/exportExcel', {data: data, op: 2}).then((response)=>{
+                        notificarOk("Excel generado...")
+                    },(error)=>{
+                        notificarFail("Error"+ error) 
+                    });
                     //this.pie = true
                 },
                 subsidiosByConcertados(){
@@ -371,8 +432,12 @@
 
                     });
                     jQuery.unique(bloques);
-                    console.log(dataBloques);
+                    //console.log(dataBloques);
                     this.dibujarSerialTwoRows(dataBloques, bloques, "Grafico Presupuesto Asignado Vs Ejecutado", 'Asignado','asignado','Ejecutado',"ejecutado")
+
+                    
+
+
 
                 },
 
@@ -426,6 +491,12 @@
                     jQuery.unique(veredas);
 
                     this.dibujarSerialBloqueFase("Inversion Total Por Bloque",dataBloques,veredas, "Pesos Colombianos")
+
+                    this.$http.post('/exportExcel', {data: dataBloques, vereda: veredas, op: 1}).then((response)=>{
+                        notificarOk("Excel generado...")
+                    },(error)=>{
+                        notificarFail("Error"+ error) 
+                    });
                 },
 
 
@@ -451,6 +522,77 @@
 
                     this.dibujarSerialBloqueFase("Subsidios Total Por Bloque",dataBloques,bloques,"Cantidad de Subsidios")
                 },
+
+                subsidiosByEstadovivienda:function () {
+                    var data = [];
+                    for(item in this.subsidiosTabulados){
+                        data.push({
+                            'country' : this.subsidiosTabulados[item].item,
+                            'estado_bueno1' : this.subsidiosTabulados[item].estado_bueno1,
+                            'estado_bueno2' : this.subsidiosTabulados[item].estado_bueno2,
+                            'estado_malo' : this.subsidiosTabulados[item].estado_malo,
+                            'estado_regular' : this.subsidiosTabulados[item].estado_regular,
+                        })
+                    }
+                    var dataBloques = [];
+                    var bloques = [];
+                    $.each(this.subsidiosBloqueOVereda, function (bloque,subs) {
+
+                                    var tempo = {};
+                                    bloques.push(bloque);
+                                    tempo['country'] = bloque
+                                    tempo['estado_malo'] =subs.estado_malo;
+                                    tempo['estado_regular'] =subs.estado_regular;
+                                    tempo['estado_bueno1'] =subs.estado_bueno1;
+                                    tempo['estado_bueno2'] =subs.estado_bueno2;
+
+                                    //console.log(tempo)
+                                    dataBloques.push(tempo)
+
+
+
+                    });
+                    jQuery.unique(bloques);
+                    console.log(dataBloques);
+                    this.dibujarSerialFourRows(dataBloques, bloques, "Grafico Estado General de la vivienda", 'Mala','estado_malo', 'Regular','estado_regular','Buena sin acabados','estado_bueno1','Buena con acabados',"estado_bueno2")
+
+                },
+
+                subsidiosByTipomejoramiento:function () {
+                    var data = [];
+                    for(item in this.subsidiosTabulados){
+                        data.push({
+                            'country' : this.subsidiosTabulados[item].item,
+                            'hacinamiento' : this.subsidiosTabulados[item].hacinamiento,
+                            'saneamiento' : this.subsidiosTabulados[item].saneamiento,
+                            'seguridad' : this.subsidiosTabulados[item].seguridad,
+                            
+                        })
+                    }
+                    var dataBloques = [];
+                    var bloques = [];
+                    $.each(this.subsidiosBloqueOVereda, function (bloque,subs) {
+
+                                    var tempo = {};
+                                    bloques.push(bloque);
+                                    tempo['country'] = bloque
+                                    tempo['hacinamiento'] =subs.hacinamiento;
+                                    tempo['saneamiento'] =subs.saneamiento;
+                                    tempo['seguridad'] =subs.seguridad;
+
+                                    //console.log(tempo)
+                                    dataBloques.push(tempo)
+
+
+
+                    });
+                    jQuery.unique(bloques);
+                    console.log(dataBloques);
+                    this.dibujarSerialThreeRows(dataBloques, bloques, "Grafico Tipo de mejoramiento", 'Hacinamiento','hacinamiento', 'Saneamiento Básico','saneamiento','Seguridad, Estructura y estética','seguridad')
+
+                },
+
+
                 subsidiosByVeredaFaseWithSubsidios: function () {
 
                     var veredas = [];
@@ -471,6 +613,11 @@
                     jQuery.unique(veredas);
 
                     this.dibujarSerialBloqueFase("Subsidios Total "+bloqueActual,dataBloques,veredas,"Cantidad de Subsidios")
+                    this.$http.post('/exportExcel', {data: dataBloques, vereda: veredas, op: 1}).then((response)=>{
+                        notificarOk("Excel generado...")
+                    },(error)=>{
+                        notificarFail("Error"+ error) 
+                    });
                 },
 
 
@@ -708,6 +855,152 @@
                     };
                     this.chartSerialTwoRows  = AmCharts.makeChart('chartdiv', chartSerialTwoRowsConfig);
                 },
+
+
+                dibujarSerialFourRows : function (data, bloques, titulo, cat1, label1, cat2, label2, cat3, label3, cat4, label4) {
+
+                    var chartSerialFourRowsConfig =  {
+                        "theme": "light",
+                        "type": "serial",
+                        "dataProvider": data,
+                        "valueAxes": [{
+                            "stackType": "3d",
+                            "unit": "",
+                            "position": "left",
+                            "title": "Cantidad",
+                            "minimum" : 0
+                        }],
+                        "legend": {
+                            "enabled": true,
+                            "useGraphSettings": true,
+                        },
+                        "startDuration": 1,
+                        "graphs": [{
+                            "balloonText": " [[category]] ("+cat1+"): <b>[[value]]</b>",
+                            "fillAlphas": 0.9,
+                            "lineAlpha": 0.2,
+                            "title": cat1,
+                            "type": "column",
+                            "valueField": label1,
+                            "labelText": "[[value]]",
+                            "labelPosition": "center"
+                        }, {
+                            "balloonText": "[[category]] ("+cat2+"): <b>[[value]]</b>",
+                            "fillAlphas": 0.9,
+                            "lineAlpha": 0.2,
+                            "title": cat2,
+                            "type": "column",
+                            "valueField": label2,
+                            "labelText": "[[value]]",
+
+                        }, {
+                            "balloonText": "[[category]] ("+cat3+"): <b>[[value]]</b>",
+                            "fillAlphas": 0.9,
+                            "lineAlpha": 0.2,
+                            "title": cat3,
+                            "type": "column",
+                            "valueField": label3,
+                            "labelText": "[[value]]",
+
+                        }, {
+                            "balloonText": "[[category]] ("+cat4+"): <b>[[value]]</b>",
+                            "fillAlphas": 0.9,
+                            "lineAlpha": 0.2,
+                            "title": cat4,
+                            "type": "column",
+                            "valueField": label4,
+                            "labelText": "[[value]]",
+
+                        }],
+                        "plotAreaFillAlphas": 0.1,
+                        "depth3D": 60,
+                        "angle": 30,
+                        "categoryField": "country",
+                        "categoryAxis": {
+                            "gridPosition": "start"
+                        },
+                        "export": {
+                            "enabled": true
+                        },
+                        'titles' : [
+                            {
+                                "id": "Title-1",
+                                "size": 15,
+                                "text": titulo,
+                            }],
+
+                    };
+                    this.chartSerialFourRows  = AmCharts.makeChart('chartdiv', chartSerialFourRowsConfig);
+                },
+
+
+                dibujarSerialThreeRows : function (data, bloques, titulo, cat1, label1, cat2, label2, cat3, label3) {
+
+                    var chartSerialThreeRowsConfig =  {
+                        "theme": "light",
+                        "type": "serial",
+                        "dataProvider": data,
+                        "valueAxes": [{
+                            "stackType": "3d",
+                            "unit": "",
+                            "position": "left",
+                            "title": "Cantidad",
+                            "minimum" : 0
+                        }],
+                        "legend": {
+                            "enabled": true,
+                            "useGraphSettings": true,
+                        },
+                        "startDuration": 1,
+                        "graphs": [{
+                            "balloonText": " [[category]] ("+cat1+"): <b>[[value]]</b>",
+                            "fillAlphas": 0.9,
+                            "lineAlpha": 0.2,
+                            "title": cat1,
+                            "type": "column",
+                            "valueField": label1,
+                            "labelText": "[[value]]",
+                            "labelPosition": "center"
+                        }, {
+                            "balloonText": "[[category]] ("+cat2+"): <b>[[value]]</b>",
+                            "fillAlphas": 0.9,
+                            "lineAlpha": 0.2,
+                            "title": cat2,
+                            "type": "column",
+                            "valueField": label2,
+                            "labelText": "[[value]]",
+
+                        }, {
+                            "balloonText": "[[category]] ("+cat3+"): <b>[[value]]</b>",
+                            "fillAlphas": 0.9,
+                            "lineAlpha": 0.2,
+                            "title": cat3,
+                            "type": "column",
+                            "valueField": label3,
+                            "labelText": "[[value]]",
+
+                        }],
+                        "plotAreaFillAlphas": 0.1,
+                        "depth3D": 60,
+                        "angle": 30,
+                        "categoryField": "country",
+                        "categoryAxis": {
+                            "gridPosition": "start"
+                        },
+                        "export": {
+                            "enabled": true
+                        },
+                        'titles' : [
+                            {
+                                "id": "Title-1",
+                                "size": 15,
+                                "text": titulo,
+                            }],
+
+                    };
+                    this.chartSerialThreeRows  = AmCharts.makeChart('chartdiv', chartSerialThreeRowsConfig);
+                },
+
                 dibujarSerialBloqueFase :function (titulo,data, bloques,medida) {
                     var graphs = []
                     var i = 1;
@@ -787,14 +1080,31 @@
                     this.pieChart = null;
                     this.serialchart = null;
                     this.chartSerialTwoRows = null
+                },
+
+                getVeredaByMunicipio: function (id_municipio) {
+                    this.$http.post('/getveredas', {id: id_municipio}).then((response)=>{
+                        this.veredas = response.body.data;
+                        //this.predio.idMunicipio = municipio;
+                    }, (error)=>{
+
+                    });
+                },
+                getMunicipioByCampo: function (id_campo) {
+                    this.$http.post('/getmunicipiosbycampo', {id: id_campo}).then((response)=>{
+                        this.municipios = response.body.data;
+                        //this.predio.idMunicipio = municipio;
+                    }, (error)=>{
+
+                    });
                 }
 
             },
 
             created(){
 
-                /*this.$http.post('/getcampos').then((response)=>{
-                    this.campos = response.body.data
+                /*this.$http.post('/getmunicipios', {id: 85}).then((response)=>{
+                    this.municipios = response.body.data
                     //this.predio.idMunicipio = municipio;
                 });*/
                 this.$http.post('/gettipossubsidios').then((response)=>{

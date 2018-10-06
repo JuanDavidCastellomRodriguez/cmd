@@ -1,6 +1,13 @@
 <template id="form-predio-template">
     <div>
         <h3>Informacion Predio</h3>
+        <div class="col-lg-12 col-sm-6">
+            <p v-if="bandera == 1"><strong>Nota.</strong>La informacion de este predio fue tomada del <strong>Levantamiento de informacion Beneficio No @{{ infoProductivo }}</strong> del beneficiario <strong>@{{ nombre }} CC. @{{ documento }}.</strong>Por favor verifica su validez para este nuevo predio, y si es correcta Guarda, sino crea un nuevo Predio.</p>
+        </div>
+        <button v-if="bandera == 1" type="button" class="btn btn-default" @click="resetPredio()" style="margin-left: 86%;">
+            Nuevo Predio
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+        </button>
         <form class="form" data-toggle="validator" v-on:submit.prevent="guardarPredio()" enctype="multipart/form-data">
 
             <div class="form-group has-feedback col-lg-6 col-sm-12">
@@ -11,12 +18,22 @@
                 </select>
                 <span class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 25px;"></span>
             </div>
+            <div class="form-group has-feedback col-lg-6 col-sm-12" v-if="tenenciaPredio.id_tipo_tenencia_tierras == 5">
+                <label for="exampleInputName2">¿Cual?</label>
+                <input type="text" required class="form-control" v-model="tenenciaPredio.otra_tenencia">
+                <span class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 25px;"></span>
+            </div>
             <div class="form-group has-feedback col-lg-6 col-sm-12">
                 <label for="exampleInputName2">Tipo Documento Predio</label>
                 <select class="form-control" v-model="tenenciaPredio.id_opcion" required>
                     <option value="" disabled  >Seleccione...</option>
                     <option v-for="opcion in opcionesTenencia" :value="opcion.id">@{{ opcion.opcion_tenencia  }}</option>
                 </select>
+                <span class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 25px;"></span>
+            </div>
+            <div class="form-group has-feedback col-lg-6 col-sm-12" v-if="tenenciaPredio.id_opcion == 4">
+                <label for="exampleInputName2">¿Cual?</label>
+                <input type="text" required class="form-control" v-model="tenenciaPredio.otra_opcion">
                 <span class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 25px;"></span>
             </div>
             <!--
@@ -28,7 +45,7 @@
             -->
             <div class="form-group has-feedback col-lg-6 col-sm-12">
                 <label for="exampleInputName2">Area del Predio (Hectareas)</label>
-                <input type="number" required class="form-control" v-model.number="tenenciaPredio.area_predio_has">
+                <input type="number" required class="form-control" v-model="tenenciaPredio.area_predio_has" step="0.1">
                 <span class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 15px;"></span>
             </div>
 

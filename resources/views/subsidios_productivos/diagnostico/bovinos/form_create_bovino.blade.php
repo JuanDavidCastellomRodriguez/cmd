@@ -4,28 +4,28 @@
             <form class="form" data-toggle="validator" v-on:submit.prevent="guardarBovino()" >
                 <div class="modal-header">
 
-                    <h4 class="modal-title">Nuevo Cultivo</h4>
+                    <h4 class="modal-title">Nuevo Bovino</h4>
                 </div>
 
                 <div class="modal-body">
                     <div class="row">
                         <div class="form-group col-lg-4 col-sm-12 col-md-6 ">
                             <label for="exampleInputName2">Tipo de Bovino</label>
-                            <select v-model="nuevoBovino.id_tipo_bovino" class="form-control" >
+                            <select required="required" v-model="nuevoBovino.id_tipo_bovino" class="form-control" >
                                 <option value="" disabled>Seleccione...</option>
                                 <option v-for="tipo in tipoBovino" :value="tipo.id" >@{{ tipo.tipo_animal }}</option>
                             </select>
                         </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6 ">
                             <label for="exampleInputName2">Raza</label>
-                            <select v-model="nuevoBovino.id_raza" class="form-control" >
+                            <select required="required" v-model="nuevoBovino.id_raza" class="form-control" >
                                 <option value="" disabled>Seleccione...</option>
                                 <option v-for="raza in razas" :value="raza.id" >@{{ raza.raza }}</option>
                             </select>
                         </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6 ">
                             <label for="exampleInputName2">Tenencia</label>
-                            <select v-model="nuevoBovino.id_tipo_propiedad" class="form-control" >
+                            <select required="required" v-model="nuevoBovino.id_tipo_propiedad" class="form-control" >
                                 <option value="" disabled>Seleccione...</option>
                                 <option v-for="propiedad in TipoPropiedades" :value="propiedad.id" >@{{ propiedad.tipo_propiedad }}</option>
                             </select>
@@ -33,7 +33,7 @@
 
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Cantidad</label>
-                            <input type="number" required class="form-control" id="exampleInputName2" v-model="nuevoBovino.cantidad">
+                            <input type="number" required="required" class="form-control" id="exampleInputName2" v-model="nuevoBovino.cantidad">
                         </div>
 
                 </div>

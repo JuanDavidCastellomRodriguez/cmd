@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 namespace App;
 
@@ -63,5 +63,10 @@ class Subsidio extends Model
         //return $this->hasManyThrough('App\InformacionVivienda', 'App\Predio', 'id', 'id_predio', 'id');
         //return $this->hasOne('App\InformacionVivienda', 'id_predio', 'id');
         //return $this->hasOne('App\Predio', 'id_vereda', 'id');
+    }
+
+    public function picture()
+    {
+        return $this->hasMany('App\picture','id_subsidio','id');
     }
 }

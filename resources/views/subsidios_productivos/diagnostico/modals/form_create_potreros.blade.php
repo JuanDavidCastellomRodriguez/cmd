@@ -10,24 +10,24 @@
                     <div class="row">
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Nombre Potrero</label>
-                            <input type="text" required class="form-control" id="exampleInputName2" v-model="nuevoPotrero.potrero_lote">
+                            <input type="text" required="required" class="form-control" id="exampleInputName2" v-model="nuevoPotrero.potrero_lote">
                         </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Extension (Hectareas)</label>
-                            <input type="number" required class="form-control" id="exampleInputName2" v-model="nuevoPotrero.extension_has">
+                            <input type="number" required="required" class="form-control" id="exampleInputName2" v-model="nuevoPotrero.extension_has" step="0.1">
                         </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Dias de Descanso</label>
-                            <input type="number" required class="form-control" id="exampleInputName2" v-model="nuevoPotrero.rotacional_dias_descanso">
+                            <input type="number" required="required" class="form-control" id="exampleInputName2" v-model="nuevoPotrero.rotacional_dias_descanso">
                         </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Dias Ocupado</label>
-                            <input type="number" required class="form-control" id="exampleInputName2" v-model="nuevoPotrero.rotacional_dias_ocupacion">
+                            <input type="number" required="required" class="form-control" id="exampleInputName2" v-model="nuevoPotrero.rotacional_dias_ocupacion">
                         </div>
 
                         <div class="form-group col-lg-4 col-sm-12 col-md-6 ">
                             <label for="exampleInputName2">Tipo Cobertura</label>
-                            <select v-model="nuevoPotrero.id_tipo_cobertura" class="form-control" v-on:change="coberturaSelected($event.target.value, $event.target[$event.target.selectedIndex].text)">
+                            <select required="required" v-model="nuevoPotrero.id_tipo_cobertura" class="form-control" v-on:change="coberturaSelected($event.target.value, $event.target[$event.target.selectedIndex].text)">
                                 <option value="" disabled>Seleccione...</option>
                                 <option v-for="tipo in tipoCobertura" :value="tipo.id">@{{ tipo.tipo_cobertura }}</option>
 
@@ -36,7 +36,7 @@
                         </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6 ">
                             <label for="exampleInputName2">Subtipo Cobertura</label>
-                            <select v-model="nuevoPotrero.id_subtipo_cobertura" class="form-control" v-on:change="subcoberturaSelected($event.target[$event.target.selectedIndex].text)">
+                            <select required="required" v-model="nuevoPotrero.id_subtipo_cobertura" class="form-control" v-on:change="subcoberturaSelected($event.target[$event.target.selectedIndex].text)">
                                 <option value="" disabled>Seleccione...</option>
                                 <option v-for="subtipos in subtipoCobertura" :value="subtipos.id" >@{{ subtipos.subtipo_cobertura }}</option>
 
@@ -46,7 +46,7 @@
 
                         <div class="form-group col-lg-4 col-sm-12 col-md-6 ">
                             <label for="exampleInputName2">Fuente Hidrica</label>
-                            <select v-model="nuevoPotrero.id_fuente_hidrica" class="form-control" v-on:change="fuenteSelected($event.target[$event.target.selectedIndex].text)">
+                            <select required="required" v-model="nuevoPotrero.id_fuente_hidrica" class="form-control" v-on:change="fuenteSelected($event.target[$event.target.selectedIndex].text)">
                                 <option value="" disabled>Seleccione...</option>
                                 <option v-for="fuente in fuentesHidricas" :value="fuente.id" >@{{ fuente.tipo_fuentes_hidricas }}</option>
 
@@ -55,9 +55,12 @@
                         </div>
                         <div class="form-group col-lg-12">
                             <label for="exampleInputName2">Uso</label>
-                            <textarea  required class="form-control" id="exampleInputName2" v-model="nuevoPotrero.uso"></textarea>
+                            <textarea  required="required" class="form-control" id="exampleInputName2" v-model="nuevoPotrero.uso"></textarea>
                         </div>
-
+                        <div class="form-group col-lg-12">
+                            <label for="exampleInputName2">Observaciones</label>
+                            <textarea  required="required" class="form-control" id="exampleInputName2" v-model="nuevoPotrero.observaciones"></textarea>
+                        </div>
 
 
                     </div>

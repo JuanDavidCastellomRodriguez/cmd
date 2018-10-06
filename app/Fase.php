@@ -21,4 +21,9 @@ class Fase extends Model
     public function Subsidios(){
         return $this->hasMany('App\Subsidio','id_fase','id');
     }
+
+    public function Orden(){
+
+        return $this->hasOne('App\OrdenServicio','id','id_orden_servicio');
+    }
 }

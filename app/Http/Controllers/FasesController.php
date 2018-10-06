@@ -31,7 +31,7 @@ class FasesController extends Controller
         $fases = Fase::paginate(10);
         foreach ($fases as $fase){
             $veredasFase = $fase->VeredasFase;
-
+            $orden = $fase->Orden;
 /*
             $veredas = new Collection();
             foreach ($veredasFase as $vereda){

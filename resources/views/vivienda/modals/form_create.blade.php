@@ -13,28 +13,33 @@
                             <div class=" form-group col-lg-6 col-sm-12">
                                 <label for="exampleInputName2">Fecha Encuesta</label>
 
-                                    <input type="text" name="fecha_encuesta" id="fecha_encuesta" class="form-control" required v-model="nuevoDiagnostico.fechaEncuesta">
+                                    <input type="text" name="fecha_encuesta" id="fecha_encuesta" class="form-control" required v-model="nuevoDiagnostico.fecha_encuesta">
 
 
                             </div>
 
                             <div class="form-group col-lg-6 col-sm-12">
                                 <label for="exampleInputName2">No de familias viven en la vivienda</label>
-                                <input type="number" required class="form-control" id="exampleInputName2" v-model.number="nuevoDiagnostico.numeroFamiliasVivienda">
+                                <input type="number" required class="form-control" id="exampleInputName2" v-model.number="nuevoDiagnostico.no_familias_vivienda">
                             </div>
                             <div class="form-group col-lg-6 col-sm-6">
                                 <label for="exampleInputName2">¿Atiende el propietario de la vivienda?</label>
                                 <div class="checkbox" >
-                                    <label><input type="checkbox" v-model="nuevoDiagnostico.respondePropietario" name="propietario">Si</label>
+                                    <label><input type="checkbox" v-model="nuevoDiagnostico.responde_propietario" name="propietario">Si</label>
                                 </div>
                             </div>
                             <div class="form-group col-lg-6 col-sm-6">
                                 <label for="exampleInputName2">¿Beneficiario de programa de Inversión Social?</label>
                                 <div class="checkbox"  >
-                                    <label><input type="checkbox" v-model="nuevoDiagnostico.programaSocial" name="programasocial">Si</label>
+                                    <label><input type="checkbox" v-model="nuevoDiagnostico.programa_social" name="programasocial">Si</label>
                                 </div>
                             </div>
-
+                            <div class="form-group col-lg-6 col-sm-6">
+                                <label for="exampleInputName2">¿Caso Especial?</label>
+                                <div class="checkbox">
+                                    <label><input type="checkbox" v-model="nuevoDiagnostico.caso_especial" name="caso_especial">Si</label>
+                                </div>
+                            </div>
 
 
                     </div>

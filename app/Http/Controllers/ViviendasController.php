@@ -8,6 +8,7 @@ use App\Beneficiario;
 use App\BeneficiarioVivienda;
 use App\Fotografia;
 use App\Generalidade;
+use App\Indicadore;
 use App\InformacionVivienda;
 use App\PersonasCargo;
 use App\Predio;
@@ -15,6 +16,10 @@ use App\PropietariosPredio;
 use App\Riesgo;
 use App\Subsidio;
 use App\TenenciaTierra;
+use App\Habitacione;
+use App\Cocina;
+use App\UnidadesSanitaria;
+
 use Carbon\Carbon;
 use Faker\Provider\File;
 
@@ -23,6 +28,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Session\TokenMismatchException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\Facades\Image;
@@ -36,8 +42,8 @@ class ViviendasController extends Controller
     }
 
     public function store (Request $request){
-
-        $validador = Validator::make($request->all(),[
+        //dd($request);
+        /*$validador = Validator::make($request->all(),[
             'fechaEncuesta'=>'required',
             'numeroFamiliasVivienda' => 'required | numeric',
 
@@ -49,7 +55,7 @@ class ViviendasController extends Controller
                 'error' => $validador->getMessageBag()->toArray(),
             ]);
 
-        }else{
+        }else{*/
             try{
                 $last = InformacionVivienda::all()->last();
                 if($last == null){
@@ -60,15 +66,17 @@ class ViviendasController extends Controller
 
                 $informacion = new InformacionVivienda();
                 $informacion->fecha_encuesta = $request->fechaEncuesta;
-                $informacion->responde_propietario = $request->respondePropietario;
-                $informacion->no_familias_vivienda = $request->numeroFamiliasVivienda;
-                $informacion->beficiarios_prog_inv_social = $request->programaSocial;
+                $informacion->responde_propietario = $request->responde_propietario;
+                $informacion->no_familias_vivienda = $request->no_familias_vivienda;
+                $informacion->caso_especial = $request->caso_especial;
+                $informacion->beficiarios_prog_inv_social = $request->programa_social;
                 $informacion->consecutivo = $consecutivo;
                 $informacion->id_usuario = Auth::User()->id;
                 $informacion->save();
 
                 $subsidio = Subsidio::find($request->subsidio);
                 $subsidio->id_info_vivienda = $informacion->id;
+                $subsidio->caso_especial = $request->caso_especial;
                 $subsidio->save();
                 return response()->json([
                     'estado' => 'ok',
@@ -85,11 +93,24 @@ class ViviendasController extends Controller
             }
 
 
-        }
+        //}
 
 
 
     }
+
+
+    /*public function getAllHabitaciones(Request $request){
+        $habitaciones = Habitacione::where('id_informacion', $request->idInfo)->get()->first();
+
+        return response()->json([
+            'estado' => 'ok',
+            'habitaciones' => $habitaciones
+        ]);
+
+    }*/
+
+
 
     public function show($id){
         $info = InformacionVivienda::findOrFail($id);
@@ -137,14 +158,18 @@ class ViviendasController extends Controller
                     $tenencia = TenenciaTierra::find($request->tenencia->id);
                     $tenencia->area_predio_has = $request->tenencia->area_predio_has;
                     $tenencia->id_opcion = $request->tenencia->id_opcion;
+                    $tenencia->otra_opcion = $request->tenencia->otra_opcion;
                     $tenencia->id_tipo_tenencia_tierras = $request->tenencia->id_tipo_tenencia_tierras;
+                    $tenencia->otra_tenencia = $request->tenencia->otra_tenencia;
                     $tenencia->save();
                 }else{
                     $tenencia = new TenenciaTierra();
                     $tenencia->area_predio_has = $request->tenencia->area_predio_has;
                     //$tenencia->file = base64_encode(file_get_contents(($request->tenencia->file)->getRealPath()));
                     $tenencia->id_opcion = $request->tenencia->id_opcion;
+                    $tenencia->otra_opcion = $request->tenencia->otra_opcion;
                     $tenencia->id_tipo_tenencia_tierras = $request->tenencia->id_tipo_tenencia_tierras;
+                    $tenencia->otra_tenencia = $request->tenencia->otra_tenencia;
                     $tenencia->id_informacion = $request->tenencia->id_informacion;
                     $tenencia->save();
                 }
@@ -182,7 +207,9 @@ class ViviendasController extends Controller
                 $tenencia->area_predio_has = $request->tenencia->area_predio_has;
                 //$tenencia->file = base64_encode(file_get_contents(($request->tenencia->file)->getRealPath()));
                 $tenencia->id_opcion = $request->tenencia->id_opcion;
+                $tenencia->otra_opcion = $request->tenencia->otra_opcion;
                 $tenencia->id_tipo_tenencia_tierras = $request->tenencia->id_tipo_tenencia_tierras;
+                $tenencia->otra_tenencia = $request->tenencia->otra_tenencia;
                 $tenencia->id_informacion = $request->tenencia->id_informacion;
                 $tenencia->save();
 
@@ -201,7 +228,8 @@ class ViviendasController extends Controller
         }catch (QueryException $ee){
             return response()->json([
                 'estado' => 'fail',
-                'mensaje' => 'Error al guardar '.$ee->getMessage(),
+                'mensaje' => 'Error al guardar ',
+                //'mensaje' => 'Error al guardar '.$ee->getMessage(),
             ]);
         }
 
@@ -210,11 +238,32 @@ class ViviendasController extends Controller
     public function getPredio(Request $request){
 
         try{
-            $predio = Predio::findOrFail($request->idPredio);
-            $propietario = PropietariosPredio::where('id_predio',$request->idPredio)->first();
-            $tenencia = TenenciaTierra::where('id_informacion',$request->idInfo)->get()->first();
+            $verificacion = InformacionVivienda::where('id', $request->idInfo)->first();
+            if ($verificacion->id_predio === null) {
+
+                $info_vivienda = Subsidio::where('id_beneficiario', $request->id)
+                                    ->where('id_info_vivienda', '<', $request->idInfo)
+                                    ->orderBy('created_at', 'desc')->first();
+                $idPredio = InformacionVivienda::where('id', $info_vivienda->id_info_vivienda)->first();
+                $predio = Predio::findOrFail($idPredio->id_predio);
+
+                $tenencia = TenenciaTierra::where('id_informacion', $idPredio->id)->first();
+                $propietario = PropietariosPredio::where('id_predio', $predio->id)->first();
+                $bandera = 1;
+            }else {
+                $predio = Predio::findOrFail($request->idPredio);
+                $propietario = PropietariosPredio::where('id_predio',$request->idPredio)->first();
+                $tenencia = TenenciaTierra::where('id_informacion',$request->idInfo)->get()->first();
+                $idPredio = '';
+                $bandera = 0;
+            }
+
+            
+            
             return response()->json([
                 'estado'=> 'ok',
+                'bandera' => $bandera,
+                'infoVivienda' => $idPredio,
                 'predio' => $predio,
                 'propietario' => $propietario,
                 'tenencia' => $tenencia,
@@ -233,16 +282,33 @@ class ViviendasController extends Controller
     public function getGeneralidades(Request $request){
 
         try{
-            $generalidades = Generalidade::where('id_informacion', $request->idInfo)->first();
+            $general = Generalidade::where('id_informacion', $request->idInfo)->first();
+            if ($general === null) {
+                $info_vivienda = Subsidio::where('id_beneficiario', $request->id)
+                                    ->where('id_info_vivienda', '<', $request->idInfo)
+                                    ->orderBy('created_at', 'desc')->first();
+                $idPredio = InformacionVivienda::where('id', $info_vivienda->id_info_vivienda)->first();
+                $generalidades = Generalidade::where('id_informacion', $idPredio->id)->first();
+                $bandera = 1;
+            }else {
+                $generalidades = Generalidade::where('id_informacion', $request->idInfo)->first();
+                $idPredio = '';
+                $bandera = 0;
+            }
+
+            
             return response()->json([
                 'estado'=> 'ok',
                 'generalidades' => $generalidades,
+                'info_vivienda' =>$idPredio,
+                'bandera' => $bandera 
 
             ]);
         }catch (QueryException $ee ){
             return response()->json([
                 'estado'=>'fail',
-                'mensaje'=> 'Error en el servidor '+ $ee->getMessage(),
+                //'mensaje'=> 'Error en el servidor '+ $ee->getMessage(),
+                'mensaje'=> 'Error en el servidor ',
             ]);
         }
 
@@ -261,10 +327,12 @@ class ViviendasController extends Controller
                 $generalidades->id_estado_via = $request->generalidades->idEstadoVia;
                 $generalidades->id_tiempo_recorrido = $request->generalidades->idTiempoRecorrido;
                 $generalidades->id_tipologia_familia = $request->generalidades->idTipologiaFamilia;
+                $generalidades->relacion_otro = $request->generalidades->relacion_otro;
+                $generalidades->descripcion_relacion = $request->generalidades->descripcion_relacion;
                 $generalidades->save();
                 $idGeneralidades = $generalidades->id;
 
-                $infoVivienda = InformacionVivienda::findOrFail($request->infoVivienda->id);
+                 $infoVivienda = InformacionVivienda::findOrFail($request->infoVivienda->id);
                 $infoVivienda->fecha_encuesta = $request->infoVivienda->fechaEncuesta;
                 $infoVivienda->responde_propietario = $request->infoVivienda->respondePropietario;
                 $infoVivienda->no_familias_vivienda = $request->infoVivienda->numeroFamiliasVivienda;
@@ -281,6 +349,8 @@ class ViviendasController extends Controller
                 $generalidades->id_estado_via = $request->generalidades->idEstadoVia;
                 $generalidades->id_tiempo_recorrido = $request->generalidades->idTiempoRecorrido;
                 $generalidades->id_tipologia_familia = $request->generalidades->idTipologiaFamilia;
+                $generalidades->relacion_otro = $request->generalidades->relacion_otro;
+                $generalidades->descripcion_relacion = $request->generalidades->descripcion_relacion;
                 $generalidades->save();
                 $idGeneralidades = $generalidades->id;
 
@@ -532,11 +602,140 @@ class ViviendasController extends Controller
             ]);
         }
     }
-    public function getRiesgos(){
+    public function getComplementosCierre(Request $request){
+        $riesgos = $this->getEnumValues('indicadores','zonas_riesgos');
         return response()->json([
             'estado' => 'ok',
-            'data' => Riesgo::all()
+            'data' => $riesgos,
+            'indicadores' => Indicadore::where('id_informacion',$request->id)->first()
+
         ]);
     }
+
+
+    public function getComplementosCierreTipoInfraestructura(Request $request){
+
+        $tipos_infraestructuras = $this->getEnumValues('indicadores','tipos_infraestructuras');
+        return response()->json([
+            'estado' => 'ok',
+            'data' => $tipos_infraestructuras,
+            'indicadores' => Indicadore::where('id_informacion',$request->id)->first()
+
+        ]);
+    }
+
+    public function getComplementosCierreTipoRiesgo(Request $request){
+
+        $tipos_riesgos = $this->getEnumValues('indicadores','tipos_riesgos');
+        return response()->json([
+            'estado' => 'ok',
+            'data' => $tipos_riesgos,
+            'indicadores' => Indicadore::where('id_informacion',$request->id)->first()
+
+        ]);
+    }
+
+    public function getdatoshabitacion(Request $request){
+
+        $tipos_riesgos = $this->getEnumValues('indicadores','tipos_riesgos');
+        return response()->json([
+            'estado' => 'ok',
+            'data' => $tipos_riesgos,
+            'indicadores' => Indicadore::where('id_informacion',$request->id)->first()
+
+        ]);
+    }
+
+
+
+    public function saveIndicadores(Request$request){
+        try{
+            if($request->id == ''){
+                $indicadores = new Indicadore();
+                $indicadores->hacinamiento = $request->hacinamiento;
+                $indicadores->saneamiento_basico = $request->saneamiento_basico;
+                $indicadores->condiciones_seguridad = $request->condiciones_seguridad;
+                $indicadores->id_informacion = $request->id_informacion;
+                $indicadores->no_habitaciones = $request->no_habitaciones;
+                $indicadores->no_personas_vivienda = $request->no_personas_vivienda;
+                $indicadores->estados_vivienda_id = $request->estados_vivienda_id;
+                $indicadores->zonas_riesgos = collect($request->zonas_riesgos)->implode(',');
+                $indicadores->otro_riesgo = $request->otro_riesgo;
+                $indicadores->infraestructura_cercana = $request->infraestructura_cercana;
+                $indicadores->tipos_infraestructuras = collect($request->tipos_infraestructuras)->implode(',');
+                $indicadores->tipos_riesgos = collect($request->tipos_riesgos)->implode(',');
+                $indicadores->propiedad_geopark = $request->propiedad_geopark;
+                $indicadores->obra_proyectada = $request->obra_proyectada;
+                $indicadores->otra_infraestructura = $request->otra_infraestructura;
+                $indicadores->cual_infraestructura = $request->cual_infraestructura;
+
+                $indicadores->save();
+            }else{
+                $indicadores = Indicadore::find($request->id);
+                $indicadores->hacinamiento = $request->hacinamiento;
+                $indicadores->saneamiento_basico = $request->saneamiento_basico;
+                $indicadores->condiciones_seguridad = $request->condiciones_seguridad;
+                //$indicadores->id_informacion = $request->id_informacion;
+                $indicadores->no_habitaciones = $request->no_habitaciones;
+                $indicadores->no_personas_vivienda = $request->no_personas_vivienda;
+                $indicadores->estados_vivienda_id = $request->estados_vivienda_id;
+                $indicadores->zonas_riesgos = collect($request->zonas_riesgos)->implode(',');
+                $indicadores->otro_riesgo = $request->otro_riesgo;
+                $indicadores->infraestructura_cercana = $request->infraestructura_cercana;
+                $indicadores->tipos_infraestructuras = collect($request->tipos_infraestructuras)->implode(',');
+                $indicadores->tipos_riesgos = collect($request->tipos_riesgos)->implode(',');
+                $indicadores->propiedad_geopark = $request->propiedad_geopark;
+                $indicadores->obra_proyectada = $request->obra_proyectada;
+
+                $indicadores->save();
+            }
+
+            return response()->json([
+                'estado' => 'ok',
+                'mensaje'=> 'Cierre Guardado',
+                'id' => $indicadores->id
+            ]);
+
+
+        }catch (QueryException $ee){
+            return response()->json([
+                'estado' => 'fail',
+                'error' => $ee->getMessage()
+
+            ]);
+
+        }catch (Exception $e){
+            return response()->json([
+                'estado' => 'fail',
+                'error' => $e->getMessage()
+
+            ]);
+
+        }catch (TokenMismatchException $exception){
+            return response()->json([
+                'estado' => 'fail',
+                'error' => $exception->getMessage()
+            ]);
+        }
+    }
+
+    public function getEnumValues($table, $column) {
+        $type = DB::select( DB::raw("SHOW COLUMNS FROM ".$table." WHERE Field = '".$column."'") )[0]->Type;
+        $dataTypes = explode("(", $type);
+        $dataType = $dataTypes[0];
+        if ($dataType == 'enum' || $dataType=='set'){
+            preg_match('/^'.$dataType.'\((.*)\)$/', $type, $matches);
+            $enum = array();
+            foreach( explode(',', $matches[1]) as $value )
+            {
+                $v = trim( $value, "'" );
+                $enum = array_add($enum, $v, $v);
+            }
+            return array_keys($enum);
+        }
+        return;
+    }
+
+    
 
 }

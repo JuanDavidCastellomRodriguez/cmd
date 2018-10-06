@@ -4,9 +4,9 @@
 @endsection
 @section('content')
     <div class="container" id="app">
-        <div class="row" style="margin-top: 10px;">
+        <div class="row" style="margin-top: 60px;">
             <div>
-                <h3>Subsidios Proyectos Productivos</h3>
+                <h3>Beneficios Proyectos Productivos</h3>
                 <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-agregar-subsidio" >
                     Nuevo
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
@@ -68,8 +68,11 @@
                     <td>@{{ info.valor }}</td>
                     <td>@{{ info.porcentaje_ejecucion+' %' }}</td>
                     <td>
-                    <a :href="'/subsidios/productivos/diagnostico/'+info.id_info_productivo" v-if="info.id_info_productivo != null" class="btn btn-sm btn-default" >Ver</a>
-                    <a  v-if="info.id_info_productivo == null" v-on:click="nuevoDiagnostico.subsidio = info.id" class="btn btn-sm btn-default" data-toggle="modal" data-target="#modal-agregar-diagnostico" >Crear</a>
+                        <a :href="'/subsidios/productivos/diagnostico/'+info.id_info_productivo" v-if="info.id_info_productivo != null" class="btn btn-sm btn-default" >Ver</a>
+                        <a  v-if="info.id_info_productivo == null" v-on:click="nuevoDiagnostico.subsidio = info.id" class="btn btn-sm btn-default" data-toggle="modal" data-target="#modal-agregar-diagnostico" >Crear</a>
+                        <a :href="'/informes/getdiagnosticoproductivo/'+info.id_info_productivo" target="_blank" v-if="info.id_info_productivo != null" class="btn btn-sm btn-default" title="Ver Diagnostico" >
+                            <span class="glyphicon glyphicon-print" aria-hidden="true"></span>
+                        </a>
                     </td>
                     <td>
                         <a :href="'/subsidios/productivos/visitas/'+info.id" class="btn btn-sm btn-default" title="Ver Visitas Realizadas" >Ver</a>
@@ -86,7 +89,7 @@
 
         </div>
 
-        @include('subsidios_vivienda.form_create')
+        @include('subsidios_productivos.form_create')
         @include('subsidios_productivos.diagnostico.modals.form_create')
 
 
@@ -115,7 +118,7 @@
         var app = new Vue({
             el : '#app',
             data : {
-                esNuevoBeneficiario : false,
+                esNuevoBeneficiario : true,
                 nuevoBeneficiario : {
                     no_cedula : '',
                     nombres : '',
@@ -137,7 +140,8 @@
                     porcentaje_ejecucion : 0,
                     entregado : false,
                     obras_en_construccion : false,
-                    observaciones : ''
+                    observaciones : 'Ninguna',
+                    archivo: null
 
 
                 },
@@ -147,8 +151,9 @@
                 loading : false,
                 nuevoDiagnostico : {
                     fechaEncuesta: '',
-                    respondePropietario: '',
-                    programaSocial:'',
+                    respondePropietario: false,
+                    programaSocial:false,
+                    caso_especial: false,
                     numeroFamiliasVivienda: '',
                     subsidio : ''
 
@@ -167,7 +172,8 @@
                 offset : 4,
                 buscar : '',
                 filtrado : false,
-                filtroActual : ''
+                filtroActual : '',
+                subirMas: false
 
 
 
@@ -213,18 +219,31 @@
                     this.getVueItems(page);
                 },
                 guardarSubsidio : function () {
+                    if (this.subirMas == true && this.nuevoSubsidio.archivo.length > 0) {
+                        //alert("entre")
+                        var archivos = new FormData()
+                        for(var i = 0 ;i<this.nuevoSubsidio.archivo.length; i++){
+                            let file = this.nuevoSubsidio.archivo[i] 
+                            archivos.append('files['+i+']',file)
+                        }
+                    }
                     var data = '';
-                    if(this.nuevoSubsidio.id_beneficiario != ''){
+                    if(this.nuevoSubsidio.id_beneficiario != '' && this.nuevoSubsidio.id_vereda != ''
+                       && this.nuevoSubsidio.id_fase != '' && this.nuevoSubsidio.observaciones != ''){
                         data = {
                             subsidio :this.nuevoSubsidio
                         }
-                    }else{
+                    }else if (this.nuevoSubsidio.id_vereda != '' && this.nuevoSubsidio.id_fase != '' 
+                              && this.nuevoSubsidio.observaciones != ''){
                         data = {
                             subsidio : this.nuevoSubsidio,
                             beneficiario : this.nuevoBeneficiario
                         }
-                    }
-                    this.$http.post('/subsidios/guardarsubsidio', data).then((response)=>{
+                    }                    
+                    if (data.subsidio.id_vereda != '' && data.subsidio.id_fase != '' 
+                              && data.subsidio.observaciones != '') {
+
+                        this.$http.post('/subsidios/guardarsubsidio', data).then((response)=>{
 
                         if(response.body.estado == 'ok'){
                             this.nuevoSubsidio.id = response.body.id;
@@ -232,10 +251,26 @@
                             this.nuevoSubsidio.vereda = response.body.vereda;
                             this.nuevoSubsidio.beneficiario = response.body.beneficiario;
                             this.nuevoSubsidio.consecutivo = response.body.consecutivo;
-                            this.subsidios.push(this.nuevoSubsidio);
+                            this.getVueItems(1);
+                            //this.subsidios.push(this.nuevoSubsidio);
                             $("#modal-agregar-subsidio").modal('hide');
                             this.formReset();
                             notificarOk('', "Subsidio de vivienda creado correctamente");
+
+                            if (this.subirMas == true){
+                                //alert("entre")
+                                var idPredio = ''
+                                archivos.append('id_beneficiario', response.body.idBeneficiario);
+                                archivos.append('idPredio', idPredio);
+                                archivos.append('tipo_subsidio', this.nuevoSubsidio.id_tipo_subsidio);
+                                this.$http.post('/guardarArchivos', archivos).then((response)=>{
+                                    notificarOk("Archivos guradados exitosamente");
+                                    //this.pagination = response.body.pagination;
+
+                                }, (error)=>{
+                                    notificarFail('', 'Error:  ' + response.body.error);
+                                });
+                            }
 
                         }else{
                             notificarFail('', 'Error:  ' + response.body.error);
@@ -243,9 +278,14 @@
 
                         }
 
-                    },(error)=>{
-                        notificarFail('', 'Error:  ' + error.status+' '+ error.statusText);
-                    });
+                        },(error)=>{
+                            notificarFail('', 'Error:  ' + error.status+' '+ error.statusText);
+                        });
+
+                    }else{
+                        //alert('Por favor completar todos los campos.'); 
+                    }
+                                      
 
                 },
 
@@ -261,10 +301,15 @@
                     });
 
                 },
+                procesarFiles (e){
+                    this.nuevoSubsidio.archivo = e.target.files
+                    //alert('procesado')
+                    //console.log(this.nuevoPlan.archivo)       
+                 },
 
                 buscarBeneficiario : function (cedula) {
                     //this.formReset();
-                    $("#txt-buscar-beneficiario").attr('disabled','disabled');
+                    
                     this.beneficiario = '';
                     this.nuevoBeneficiario.no_cedula = cedula;
                     if(cedula != ''){
@@ -272,6 +317,7 @@
                         this.$http.post('/beneficiarios/buscarbeneficiario',{no_cedula : cedula}).then((response)=>{
                             if(response.body.estado == 'ok'){
                                 if(response.body.data != null){
+                                    $("#txt-buscar-beneficiario").attr('disabled','disabled');
                                     this.nuevoSubsidio.id_beneficiario = response.body.data.id;
                                     this.esNuevoBeneficiario = false
                                     this.beneficiario = response.body.data.nombres + ' '+ response.body.data.apellidos
@@ -305,9 +351,10 @@
                         id_info_productivo : null,
                         porcentaje_ejecucion : null,
                         entregado : false,
-                        obras_en_construccion : false,
+                        obras_en_construccion : false
                     };
-
+                    $("#txt-buscar-beneficiario").removeAttr('disabled');
+                    this.esNuevoBeneficiario = true,
                     this.nuevoBeneficiario = {
                         no_cedula : '',
                         nombres : '',

@@ -10,23 +10,23 @@
                     <div class="row">
                         <div class="form-group col-lg-12">
                             <label for="exampleInputName2">Descripcion del Cultivo</label>
-                            <textarea  required class="form-control" id="exampleInputName2" v-model="nuevoCultivo.descripcion_cultivo"></textarea>
+                            <textarea  required="required" class="form-control" id="exampleInputName2" v-model="nuevoCultivo.descripcion_cultivo"></textarea>
                         </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Nombre del Producto</label>
-                            <input type="text" required class="form-control" id="exampleInputName2" v-model="nuevoCultivo.nombre_producto">
+                            <input type="text" required="required" class="form-control" id="exampleInputName2" v-model="nuevoCultivo.nombre_producto">
                         </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Fecha establecimiento del Cultivo</label>
-                            <input type="text" id="fecha_establecimiento" required class="form-control" id="exampleInputName2" v-model="nuevoCultivo.fecha_establecimiento_cultivo">
+                            <input type="text" id="fecha_establecimiento" required="required" class="form-control" id="exampleInputName2" v-model="nuevoCultivo.fecha_establecimiento_cultivo">
                         </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Fecha Renovacion</label>
-                            <input type="text" id="fecha_renovacion" required class="form-control" id="exampleInputName2" v-model="nuevoCultivo.fecha_renovacion">
+                            <input type="text" id="fecha_renovacion" required="required" class="form-control" id="exampleInputName2" v-model="nuevoCultivo.fecha_renovacion">
                         </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6 ">
                             <label for="exampleInputName2">Unidad del Producto</label>
-                            <select v-model="nuevoCultivo.id_unidad_producto" class="form-control" >
+                            <select required="required" v-model="nuevoCultivo.id_unidad_producto" class="form-control" >
                                 <option value="" disabled>Seleccione...</option>
                                 <option v-for="unidad in unidadesProducto" :value="unidad.id" >@{{ unidad.descripcion_unidad+ '('+unidad.unidad_producto+')' }}</option>
 
@@ -34,7 +34,7 @@
                         </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6 ">
                             <label for="exampleInputName2">Sitio de Venta</label>
-                            <select v-model="nuevoCultivo.id_sitio_venta" class="form-control" >
+                            <select required="required" v-model="nuevoCultivo.id_sitio_venta" class="form-control" >
                                 <option value="" disabled>Seleccione...</option>
                                 <option v-for="sitio in  sitiosVenta" :value="sitio.id" >@{{ sitio.sitio_venta }}</option>
 
@@ -98,11 +98,7 @@
                                 </div>
                                 <div class="form-group col-lg-2">
                                     <label for="exampleInputName2">Procedencia</label>
-                                    <select v-model="nuevaSemilla.id_procedencia_semilla" class="form-control" >
-                                        <option value="" disabled>Seleccione...</option>
-                                        <option v-for="procedencia in  procedenciaSemilla" :value="procedencia.id" >@{{ procedencia.procedencia_semilla }}</option>
-
-                                    </select>
+                                    <input type="text" required class="form-control" id="exampleInputName2" v-model="nuevaSemilla.otra_procedencia">
                                 </div>
                                 <div class="form-group col-lg-2">
                                     <label for="exampleInputEmail2">Semilla Certificada</label>
@@ -122,12 +118,16 @@
                                     <th>Densidad</th>
                                     <th>Procedencia</th>
                                     <th>Certificada</th>
+                                    <th>Eliminar</th>
                                 </tr>
                                 <tr v-for="semilla in nuevoCultivo.semillas">
-                                    <td>@{{ semilla.variedad }}</td>
-                                    <td>@{{ semilla.densidad }}</td>
-                                    <td>@{{ semilla.id_procedencia_semilla }}</td>
-                                    <td>@{{ semilla.certificado_ica }}</td>
+                                    <td><input class="edit" type="text" v-model="semilla.variedad" ></td>
+                                    <td><input class="edit" type="text" v-model="semilla.densidad" ></td>
+                                    <td><input class="edit" type="text" v-model="semilla.otra_procedencia" ></td>
+                                    <td><input class="edit" type="checkbox" v-model="semilla.certificado_ica" :value="semilla.certificado_ica"></td>
+                                    <td>
+                                        <span  class="glyphicon glyphicon-remove btn-dlt" v-on:click="borrarSemilla(semilla)" title="Eliminar" aria-hidden="true"></span>
+                                    </td>                     
                                 </tr>
 
                             </table>

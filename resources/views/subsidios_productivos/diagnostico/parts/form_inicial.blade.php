@@ -21,17 +21,21 @@
             <label><input type="checkbox" v-model="infoProductivo.programaSocial" name="programasocial">Si</label>
         </div>
     </div>
-
+    <p v-if="bandera == 1"><strong>Nota.</strong>La informacion incial fue tomada del <strong>Levantamiento de informacion Beneficio No @{{ infoProductivoAnterior.consecutivo }}</strong> del beneficiario <strong>@{{ infoProductivo.beneficiario.nombre }} CC. @{{ infoProductivo.beneficiario.documento }}.</strong>Por favor verifica su validez, y si es correcta Guarda, sino crea nueva informacion inicial.</p>
+    <button v-if="bandera == 1" type="button" class="btn btn-default" @click="resetGeneral()" style="margin-left: 86%;">
+        Nuevo
+        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+    </button>
     <div class="form-group col-lg-6 col-sm-12">
         <label for="exampleInputName2">Tipo de Proyecto</label>
-        <select v-model="generalidades.id_tipo_proyecto" class="form-control">
+        <select required="required" v-model="generalidades.id_tipo_proyecto" class="form-control">
             <option value="" disabled >Seleccione...</option>
             <option v-for="tipo in tipoProyectos" :value="tipo.id">@{{ tipo.tipo_proyecto }}</option>
         </select>
     </div>
     <div class="form-group col-lg-6 col-sm-12">
         <label for="exampleInputName2">Tipo de Familia</label>
-        <select v-model="generalidades.idTipologiaFamilia" class="form-control">
+        <select required="required" v-model="generalidades.idTipologiaFamilia" class="form-control">
             <option value="" disabled >Seleccione...</option>
             <option v-for="tipologia in tipologiasFamilia" :value="tipologia.id">@{{ tipologia.tipologia_familia }}</option>
         </select>
@@ -47,28 +51,28 @@
     </div>
     <div class="form-group col-lg-6 col-sm-12">
         <label for="exampleInputName2">Medio de Transporte</label>
-        <select  v-model="generalidades.idTipoVehiculo" class="form-control">
+        <select required="required" v-model="generalidades.idTipoVehiculo" class="form-control">
             <option value="" disabled >Seleccione...</option>
             <option v-for=" vehiculo in tiposVehiculos" :value="vehiculo.id">@{{ vehiculo.tipo_vehiculo }}</option>
         </select>
     </div>
     <div class="form-group col-lg-6 col-sm-12">
         <label for="exampleInputName2">Via de Acceso</label>
-        <select v-model="generalidades.idTipoViaAcceso" class="form-control">
+        <select required="required" v-model="generalidades.idTipoViaAcceso" class="form-control">
             <option value="" disabled >Seleccione...</option>
             <option v-for="via in viasAcceso" :value="via.id">@{{ via.tipo_via_acceso }}</option>
         </select>
     </div>
     <div class="form-group col-lg-6 col-sm-12">
         <label for="exampleInputName2">Estado de la Via</label>
-        <select v-model="generalidades.idEstadoVia" class="form-control">
+        <select required="required" v-model="generalidades.idEstadoVia" class="form-control">
             <option value="" disabled >Seleccione...</option>
             <option v-for="estado in estadosVia" :value="estado.id" >@{{  estado.estado_via }}</option>
         </select>
     </div>
     <div class="form-group col-lg-6 col-sm-12">
         <label for="exampleInputName2">Tiempo de Recorrido</label>
-        <select v-model="generalidades.idTiempoRecorrido" class="form-control">
+        <select required="required" v-model="generalidades.idTiempoRecorrido" class="form-control">
             <option value="" disabled >Seleccione...</option>
             <option v-for="tiempo in tiemposRecorrido" :value="tiempo.id">@{{ tiempo.tiempo_recorrido }}</option>
         </select>
@@ -76,6 +80,6 @@
 
     <div class="form-group col-lg-12 btns-forms">
         <button type="submit"  class="btn btn-default " data-loading-text="<i class='fa fa-spinner fa-spin '></i> Guardando..." id="btn-guardar">Guardar</button>
-        <button type="button" class="btn btn-default">Siguiente</button>
+        <!--<button type="button" class="btn btn-default">Siguiente</button>-->
     </div>
 </form>

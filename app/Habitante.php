@@ -12,4 +12,9 @@ class Habitante extends Model
     public function EstadoCivil(){
         return $this->hasOne('App\EstadosCivile','id','id_estado_civil');
     }
+
+    public function NivelEducativo(){
+
+        return $this->hasOne('App\NivelEducativo', 'id', 'id_nivel_educativo');
+    }
 }

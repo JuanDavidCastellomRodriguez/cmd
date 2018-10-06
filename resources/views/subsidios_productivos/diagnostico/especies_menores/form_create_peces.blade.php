@@ -11,14 +11,14 @@
                     <div class="row">
                         <div class="form-group col-lg-4 col-sm-12 col-md-6 ">
                             <label for="exampleInputName2">Tipo Produccion</label>
-                            <select v-model="nuevoPeces.id_tipo_produccion" class="form-control" >
+                            <select required="required" v-model="nuevoPeces.id_tipo_produccion" class="form-control" >
                                 <option value="" disabled>Seleccione...</option>
-                                <option v-for="item in TipoProducciones" :value="item.id">@{{ item.tipo_produccion }}</option>
+                                <option v-for="item in tipoProduccionCerdo" :value="item.id">@{{ item.tipo_produccion }}</option>
                             </select>
                         </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Especie</label>
-                            <select v-model="nuevoPeces.id_especie" class="form-control" >
+                            <select required="required" v-model="nuevoPeces.id_especie" class="form-control" >
                                 <option value="" disabled>Seleccione...</option>
                                 <option v-for="item in TipoPeces" :value="item.id">@{{ item.especie }}</option>
                             </select>
@@ -26,19 +26,19 @@
 
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Cantidad Estanques</label>
-                            <input type="number" required class="form-control" id="exampleInputName2" v-model="nuevoPeces.cantidad_estanques">
+                            <input type="number" required="required" class="form-control" id="exampleInputName2" v-model="nuevoPeces.cantidad_estanques">
                         </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Cantidad Producción (Kg)</label>
-                            <input type="number" required class="form-control" id="exampleInputName2" v-model="nuevoPeces.kg_producidos">
+                            <input type="number" required="required" class="form-control" id="exampleInputName2" v-model="nuevoPeces.kg_producidos">
                         </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Cantidad Comida (Kg)</label>
-                            <input type="number" required class="form-control" id="exampleInputName2" v-model="nuevoPeces.kg_comida">
+                            <input type="number" required="required" class="form-control" id="exampleInputName2" v-model="nuevoPeces.kg_comida">
                         </div>
                         <div class="form-group col-sm-12">
                             <label for="exampleInputName2">Observaciones</label>
-                            <textarea type="number" rows="5" required class="form-control" id="exampleInputName2" v-model="nuevoPeces.observaciones"></textarea>
+                            <textarea type="number" rows="5" required="required" class="form-control" id="exampleInputName2" v-model="nuevoPeces.observaciones"></textarea>
                         </div>
 
 

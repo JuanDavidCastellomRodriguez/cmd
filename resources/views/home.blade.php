@@ -2,10 +2,10 @@
 
 @section('content')
 <div class="container">
-    <div class="row" style="margin-top: 10px;">
+    <div class="row" style="margin-top: 50px;">
 
         <div>
-            <h3>Bienvenido <b>{{ \Illuminate\Support\Facades\Auth::User()->nombre_usuario }}</b></h3>
+            <h3>Bienvenido <b>{{ Auth::User()->nombre_usuario }}</b></h3>
         </div>
         <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
             <!-- Indicators -->
@@ -18,25 +18,25 @@
             <!-- Wrapper for slides -->
             <div class="carousel-inner" role="listbox">
                 <div class="item active">
-                    <img src="http://lorempixel.com/800/400/nature/1" alt="..." style="width: 100%">
+                    <img src="http://cmd.lareporteria.com/img/1.jpg" alt="..." style="width: 100%">
                     <div class="carousel-caption">
                         ...
                     </div>
                 </div>
                 <div class="item">
-                    <img src="http://lorempixel.com/800/400/nature/2" alt="..." style="width: 100%">
+                    <img src="http://cmd.lareporteria.com/img/2.jpg" alt="..." style="width: 100%">
                     <div class="carousel-caption">
                         ...
                     </div>
                 </div>
                 <div class="item">
-                    <img src="http://lorempixel.com/800/400/nature/3" alt="..." style="width: 100%">
+                    <img src="http://cmd.lareporteria.com/img/3.jpg" alt="..." style="width: 100%">
                     <div class="carousel-caption">
                         ...
                     </div>
                 </div>
                 <div class="item">
-                    <img src="http://lorempixel.com/800/400/nature/4" alt="..." style="width: 100%">
+                    <img src="http://cmd.lareporteria.com/img/4.jpg" alt="..." style="width: 100%">
                     <div class="carousel-caption">
                         ...
                     </div>

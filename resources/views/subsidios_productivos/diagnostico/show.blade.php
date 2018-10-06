@@ -39,6 +39,7 @@
                     <li>Informacion Especifica</li>
                     <li role="presentation"><a class="red geopark white-text" href="#p-cargos" aria-controls="p-cargos" role="tab" data-toggle="tab">Mano de Obra</a></li>
                     <li role="presentation"><a class="red geopark white-text" href="#habitaciones" aria-controls="habitaciones" role="tab" data-toggle="tab">Potreros</a></li>
+                    <li role="presentation"><a class="red geopark white-text" href="#fortalecimiento" aria-controls="fortalecimiento" role="tab" data-toggle="tab">Fortalecimiento</a></li>
                     <li role="presentation"><a  class="red geopark white-text" href="#cocinas" aria-controls="cocinas" role="tab" data-toggle="tab">Cultivos</a></li>
                     <li role="presentation"><a  class="red geopark white-text" href="#s_publicos" aria-controls="s_publicos" role="tab" data-toggle="tab">Bovinos</a></li>
                     <li role="presentation"><a  class="red geopark white-text" href="#e_menores" aria-controls="e_menores" role="tab" data-toggle="tab">Especies Menores</a></li>
@@ -49,32 +50,35 @@
             <section class="col-lg-10 col-sm-8">
                 <div class="tab-content">
                     <div role="tabpanel" class="tab-pane active" id="predio">
-                        <form-predio  :idinfo="idInfoProductivo" :idpredio="idPredio" ></form-predio>
+                        <form-predio  :idinfo="idInfoProductivo" :idpredio="idPredio" :id="infoProductivo.beneficiario.id" :nombre="infoProductivo.beneficiario.nombre" :documento="infoProductivo.beneficiario.documento"></form-predio>
 
                     </div>
                     <div role="tabpanel" class="tab-pane" id="habitantes">
-                        <beneficiarios  :idinfo="idInfoProductivo" :generos="generos" :niveles="nivelesEducativos"></beneficiarios>
+                        <beneficiarios  :idinfo="idInfoProductivo" :generos="generos" :niveles="nivelesEducativos" :id="infoProductivo.beneficiario.id" :nombre="infoProductivo.beneficiario.nombre" :documento="infoProductivo.beneficiario.documento"></beneficiarios>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="general">
                         @include('subsidios_productivos.diagnostico.parts.form_inicial')
                     </div>
                     <div role="tabpanel" class="tab-pane" id="p-cargos">
-                        <mano-obra :idinfo="idInfoProductivo"></mano-obra>
+                        <mano-obra :idinfo="idInfoProductivo" :id="infoProductivo.beneficiario.id" :nombre="infoProductivo.beneficiario.nombre" :documento="infoProductivo.beneficiario.documento"></mano-obra>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="habitaciones">
-                        <potreros :idinfo="idInfoProductivo" ></potreros>
+                        <potreros :idinfo="idInfoProductivo" :id="infoProductivo.beneficiario.id" :nombre="infoProductivo.beneficiario.nombre" :documento="infoProductivo.beneficiario.documento"></potreros>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="fortalecimiento">
+                        <fortalecimiento :idinfo="idInfoProductivo" :id="infoProductivo.beneficiario.id" :nombre="infoProductivo.beneficiario.nombre" :documento="infoProductivo.beneficiario.documento"></fortalecimiento>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="cocinas">
-                        <cultivos :idinfo="idInfoProductivo"></cultivos>
+                        <cultivos :idinfo="idInfoProductivo" :id="infoProductivo.beneficiario.id" :nombre="infoProductivo.beneficiario.nombre" :documento="infoProductivo.beneficiario.documento"></cultivos>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="s_publicos">
-                        <bovinos :idinfo="idInfoProductivo"  ></bovinos>
+                        <bovinos :idinfo="idInfoProductivo" :id="infoProductivo.beneficiario.id" :nombre="infoProductivo.beneficiario.nombre" :documento="infoProductivo.beneficiario.documento" ></bovinos>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="e_menores">
-                        <especies :idinfo="idInfoProductivo" ></especies>
+                        <especies :idinfo="idInfoProductivo" :id="infoProductivo.beneficiario.id" :nombre="infoProductivo.beneficiario.nombre" :documento="infoProductivo.beneficiario.documento"></especies>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="cierre">
-                        <cierre :idinfo="idInfoProductivo" ></cierre>
+                        <cierre :idinfo="idInfoProductivo" :id="infoProductivo.beneficiario.id" :idpredio="idPredio"></cierre>
                     </div>
                 </div>
             </section>
@@ -93,36 +97,128 @@
     <script>
         Vue.http.headers.common['X-CSRF-TOKEN'] = $("#token").attr("value");
 
+        Vue.component('fortalecimiento',{
+            template : '#fortalecimiento-infraestructura',
+            props : ['idinfo', 'id', 'nombre', 'documento'],
+            data : function () {
+                return {
+                    fortalecimientos: '',
+                    bandera: '',
+                    nuevaInfraestructura: {
+                        id: '',
+                        tipo: '',
+                        descripcion: ''
+                    },
+                    infoProductivo: '',
+                    fortalecimientoToDelete: '',
+                    fortalecimientoToEdit: ''
+
+                }
+            },
+            methods: {
+                guardarFortalecimiento: function () {
+                    this.$http.post('/guardar/fortalecimiento', {id: this.id, idInfo: this.idinfo, fortalecimiento: this.nuevaInfraestructura}).then((response)=>{
+                        if(response.body.estado == 'ok'){
+                            if (response.body.updated) {
+                                index = this.fortalecimientos.indexOf(this.fortalecimientoToEdit);
+                                this.fortalecimientos.splice(index,1);
+                                this.fortalecimientos.splice(index,0,response.body.data);
+                                $("#modal-agregar-fortalecimiento").modal('hide');
+                                notificarOk('', 'Fortalecimiento editado correctamente');
+                                this.formReset();
+                                this.bandera = response.body.bandera;
+                            }else {
+                                this.fortalecimientos.push(response.body.data);
+                                this.bandera = response.body.bandera;
+                                this.infoProductivo = response.body.infoProductivo;
+                                notificarOk('', 'Fortalecimiento de infraestructura creado exitosamente');
+                                this.formReset();
+                                $("#modal-agregar-fortalecimiento").modal('hide');    
+                                this.bandera = response.body.bandera;
+                            }                            
+                        }
+                    }, (error)=>{
+                        notificarFail('', 'Error al guardar los Fortalecimientos ');
+                    });
+                },
+
+                prepareToDeleteOrEdit: function (tipo, fortalecimiento) {
+                    if (tipo == 1) {
+                        this.nuevaInfraestructura = JSON.parse( JSON.stringify( fortalecimiento ));
+                        this.fortalecimientoToEdit = fortalecimiento;
+                    }else if (tipo == 2) {
+                        this.fortalecimientoToDelete = fortalecimiento;
+                    }
+                    
+                },
+
+                eliminarFortalecimiento: function () {
+                    this.$http.post('/borrar/fortalecimiento', {idInfo: this.idinfo, fortalecimiento: this.fortalecimientoToDelete}).then((response)=>{
+                        if(response.body.estado == 'ok'){
+                            this.borrarTemporal(this.fortalecimientoToDelete);
+                            notificarOk('', 'Fortalecimiento de infraestructura borrado exitosamente');
+                            $("#modal-confirm-delete-fortalecimiento").modal('hide');
+                        }
+                    }, (error)=>{
+                        notificarFail('', 'Error al borrar los Fortalecimientos ' + error.status+' '+ error.statusText);
+                    });
+                },
+
+                borrarTemporal: function (fortalecimiento) {
+                    this.fortalecimientos.splice(this.fortalecimientos.indexOf(fortalecimiento),1);
+                },
+
+                formReset: function () {
+                    this.nuevaInfraestructura = {
+                        id: '',
+                        tipo: '',
+                        descripcion: ''
+                    }
+                }
+            },
+            created (){
+                this.$http.post('/get/fortalecimientos', { idInfo : this.idinfo, id: this.id }).then((response)=>{
+                        this.fortalecimientos = response.body.data;
+                }, (error)=>{
+                    //notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                });
+
+            }
+        });
+
 
         Vue.component('beneficiarios',{
             template : '#beneficiarios',
-            props : ['idinfo', 'generos', 'niveles'],
+            props : ['idinfo', 'generos', 'niveles', 'id', 'nombre', 'documento'],
             data : function () {
                 return {
                     beneficiarios : '',
                     nuevoBeneficiario : {
                         id :'',
-                        no_cedula : '',
-                        nombres : '',
-                        apellidos : '',
-                        fecha_nacimiento : '',
-                        no_celular : '',
-                        correo_electronico : '',
+                        no_cedula : '00000',
+                        nombres : 'Nombre',
+                        apellidos : 'Apellidos',
+                        fecha_nacimiento : '2000-01-01',
+                        no_celular : '000000',
+                        correo_electronico : 'example.com',
                         ocupacion : '',
                         id_estado_civil : '',
                         id_nivel_educativo : '',
+                        estudia: '',
+                        descripcion_estudio: '',
                         id_genero : '',
                         cabeza_hogar : true,
+                        id_tipo_persona_a_cargo: '',
+                        id_parentesco: ''
                     },
                     beneficiarioToRemove : '',
                     creandoNuevoBeneficiario : false,
                     loading : false,
                     estadosCiviles : '',
-
-
-
-
-
+                    tipo_personas: '',
+                    bandera: '',
+                    infoProductivo: '',
+                    parentescos: ''
                 }
             },
             methods : {
@@ -154,9 +250,14 @@
                         this.loading = true;
                         this.$http.post('/vivienda/habitantes/buscar',{no_cedula : this.nuevoBeneficiario.no_cedula, tipoSubsidio : 2}).then((response)=>{
                             if(response.body.estado == 'ok'){
-                                this.nuevoBeneficiario = response.body.habitante;
-                                this.creandoNuevoBeneficiario = false;
-                                //this.formReset();
+                                if(response.body.yaEsHabitante == true){
+                                    notificarFail('', 'El beneficiario ya existe en otro proyecto');
+                                }
+                                this.beneficiarios.push(response.body.habitante);
+                                $("#modal-agregar-beneficiario").modal('hide');
+                                notificarOk('', 'Habitante agregado correctamente');
+                                this.bandera = response.body.bandera;
+                                this.formReset();
                             }else{
                                 this.creandoNuevoBeneficiario = true;
                                 notificarFail('', 'Beneficiario no encontrado, se creará uno nuevo ' );
@@ -164,7 +265,7 @@
                             this.loading = false
 
                         },(error)=>{
-                            notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                          //  notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
                         })
 
                     }else{
@@ -173,15 +274,33 @@
                     }
 
                 },
+                guardarBeneficiarioAnterior: function (idBeneficiario) {
+                    this.$http.post('/guardar/beneficiarioAnterior', {id: idBeneficiario, idInfo: this.idinfo, tipo: 2}).then((response)=>{
+                        if(response.body.estado == 'ok'){
+                            this.tipo_personas = response.body.data;
+                            this.bandera = response.body.bandera;
+                        }
+                    }, (error)=>{
+                        //notificarFail('', 'Error al cargar el tipo de Personas a Cargo ' + error.status+' '+ error.statusText);
+                    });
+                },
+                borrarTemporal: function (habitante) {
+                    this.beneficiarios.splice(this.beneficiarios.indexOf(habitante),1);
+                },
 
                 guardarBeneficiario : function () {
                     var esnuevo = true;
                     var id = this.nuevoBeneficiario.id;
-                    this.beneficiarios.forEach(function (beneficiario) {
+                    /*this.beneficiarios.forEach(function (beneficiario) {
                         if(beneficiario.id == id){
                             esnuevo = false
                         }
-                    })
+                    })*/
+                    for (var i = 0; i < this.beneficiarios.length; i++) {
+                        if(this.beneficiarios[i].id == id){
+                            esnuevo = false;
+                        }
+                    }
 
                     if(esnuevo){
                         this.$http.post('/vivienda/habitantes/guardar',{idInfo : this.idinfo, habitante : this.nuevoBeneficiario,tipoSubsidio : 2 }).then((response)=>{
@@ -195,12 +314,12 @@
                                 this.formReset();
 
                             }else{
-                                notificarFail('', 'Error en el servidor ' + response.body.error);
+                                //notificarFail('', 'Error en el servidor ' + response.body.error);
                             }
 
                         },(error)=>{
 
-                            notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                            //notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
                         });
                     }else{
                         notificarFail('', 'El Habitante ya existe en este proyecto');
@@ -217,11 +336,11 @@
                             this.beneficiarios.splice(this.beneficiarios.indexOf(this.beneficiarioToRemove),1);
                         }else{
                             $("#modal-confirm-delete-beneficiario").modal('hide');
-                            notificarFail('', 'Error en el servidor ' + response.body.error);
+                            //notificarFail('', 'Error en el servidor ' + response.body.error);
                         }
                     },(error)=>{
                         $("#modal-confirm-delete-beneficiario").modal('hide');
-                        notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                        //notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
                         this.loading = false;
                     });
 
@@ -229,19 +348,35 @@
 
             },
             created (){
-                this.$http.post('/vivienda/habitantes/get', {_token : this.token, idInfo : this.idinfo,tipoSubsidio : 2 }).then((response)=>{
+                this.$http.post('/vivienda/habitantes/get', {_token : this.token, idInfo : this.idinfo,tipoSubsidio : 2, id: this.id }).then((response)=>{
                     this.beneficiarios = response.body.data;
+                    this.bandera = response.body.bandera;
+                    this.infoProductivo = response.body.infoProductivo;
                 }, (error)=>{
-                    notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                    //notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
                 });
 
                 this.$http.post('/getestadosciviles').then((response)=>{
                     this.estadosCiviles = response.body.data;
                 }, (error)=>{
-                    notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                    //notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
                 });
 
+                this.$http.post('/gettipopersonascargo').then((response)=>{
+                if(response.body.estado == 'ok'){
+                    this.tipo_personas = response.body.data;
+                    }
+                }, (error)=>{
+                   // notificarFail('', 'Error al cargar el tipo de Personas a Cargo ' + error.status+' '+ error.statusText);
+                });
 
+                 this.$http.post('/get_parentesco').then((response)=>{
+                if(response.body.estado == 'ok'){
+                    this.parentescos = response.body.parentesco;
+                    }
+                }, (error)=>{
+                  //  notificarFail('', 'Error al cargar el tipo de Personas a Cargo ' + error.status+' '+ error.statusText);
+                });
 
 
             },
@@ -263,7 +398,7 @@
         });
         Vue.component('form-predio',{
             template : '#form-predio-template',
-            props: ['departamentos','idinfo','idpredio'],
+            props: ['departamentos','idinfo','idpredio', 'id', 'nombre', 'documento'],
             data : function () {
                 return  {
                     predio:{
@@ -292,7 +427,9 @@
                         pdf :'',
                         id_productivo :this.idinfo,
                         id_opcion : '',
-                        id_tipo_tenencia_tierras : ''
+                        id_tipo_tenencia_tierras : '',
+                        otra_tenencia: '',
+                        otra_opcion: ''
 
                     },
                     //municipios : '',
@@ -301,6 +438,8 @@
                     opcionesTenencia : '',
                     tipoTenencia : '',
                     pdf : '',
+                    bandera: '',
+                    infoProductivo: '' 
                 }
             },
             methods:{
@@ -308,6 +447,7 @@
                     var fdata = new FormData();
                     fdata.append('pdf', this.pdf);
                     infoEnviar = {
+                        id: this.id,
                         idInfo : this.idinfo,
                         predio : this.predio,
                         propietario : this.propietarioPredio,
@@ -329,7 +469,7 @@
 
                     },(response)=>{
                         $("#btn-guardar").button('reset');
-                        notificarFail('Predio', 'Error en el servidor ' + response.status+' '+ response.statusText);
+                        //notificarFail('Predio', 'Error en el servidor ' + response.status+' '+ response.statusText);
 
                     });
                 },
@@ -348,6 +488,40 @@
                      };
                      reader.readAsDataURL(file);
                      */
+                },
+
+                resetPredio: function () {
+                    this.predio = {
+                        id:'',
+                        nombre: '',
+                        direccion: '',
+                        //idVereda : '',
+                        latitud: '',
+                        longitud : '',
+                        msnm : '',
+                        idMunicipio : '',
+                        idDepartamento : '',
+                    },
+                    this.propietarioPredio = {
+                        id : '',
+                        noCedula : '',
+                        nombres: '',
+                        apellidos: '',
+                        telefono:'',
+                        idPredio: '',
+                        editado : false
+                    },
+                    this.tenenciaPredio = {
+                        id : '',
+                        area_predio_has :'',
+                        pdf :'',
+                        id_productivo :this.idinfo,
+                        id_opcion : '',
+                        id_tipo_tenencia_tierras : '',
+                        otra_tenencia: '',
+                        otra_opcion: ''
+
+                    }
                 }
             },
             watch: {
@@ -363,7 +537,7 @@
             },
             mounted(){
                 if(this.idpredio != ''){
-                    this.$http.post('/subsidios/productivos/diagnostico/getpredio',{ idPredio : this.idpredio, idInfo : this.idinfo }).then((response)=>{
+                    this.$http.post('/subsidios/productivos/diagnostico/getpredio',{ idPredio : this.idpredio, idInfo : this.idinfo}).then((response)=>{
 
 
 
@@ -390,8 +564,39 @@
 
 
                     },(response)=>{
-                        notificarFail('Predio', 'Tenemos problemas al cargar la informacion del predio ' + + response.status+' '+ response.statusText);
+                        //notificarFail('Predio', 'Tenemos problemas al cargar la informacion del predio ' + + response.status+' '+ response.statusText);
                     });
+                }else {
+                    this.$http.post('/subsidios/productivos/diagnostico/getpredioAnterior',{ idInfo : this.idinfo, id: this.id }).then((response)=>{
+
+                        this.predio.nombre = response.body.predio.nombre_predio;
+                        this.predio.direccion = response.body.predio.direccion;
+                        this.predio.latitud = response.body.predio.latitud;
+                        this.predio.longitud = response.body.predio.longitud;
+                        this.predio.msnm = response.body.predio.msnm;
+
+
+                        if(response.body.propietario != null ){
+                            this.propietarioPredio.id = response.body.propietario.id;
+                            this.propietarioPredio.noCedula = response.body.propietario.no_cedula;
+                            this.propietarioPredio.nombres = response.body.propietario.nombres_propietario;
+                            this.propietarioPredio.apellidos = response.body.propietario.apellidos_propietario;
+                            this.propietarioPredio.telefono = response.body.propietario.no_telefonico;
+                            this.propietarioPredio.idPredio = response.body.propietario.id_predio;
+                        }
+
+
+                        this.predioEditado = false;
+                        this.tenenciaPredio = response.body.tenencia;
+                        this.bandera = response.body.bandera;
+                        this.tenenciaPredio.id = '';
+                        this.tenenciaPredio.id_productivo = this.idinfo;
+                        this.infoProductivo = response.body.infoProductivo;
+
+                    },(response)=>{
+                        //notificarFail('Predio', 'Tenemos problemas al cargar la informacion del predio ' + + response.status+' '+ response.statusText);
+                    });
+
                 }
             },
             created(){
@@ -400,17 +605,17 @@
                         this.opcionesTenencia = response.body.opciones;
                         this.tipoTenencia = response.body.tipo;
                     }else{
-                        notificarFail('', 'Error al cargar datos ' + response.body.error);
+                        //notificarFail('', 'Error al cargar datos ' + response.body.error);
                     }
                 },(error)=>{
-                    notificarFail('', 'Error en el servidor ' + response.status+' '+ response.statusText);
+                    //notificarFail('', 'Error en el servidor ' + response.status+' '+ response.statusText);
                 });
             }
 
         });
         Vue.component('mano-obra',{
             template : '#mano-obra',
-            props : ['idinfo', 'generos', 'niveles'],
+            props : ['idinfo', 'generos', 'niveles', 'id', 'nombre', 'documento'],
             data : function () {
                 return {
 
@@ -425,6 +630,8 @@
                         id_info_productivo : this.idinfo,
                         mes : ''
                     },
+                    bandera: '',
+                    infoProductivo: '',
                     manosObra: '',
                     meses : [
                         {
@@ -521,26 +728,31 @@
                     }
                 },
 
-                guardarManoObra : function () {
-                    this.loading = true;
-                    this.$http.post('/subsidios/productivos/diagnostico/guardarmanoobra',{idInfo : this.idinfo, mano : this.nuevaMano }).then((response)=>{
+                guardarManoObra : function () {                    
+                    if (this.nuevaMano.actividad_jornal_vendido != '' && this.nuevaMano.actividad_jornal_contratado != '') {
+                        this.loading = true;
+                        this.$http.post('/subsidios/productivos/diagnostico/guardarmanoobra',{idInfo : this.idinfo, mano : this.nuevaMano }).then((response)=>{
                         this.loading = false;
-                        if(response.body.estado == 'ok'){
+                            if(response.body.estado == 'ok'){
 
-                            this.nuevaMano.id = response.body.id;
-                            this.manosObra.push(this.nuevaMano);
-                            $("#modal-agregar-mano-obra").modal('hide');
-                            notificarOk('', 'Mano de Obra agregada correctamente');
-                            this.formReset();
+                                this.nuevaMano.id = response.body.id;
+                                this.manosObra.push(this.nuevaMano);
+                                $("#modal-agregar-mano-obra").modal('hide');
+                                notificarOk('', 'Mano de Obra agregada correctamente');
+                                this.formReset();
 
-                        }else{
-                            notificarFail('', 'Error:  ' + response.body.error);
-                        }
+                            }else{
+                                //notificarFail('', 'Error:  ' + response.body.error);
+                            }
 
-                    },(error)=>{
-                        this.loading = false;
-                        notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
-                    });
+                        },(error)=>{
+                            this.loading = false;
+                            //notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                        });
+                    }else {
+                        notificarFail('', 'Por favor, complete todos los campos');
+                    }
+                    
 
                 },
 
@@ -554,22 +766,38 @@
                             this.manosObra.splice(this.manosObra.indexOf(this.mesToRemove),1);
                         }else{
                             $("#modal-confirm-delete-mano-obra").modal('hide');
-                            notificarFail('', 'Error: ' + response.body.error);
+                            //notificarFail('', 'Error: ' + response.body.error);
                         }
                     },(error)=>{
                         $("#modal-confirm-delete-beneficiario").modal('hide');
-                        notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                        //notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
                         this.loading = false;
                     });
 
-                }
+                },
+                guardarManoAnterior: function (idMano) {
+                    this.$http.post('/guardar/manoAnterior', { mano: idMano, idInfo: this.idinfo}).then((response)=>{
+                        if(response.body.estado == 'ok'){
+                            this.nuevaMano.id = response.body.id;
+                            notificarOk('', 'Mano de Obra agregada correctamente');
+                            //this.bandera = response.body.bandera;
+                        }
+                    }, (error)=>{
+                        //notificarFail('', 'Error al cargar el tipo de Personas a Cargo ' + error.status+' '+ error.statusText);
+                    });
+                },
+                borrarTemporal: function (mano) {
+                    this.manosObra.splice(this.manosObra.indexOf(mano),1);
+                },
 
             },
             mounted(){
-                this.$http.post('/subsidios/productivos/diagnostico/getmanoobra',{idInfo: this.idinfo}).then((response)=>{
+                this.$http.post('/subsidios/productivos/diagnostico/getmanoobra',{id: this.id, idInfo: this.idinfo}).then((response)=>{
                     this.manosObra = response.body.data;
+                    this.bandera = response.body.bandera;
+                    this.infoProductivo = response.body.infoProductivo;                    
                 },(error)=>{
-                    notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                   // notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
                 });
             },
 
@@ -577,7 +805,7 @@
         });
         Vue.component('potreros',{
             template : '#potreros',
-            props : ['idinfo'],
+            props : ['idinfo', 'id', 'nombre', 'documento'],
             data : function () {
                 return {
 
@@ -597,8 +825,7 @@
                         tipoCobertura : '',
                         subtipoCobertura : '',
                         uso : '',
-
-
+                        observaciones: ''
                     },
                     potreros: '',
 
@@ -606,11 +833,8 @@
                     tipoCobertura : '',
                     subtipoCobertura : '',
                     fuentesHidricas : '',
-
-
-
-
-
+                    bandera: '',
+                    infoProductivo: ''
 
                 }
             },
@@ -623,7 +847,7 @@
                     this.$http.post('/getselectssubtipocobertura',{id : id}).then((response)=>{
                         this.subtipoCobertura = response.body.data;
                     },(error)=>{
-                        notificarFail('', 'Error al obtener los Tipos de Cobertura ' + error.status+' '+ error.statusText);
+                       // notificarFail('', 'Error al obtener los Tipos de Cobertura ' + error.status+' '+ error.statusText);
                     });
                 },
                 subcoberturaSelected : function (nombre) {
@@ -670,12 +894,12 @@
                             this.formReset();
 
                         }else{
-                            notificarFail('', 'Error:  ' + response.body.error);
+                          //  notificarFail('', 'Error:  ' + response.body.error);
                         }
 
                     },(error)=>{
                         this.loading = false;
-                        notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                        //notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
                     });
 
                 },
@@ -690,34 +914,57 @@
                             this.potreros.splice(this.potreros.indexOf(this.potreroToRemove),1);
                         }else{
                             $("#modal-confirm-delete-potrero").modal('hide');
-                            notificarFail('', 'Error: ' + response.body.error);
+                            //notificarFail('', 'Error: ' + response.body.error);
                         }
                     },(error)=>{
                         $("#modal-confirm-delete-potrero").modal('hide');
-                        notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                        //notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
                         this.loading = false;
                     });
 
+                },
+                guardarPotreroAnterior: function (potrero) {
+                    this.$http.post('/guardar/potreroAnterior', { potrero: potrero, idInfo: this.idinfo}).then((response)=>{
+                        if(response.body.estado == 'ok'){
+                            this.nuevoPotrero.id = response.body.id;
+                            notificarOk('', 'Potrero agregado correctamente');
+                            //this.bandera = response.body.bandera;
+                        }
+                    }, (error)=>{
+                        //notificarFail('', 'Error al cargar los potreros ' + error.status+' '+ error.statusText);
+                    });
+                },
+                borrarTemporal: function (potrero) {
+                    this.potreros.splice(this.potreros.indexOf(potrero),1);
                 }
 
             },
             mounted(){
-                this.$http.post('/subsidios/productivos/diagnostico/getpotreros',{idInfo: this.idinfo}).then((response)=>{
+                this.$http.post('/subsidios/productivos/diagnostico/getpotreros',{id: this.id, idInfo: this.idinfo}).then((response)=>{
                     this.potreros = response.body.data;
+                    this.bandera = response.body.bandera;
+                    this.infoProductivo = response.body.infoProductivo;
+                    /*if (response.body.bnadera == 1) {
+                        for (var i = 0; i < this.potreros.length(); i++) {
+                            this.potreros[i].id = '';
+                            this.potreros[i].id_info_productivo = this.idinfo;
+                        }
+                    }*/
+
                 },(error)=>{
-                    notificarFail('', 'Error al obtener los Potreros ' + error.status+' '+ error.statusText);
+                    //notificarFail('', 'Error al obtener los Potreros ' + error.status+' '+ error.statusText);
                 });
 
                 this.$http.post('/getselectstipocobertura').then((response)=>{
                     this.tipoCobertura = response.body.data;
                 },(error)=>{
-                    notificarFail('', 'Error al obtener los Potreros ' + error.status+' '+ error.statusText);
+                    //notificarFail('', 'Error al obtener los Potreros ' + error.status+' '+ error.statusText);
                 });
 
                 this.$http.post('/getselectstipofuentehidrica').then((response)=>{
                     this.fuentesHidricas = response.body.data;
                 },(error)=>{
-                    notificarFail('', 'Error al obtener los Potreros ' + error.status+' '+ error.statusText);
+                  //  notificarFail('', 'Error al obtener los Potreros ' + error.status+' '+ error.statusText);
                 });
             },
 
@@ -725,7 +972,7 @@
         });
         Vue.component('cultivos',{
             template : '#cultivos',
-            props : ['idinfo'],
+            props : ['idinfo', 'id', 'nombre', 'documento'],
             data : function () {
                 return {
 
@@ -799,7 +1046,8 @@
                         variedad : '',
                         densidad : '',
                         certificado_ica : false,
-                        id_procedencia_semilla : ''
+                        //id_procedencia_semilla : '',
+                        otra_procedencia: ''
                     },
                     nuevoCultivo : {
                         descripcion_cultivo : '',
@@ -823,7 +1071,8 @@
                     nuevoDetalleCultivo : {
                         semilla : {
                             variedad : '',
-                            id_procedencia_semilla : '',
+                            //id_procedencia_semilla : '',
+                            otra_procedencia: '',
                             certificado_ica :'',
                             densidad :'',
                             id_cultivo :'',
@@ -854,7 +1103,10 @@
                     cultivoToDetalle : '',
                     agregandoPlaga : false,
                     agregandoSemilla : false,
+                    editandoSemilla : false,
                     procedenciaSemilla : '',
+                    bandera: '',
+                    infoProductivo: ''
 
 
 
@@ -869,7 +1121,7 @@
                     this.$http.post('/getselectssubtipocobertura',{id : id}).then((response)=>{
                         this.subtipoCobertura = response.body.data;
                     },(error)=>{
-                        notificarFail('', 'Error al obtener los Tipos de Cobertura ' + error.status+' '+ error.statusText);
+                       // notificarFail('', 'Error al obtener los Tipos de Cobertura ' + error.status+' '+ error.statusText);
                     });
                 },
                 subcoberturaSelected : function (nombre) {
@@ -940,12 +1192,12 @@
 
 
                             }else{
-                                notificarFail('', 'Error:  ' + response.body.error);
+                               // notificarFail('', 'Error:  ' + response.body.error);
                             }
 
                         },(error)=>{
                             this.loading = false;
-                            notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                           // notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
                         });
                     }else{
                         notificarFail('','Debe agregar al menos una semilla')
@@ -960,15 +1212,15 @@
                         this.loading = false;
                         if(response.body.estado == 'ok'){
                             $("#modal-confirm-delete-cultivo").modal('hide');
-                            notificarOk('', 'Potrero borrado correctamente');
+                            notificarOk('', 'Cultivo borrado correctamente');
                             this.potreros.splice(this.potreros.indexOf(this.potreroToRemove),1);
                         }else{
                             $("#modal-confirm-delete-cultivo").modal('hide');
-                            notificarFail('', 'Error: ' + response.body.error);
+                          //  notificarFail('', 'Error: ' + response.body.error);
                         }
                     },(error)=>{
                         $("#modal-confirm-delete-cultivo").modal('hide');
-                        notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                        //notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
                         this.loading = false;
                     });
 
@@ -980,6 +1232,15 @@
                     }else{
                         this.agregandoPlaga = false;
                     }
+                },
+
+                borrarSemilla: function (id, semilla) {
+                    var idSemilla = id;
+                    this.$http.post('/subsidios/productivos/cultivos/borrarSemilla', idSemilla).then((response)=>{this.nuevoCultivo.semillas.splice(this.nuevoCultivo.semillas.indexOf(semilla),1);
+                        notificarFail('', response.body.mensaje);
+                    },(error)=>{
+                        notificarFail('', response.body.descripcion);
+                    });
                 },
 
                 showAgregarSemilla : function (tipo) {
@@ -997,38 +1258,54 @@
                             variedad : '',
                             densidad : '',
                             certificado_ica : false,
-                            id_procedencia_semilla : ''
+                            //id_procedencia_semilla : ''
+                            otra_procedencia: ''
 
                         }
                         this.agregandoSemilla = false;
                     }else{
                         notificarFail('', 'Todos los campos son requeridos')
                     }
+                },
+                guardarCultivoAnterior: function (cultivo) {
+                    this.$http.post('/guardar/cultivoAnterior', { cultivo: cultivo, idInfo: this.idinfo}).then((response)=>{
+                        if(response.body.estado == 'ok'){
+                            notificarOk('', 'Cultivo agregado correctamente');
+                            //this.bandera = response.body.bandera;
+                        }
+                    }, (error)=>{
+                       // notificarFail('', 'Error al cargar los cultivos ' + error.status+' '+ error.statusText);
+                    });
+                },
+                borrarTemporal: function (cultivo) {
+                    this.cultivos.splice(this.cultivos.indexOf(cultivo),1);
                 }
 
             },
             mounted(){
-                this.$http.post('/subsidios/productivos/diagnostico/getcultivos',{idInfo: this.idinfo}).then((response)=>{
+                this.$http.post('/subsidios/productivos/diagnostico/getcultivos',{id: this.id, idInfo: this.idinfo}).then((response)=>{
                     this.cultivos = response.body.data;
+                    this.bandera = response.body.bandera;
+                    this.infoProductivo = response.body.infoProductivo;
                 },(error)=>{
-                    notificarFail('', 'Cultivos: Error al obtener los Cultivos ' + error.status+' '+ error.statusText);
+                   // notificarFail('', 'Cultivos: Error al obtener los Cultivos ' + error.status+' '+ error.statusText);
                 });
 
                 this.$http.post('/getselectsunidadproducto').then((response)=>{
                     this.unidadesProducto = response.body.data;
                 },(error)=>{
-                    notificarFail('', 'Cultivos: Error al obtener la unidad de los productos ' + error.status+' '+ error.statusText);
+                    //notificarFail('', 'Cultivos: Error al obtener la unidad de los productos ' + error.status+' '+ error.statusText);
                 });
 
                 this.$http.post('/getselectssitioventa').then((response)=>{
                     this.sitiosVenta = response.body.data;
                 },(error)=>{
-                    notificarFail('', 'Cultivos: Error al obtener los sitios de venta ' + error.status+' '+ error.statusText);
+                   // notificarFail('', 'Cultivos: Error al obtener los sitios de venta ' + error.status+' '+ error.statusText);
                 });
                 this.$http.post('/getselectsprocedenciasemilla').then((response)=>{
                     this.procedenciaSemilla = response.body.data;
                 },(error)=>{
-                    notificarFail('', 'Cultivos: Error al obtener los sitios de venta ' + error.status+' '+ error.statusText);
+                   // notificarFail('', 'Cultivos: Error al obtener los sitios de venta ' + error.status+' '+ error.statusText);
                 });
 
 
@@ -1190,7 +1467,7 @@
                         }
 
                     }, (error)=>{
-                        notificarFail('', 'Error al obtener los Detalles del Cultivo ' + error.status+' '+ error.statusText);
+                       // notificarFail('', 'Error al obtener los Detalles del Cultivo ' + error.status+' '+ error.statusText);
                     });
 
                 }
@@ -1262,7 +1539,7 @@
                         }
                     },(error)=>{
                         this.loading = false;
-                        notificarFail('', 'Error al guardar el insumo' + error.status+' '+ error.statusText);
+                        notificarFail('', 'Error al guardar el insumo');
                     });
 
                 },
@@ -1283,7 +1560,7 @@
                         }
                     },(error)=>{
                         this.loading = false;
-                        notificarFail('', 'Error al guardar la actividad' + error.status+' '+ error.statusText);
+                        notificarFail('', 'Error al guardar la actividad');
                     });
                 },
                 eliminarActividad : function (actividad) {
@@ -1293,7 +1570,7 @@
                             notificarOk('','Actividad eliminada correctamente');
                         }
                     }, (error)=>{
-                        notificarFail('', 'Error al guardar la actividad' + error.status+' '+ error.statusText);
+                        notificarFail('', 'Error al guardar la actividad');
                     });
                 },
                 eliminarInsumo : function (insumo) {
@@ -1303,7 +1580,7 @@
                             notificarOk('','Insumo eliminado correctamente');
                         }
                     }, (error)=>{
-                        notificarFail('', 'Error al guardar el insumo' + error.status+' '+ error.statusText);
+                        notificarFail('', 'Error al guardar el insumo');
                     });
 
                 },
@@ -1326,7 +1603,7 @@
                         }
                     },(error)=>{
                         this.loading = false;
-                        notificarFail('', 'Error al guardar la plaga' + error.status+' '+ error.statusText);
+                        notificarFail('', 'Error al guardar la plaga');
                     });
 
                 },
@@ -1337,7 +1614,7 @@
                             notificarOk('','Plaga eliminada correctamente');
                         }
                     }, (error)=>{
-                        notificarFail('', 'Error al eliminar la plaga' + error.status+' '+ error.statusText);
+                        notificarFail('', 'Error al eliminar la plaga');
                     });
                 },
 
@@ -1367,7 +1644,7 @@
                             }
                         },(error)=>{
                             this.loading = false;
-                            notificarFail('', 'Error al guardar la venta' + error.status+' '+ error.statusText);
+                            notificarFail('', 'Error al guardar la venta');
                         });
                     }else{
                         notificarFail('','La suma de los campos de calidad del producto debe ser igual a la produccion total')
@@ -1382,7 +1659,7 @@
                             notificarOk('','Venta eliminada correctamente');
                         }
                     }, (error)=>{
-                        notificarFail('', 'Error al eliminar la venta' + error.status+' '+ error.statusText);
+                        notificarFail('', 'Error al eliminar la venta');
                     });
                 },
 
@@ -1391,7 +1668,7 @@
                 this.$http.post('/getselectscomponentescultivos').then((response)=>{
                     this.componentesCultivos = response.body.data;
                 },(error)=>{
-                    notificarFail('', 'Error al obtener los Componetes del Cultivo ' + error.status+' '+ error.statusText);
+                    //notificarFail('', 'Error al obtener los Componetes del Cultivo ' + error.status+' '+ error.statusText);
                 });
 
                 var componente = this;
@@ -1424,7 +1701,7 @@
 
         Vue.component('bovinos', {
             template: '#bovinos',
-            props: ['idinfo'],
+            props: ['idinfo', 'id', 'nombre','documento'],
             data: function () {
                 return {
 
@@ -1464,6 +1741,10 @@
                     },
                     frecuenciasOrdenios : '',
                     unidadesOrdenios : '',
+                    banderaB: '',
+                    banderaM: '',
+                    banderaO: '',
+                    infoProductivo: ''
 
 
                 }
@@ -1523,7 +1804,7 @@
                         }
                     }, (error) => {
                         this.loading = false;
-                        notificarFail('', 'Error al guardar los bovinos' + error.status + ' ' + error.statusText);
+                        notificarFail('', 'Error al guardar los bovinos');
                     });
                 },
 
@@ -1535,7 +1816,7 @@
                             $("#modal-confirm-delete-bovino").modal('hide');
                         }
                     }, (error) => {
-                        notificarFail('', 'Error al eliminar el bovino' + error.status + ' ' + error.statusText);
+                        notificarFail('', 'Error al eliminar el bovino');
                     });
                 },
 
@@ -1556,7 +1837,7 @@
                         }
                     }, (error) => {
                         this.loading = false;
-                        notificarFail('', 'Error al guardar el manejo de animales' + error.status + ' ' + error.statusText);
+                        notificarFail('', 'Error al guardar el manejo de animales');
                     });
                 },
 
@@ -1568,7 +1849,7 @@
                             $("#modal-confirm-delete-manejo-bovino").modal('hide');
                         }
                     }, (error) => {
-                        notificarFail('', 'Error al eliminar el manejo de animales' + error.status + ' ' + error.statusText);
+                        notificarFail('', 'Error al eliminar el manejo de animales');
                     });
                 },
 
@@ -1585,17 +1866,13 @@
 
                             notificarOk('', 'Registro de Ordeño creado correctamente');
                         } else {
-                            notificarFail('', 'Error:  ' + response.body.error);
+                            //notificarFail('', 'Error:  ' + response.body.error);
                         }
                     }, (error) => {
                         this.loading = false;
-                        notificarFail('', 'Error al guardar el registro de ordeño' + error.status + ' ' + error.statusText);
+                        notificarFail('', 'Error al guardar el registro de ordeño');
                     });
                 },
-
-
-
-
 
                 eliminarOrdenioBovino: function () {
                     this.$http.post('/subsidios/productivos/diagnostico/eliminarordeniobovino', {id: this.ordenioToDelete.id}).then((response) => {
@@ -1605,16 +1882,66 @@
                             $("#modal-confirm-delete-ordenio-bovino").modal('hide');
                         }
                     }, (error) => {
-                        notificarFail('', 'Error al eliminar el registro de ordeño' + error.status + ' ' + error.statusText);
+                        notificarFail('', 'Error al eliminar el registro de ordeño');
                     });
                 },
+
+                guardarBovinoAnterior: function (bovino) {
+                    this.borralTemporalBovino(bovino);
+                    this.$http.post('/guardar/bovinoAnterior', { bovino: bovino, idInfo: this.idinfo}).then((response)=>{
+                        if(response.body.estado == 'ok'){
+                            notificarOk('', 'Bovino agregado correctamente');                            
+                            //this.bovinos.push(response.body.bovino);
+                            //$("#btnBovino").attr('disabled','disabled');
+                            //this.bandera = response.body.bandera;
+                        }
+                    }, (error)=>{
+                       // notificarFail('', 'Error al cargar los bovinos ' + error.status+' '+ error.statusText);
+                    });
+                },
+                borralTemporalBovino: function (bovino) {
+                    this.bovinos.splice(this.bovinos.indexOf(bovino),1);
+                },
+
+                guardarManejoAnterior: function (manejo) {
+                    this.borralTemporalManejo(manejo);
+                    this.$http.post('/guardar/manejoAnterior', { manejo: manejo, idInfo: this.idinfo}).then((response)=>{
+                        if(response.body.estado == 'ok'){
+                            notificarOk('', 'Manejo agregado correctamente');
+                            //$("#btnManejo").attr('disabled','disabled');
+                            //this.bandera = response.body.bandera;
+                        }
+                    }, (error)=>{
+                       // notificarFail('', 'Error al cargar los manejos ' + error.status+' '+ error.statusText);
+                    });
+                },
+                borralTemporalManejo: function (manejo) {
+                    this.manejoAnimales.splice(this.manejoAnimales.indexOf(manejo),1);
+                },
+
+                guardarOrdenioAnterior: function (ordenio) {
+                    this.borralTemporalOrdenio(ordenio);
+                    this.$http.post('/guardar/ordenioAnterior', { ordenio: ordenio, idInfo: this.idinfo}).then((response)=>{
+                        if(response.body.estado == 'ok'){
+                            notificarOk('', 'Ordeño agregado correctamente');
+                            //$("#btnOrdenio").attr('disabled','disabled');
+                            //this.bandera = response.body.bandera;
+                        }
+                    }, (error)=>{
+                       // notificarFail('', 'Error al cargar los ordeños ' + error.status+' '+ error.statusText);
+                    });
+                },
+                borralTemporalOrdenio: function (ordenio) {
+                    this.ordenios.splice(this.ordenios.indexOf(ordenio),1);
+                }
+
         },
 
 
 
         mounted(){
 
-                this.$http.post('/getselectsbovinos').then((response)=>{
+            this.$http.post('/getselectsbovinos').then((response)=>{
                 this.razas = response.body.razas;
                 this.TipoPropiedades = response.body.propiedades;
                 this.tipoBovino = response.body.tipos;
@@ -1624,19 +1951,22 @@
 
 
             },(error)=>{
-                notificarFail('', 'Error al obtener las razas de los bovinos ' + error.status+' '+ error.statusText);
+               // notificarFail('', 'Error al obtener las razas de los bovinos ' + error.status+' '+ error.statusText);
             });
 
-            this.$http.post('/subsidios/productivos/diagnostico/getbovinos', {id: this.idinfo}).then((response) => {
+            this.$http.post('/subsidios/productivos/diagnostico/getbovinos', {id: this.id, idInfo: this.idinfo}).then((response) => {
                 if (response.body.estado == 'ok') {
                     this.bovinos = response.body.data;
                     this.manejoAnimales = response.body.manejo;
                     this.ordenios = response.body.ordenio;
-
+                    this.banderaB = response.body.banderaB;
+                    this.banderaM = response.body.banderaM;
+                    this.banderaO = response.body.banderaO;
+                    this.infoProductivo = response.body.infoProductivo;
                 }
 
             }, (error) => {
-                notificarFail('', 'Error al obtener los bovinos ' + error.status + ' ' + error.statusText);
+               // notificarFail('', 'Error al obtener los bovinos ' + error.status + ' ' + error.statusText);
             });
 
         },
@@ -1647,11 +1977,12 @@
 
         Vue.component('especies', {
             template: '#especies',
-            props: ['idinfo'],
+            props: ['idinfo', 'id', 'nombre', 'documento'],
             data: function () {
                 return {
 
                     TipoProducciones : [],
+                    tipoProduccionCerdo: [],
                     TipoCorrales : [],
                     EstadoCorrales : [],
                     TipoAves : [],
@@ -1680,6 +2011,11 @@
                     cerdoToDelete : '',
                     pecesToDelete : '',
                     otraToDelete : '',
+                    banderaA: '',
+                    banderaC: '',
+                    banderaP: '',
+                    banderaO: '',
+                    infoProductivo: ''
 
 
                 }
@@ -1718,11 +2054,12 @@
 
                             notificarOk('', 'Registro de aves creado correctamente');
                         } else {
-                            notificarFail('', 'Error:  ' + response.body.error);
+                            //notificarFail('', 'Error:  ' + response.body.error);
+                            notificarFail('', 'Por favor diligencie todos los campos.');
                         }
                     }, (error) => {
                         this.loading = false;
-                        notificarFail('', 'Error al guardar el registro de aves' + error.status + ' ' + error.statusText);
+                        notificarFail('', 'Error al guardar el registro de aves');
                     });
                 },
                 eliminarAveEspecies: function () {
@@ -1733,7 +2070,7 @@
                             $("#modal-confirm-delete-ave-especies").modal('hide');
                         }
                     }, (error) => {
-                        notificarFail('', 'Error al eliminar el registro de aves' + error.status + ' ' + error.statusText);
+                        notificarFail('', 'Error al eliminar el registro de aves');
                     });
                 },
 
@@ -1751,11 +2088,12 @@
 
                             notificarOk('', 'Registro de cerdos creado correctamente');
                         } else {
-                            notificarFail('', 'Error:  ' + response.body.error);
+                            //notificarFail('', 'Error:  ' + response.body.error);
+                            notificarFail('', 'Por favor diligencie todos los campos.');
                         }
                     }, (error) => {
                         this.loading = false;
-                        notificarFail('', 'Error al guardar el registro de cerdos' + error.status + ' ' + error.statusText);
+                        notificarFail('', 'Error al guardar el registro de cerdos');
                     });
                 },
                 eliminarCerdoEspecies: function () {
@@ -1766,7 +2104,7 @@
                             $("#modal-confirm-delete-cerdo-especies").modal('hide');
                         }
                     }, (error) => {
-                        notificarFail('', 'Error al eliminar el registro de cerdos' + error.status + ' ' + error.statusText);
+                        notificarFail('', 'Error al eliminar el registro de cerdos');
                     });
                 },
                 prepareToDeleteCerdo : function (cerdo) {
@@ -1787,11 +2125,12 @@
 
                             notificarOk('', 'Registro de peces creado correctamente');
                         } else {
-                            notificarFail('', 'Error:  ' + response.body.error);
+                            //notificarFail('', 'Error:  ' + response.body.error);
+                            notificarFail('', 'Por favor diligencie todos los campos');
                         }
                     }, (error) => {
                         this.loading = false;
-                        notificarFail('', 'Error al guardar el registro de cerdos' + error.status + ' ' + error.statusText);
+                        notificarFail('', 'Error al guardar el registro de cerdos');
                     });
                 },
                 eliminarPecesEspecies: function () {
@@ -1802,7 +2141,7 @@
                             $("#modal-confirm-delete-peces-especies").modal('hide');
                         }
                     }, (error) => {
-                        notificarFail('', 'Error al eliminar el registro de peces' + error.status + ' ' + error.statusText);
+                        notificarFail('', 'Error al eliminar el registro de peces');
                     });
                 },
                 prepareToDeletePeces : function (peces) {
@@ -1823,11 +2162,13 @@
 
                             notificarOk('', 'Registro de otras especies creado correctamente');
                         } else {
-                            notificarFail('', 'Error:  ' + response.body.error);
+                            //notificarFail('', 'Error:  ' + response.body.error);
+                            notificarFail('', 'Por favor diligencie todos los campos.');
                         }
                     }, (error) => {
                         this.loading = false;
-                        notificarFail('', 'Error al guardar el registro de otras especies' + error.status + ' ' + error.statusText);
+                        //notificarFail('', 'Error al guardar el registro de otras especies' + error.status + ' ' + error.statusText);
+                        notificarFail('', 'Error al guardar el registro de otras especies');
                     });
                 },
                 eliminarOtrasEspecies: function () {
@@ -1838,12 +2179,77 @@
                             $("#modal-confirm-delete-otras-especies").modal('hide');
                         }
                     }, (error) => {
-                        notificarFail('', 'Error al eliminar el registro de otras especies' + error.status + ' ' + error.statusText);
+                       // notificarFail('', 'Error al eliminar el registro de otras especies' + error.status + ' ' + error.statusText);
                     });
                 },
                 prepareToDeleteOtras : function (otras) {
                     this.otrasToDelete = otras
                 },
+
+                guardarAvesAnterior: function (ave) {
+                    this.borrarTemporalAves(ave);
+                    this.$http.post('/guardar/aveAnterior', { ave: ave, idInfo: this.idinfo}).then((response)=>{
+                        if(response.body.estado == 'ok'){
+                            notificarOk('', 'Ave agregada correctamente');
+                            //$("#btnOrdenio").attr('disabled','disabled');
+                            //this.bandera = response.body.bandera;
+                        }
+                    }, (error)=>{
+                       // notificarFail('', 'Error al cargar las aves ' + error.status+' '+ error.statusText);
+                    });
+                },
+                borrarTemporalAves: function (ave) {
+                    this.aves.splice(this.aves.indexOf(ave),1);
+                },
+
+                guardarCerdoAnterior: function (cerdo) {
+                    this.borrarTemporalCerdo(cerdo);
+                    this.$http.post('/guardar/cerdoAnterior', { cerdo: cerdo, idInfo: this.idinfo}).then((response)=>{
+                        if(response.body.estado == 'ok'){
+                            notificarOk('', 'Cerdo agregado correctamente');
+                            //$("#btnOrdenio").attr('disabled','disabled');
+                            //this.bandera = response.body.bandera;
+                        }
+                    }, (error)=>{
+                       // notificarFail('', 'Error al cargar los cerdos ' + error.status+' '+ error.statusText);
+                    });
+                },
+                borrarTemporalCerdo: function (cerdo) {
+                    this.cerdos.splice(this.cerdos.indexOf(cerdo),1);
+                },
+
+                guardarPezAnterior: function (pez) {
+                    this.borrarTemporalPez(pez);
+                    this.$http.post('/guardar/pezAnterior', { pez: pez, idInfo: this.idinfo}).then((response)=>{
+                        if(response.body.estado == 'ok'){
+                            notificarOk('', 'Pez agregado correctamente');
+                            //$("#btnOrdenio").attr('disabled','disabled');
+                            //this.bandera = response.body.bandera;
+                        }
+                    }, (error)=>{
+                       // notificarFail('', 'Error al cargar los peces ' + error.status+' '+ error.statusText);
+                    });
+                },
+                borrarTemporalPez: function (pez) {
+                    this.peces.splice(this.peces.indexOf(pez),1);
+                },
+
+                guardarOtraAnterior: function (otra) {
+                    this.borrarTemporalOtra(otra);
+                    this.$http.post('/guardar/otraAnterior', { otra: otra, idInfo: this.idinfo}).then((response)=>{
+                        if(response.body.estado == 'ok'){
+                            notificarOk('', 'Otra especie agregada correctamente');
+                            //$("#btnOrdenio").attr('disabled','disabled');
+                            //this.bandera = response.body.bandera;
+                        }
+                    }, (error)=>{
+                       // notificarFail('', 'Error al cargar las otras especies ' + error.status+' '+ error.statusText);
+                    });
+                },
+                borrarTemporalOtra: function (otra) {
+                    this.otras.splice(this.otras.indexOf(otra),1);
+                }
+
 
 
 
@@ -1854,7 +2260,8 @@
             mounted(){
 
                 this.$http.post('/getselectsespecies').then((response)=>{
-                    this.TipoProducciones = response.body.tipo_produccion;
+                    this.tipoProduccionCerdo = response.body.tipo_produccion_cerdo;
+                    this.TipoProducciones = response.body.tipo_produccion_ave;
                     this.TipoCorrales = response.body.tipo_corral;
                     this.EstadoCorrales = response.body.estado_corral;
                     this.TipoAves = response.body.tipo_aves;
@@ -1864,20 +2271,25 @@
 
 
                 },(error)=>{
-                    notificarFail('', 'Error al obtener las opciones del formulario ' + error.status+' '+ error.statusText);
+                   // notificarFail('', 'Error al obtener las opciones del formulario ' + error.status+' '+ error.statusText);
                 });
 
-                this.$http.post('/subsidios/productivos/diagnostico/especies/todaslasespecies', {id: this.idinfo}).then((response) => {
+                this.$http.post('/subsidios/productivos/diagnostico/especies/todaslasespecies', {id: this.id, idInfo: this.idinfo}).then((response) => {
                     if (response.body.estado === 'ok') {
                         this.aves = response.body.aves;
                         this.cerdos = response.body.cerdos;
                         this.peces = response.body.peces;
                         this.otras = response.body.otras;
+                        this.infoProductivo = response.body.infoProductivo;
+                        this.banderaA = response.body.banderaA;
+                        this.banderaC = response.body.banderaC;
+                        this.banderaP = response.body.banderaP;
+                        this.banderaO = response.body.banderaO;
 
                     }
 
                 }, (error) => {
-                    notificarFail('', 'Error al obtener los datos de las especies ' + error.status + ' ' + error.statusText);
+                    //notificarFail('', 'Error al obtener los datos de las especies ' + error.status + ' ' + error.statusText);
                 });
 
             },
@@ -1888,18 +2300,64 @@
 
         Vue.component('cierre', {
             template : '#form-cierre',
-            props : ['idinfo'],
+            props : ['idinfo', 'id', 'idpredio'],
             data : function () {
                 return {
                     image: [],
                     loading :false,
                     images :[],
                     subirMas : false,
-
+                    obs : '',
+                    subirMasArchivos: false,
+                    archivo: null,
+                    idPredio: this.idpredio
 
                 }
             },
             methods: {
+                procesarFiles (e){
+                    this.archivo = e.target.files
+                    //alert('procesado')
+                    //console.log(this.nuevoPlan.archivo)       
+                 },
+                subirArchivos(){
+                    if(this.subirMasArchivos == true && this.archivo.length > 0){
+                        this.loading = true;
+                        var archivos = new FormData()
+                            for(var i = 0 ;i<this.archivo.length; i++){
+                                let file = this.archivo[i] 
+                                archivos.append('files['+i+']',file)
+                            }
+                            archivos.append('id_beneficiario', this.id)
+                            archivos.append('idPredio', this.idPredio)
+                            archivos.append('tipo_subsidio', 2)
+                        this.$http.post('/guardarArchivos', archivos).then((response)=>{
+                            notificarOk("Archivos guradados exitosamente");
+                            this.loading = false;
+                            this.cierre.archivo = null;
+                            //this.pagination = response.body.pagination;
+
+                        }, (error)=>{
+                            notificarFail('', 'Error:  ' + response.body.error);
+                        });
+
+                    }
+                },
+
+                guardarObs () {
+                    this.$http.post('/subsidios/productivos/diagnostico/cierre/save-cierre',{obs: this.obs, id: this.idinfo }).then((response)=>{
+                        if(response.body.estado ==='ok'){
+
+                            notificarOk("", "Observaciones guardadas");
+                        }else{
+                           // notificarFail("",""+response.body.error)
+                        }
+
+                    },(error)=>{
+                       // notificarFail("",""+error)
+                    })
+
+                },
                 onFileChange(e) {
                     var files = e.target.files || e.dataTransfer.files;
                     if (!files.length)
@@ -1953,8 +2411,9 @@
                 }
             },
             mounted(){
-                this.$http.post('/subsidios/productivos/diagnostico/cierre/todasimagenes', {id :this.idinfo, tipo : 2 }).then((response)=>{
+                this.$http.post('/subsidios/productivos/diagnostico/cierre/info-cierre', {id :this.idinfo, tipo : 2 }).then((response)=>{
                     this.images = response.body.data;
+                    this.obs = response.body.obs;
             }, (error)=>{
 
                 });
@@ -1977,6 +2436,7 @@
                     numeroFamiliasVivienda: '{{$info->no_familias_vivienda}}',
                     idPredio : '{{$info->id_predio}}',
                     beneficiario : {
+                        id: {{$info->Subsidio->Beneficiario->id}},
                         nombre : "{{ $info->Subsidio->Beneficiario->nombres .' '.$info->Subsidio->Beneficiario->apellidos}}",
                         documento : "{{ $info->Subsidio->Beneficiario->no_cedula }}"
                     },
@@ -1998,6 +2458,7 @@
                     idTipologiaFamilia:'',
                     editado : false,
                     id_tipo_proyecto: '',
+                    observaciones_proyecto : '',
                 },
                 idVereda :'',
                 departamentos : '',
@@ -2015,7 +2476,9 @@
                 materialPuertas : '',
                 materialVentanas : '',
                 estadoVivienda : '',
-                tipoProyectos : ''
+                tipoProyectos : '',
+                infoProductivoAnterior: '',
+                bandera: ''
 
             },
             methods:{
@@ -2031,11 +2494,11 @@
                             this.generalidades.id = response.body.idGeneralidades;
 
                         }else{
-                            notificarFail('', 'Error al guardar ' + response.body.error);
+                          //  notificarFail('', 'Error al guardar ' + response.body.error);
                         }
 
                     }, (error)=>{
-                        notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                        //notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
                     });
 
                 },
@@ -2065,6 +2528,22 @@
                         this.tipologiasFamilia = response.body.data
                     })
                 },
+                resetGeneral: function () {
+                    this.generalidades = {
+                        id: '',
+                        idInformacion: this.idInfoProductivo,
+                        fechaViveVereda:'',
+                        fechaViveVivienda : '',
+                        idTipoVehiculo : '',
+                        idTipoViaAcceso:'',
+                        idEstadoVia:'',
+                        idTiempoRecorrido:'',
+                        idTipologiaFamilia:'',
+                        editado : false,
+                        id_tipo_proyecto: '',
+                        observaciones_proyecto : ''
+                    }
+                }
 
             },
             watch: {
@@ -2081,26 +2560,26 @@
                 this.$http.post('/getniveleseducativos').then((response)=>{
                     this.nivelesEducativos = response.body.data;
                 }, (error)=>{
-                    notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                    //notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
                 });
 
                 this.$http.post('/getgeneros').then((response)=>{
                     this.generos = response.body.data;
                 }, (error)=>{
-                    notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                    //notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
                 });
 
                 this.$http.post('/getselectstipoproyectos').then((response)=>{
                     this.tipoProyectos = response.body.data;
                 }, (error)=>{
-                    notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                    //notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
                 });
 
 
 
             },
             mounted(){//ok revision
-                this.$http.post('/subsidios/productivos/diagnostico/getgeneralidades', {_token: this.token, idInfo : this.idInfoProductivo}).then((response)=>{
+                this.$http.post('/subsidios/productivos/diagnostico/getgeneralidades', {_token: this.token, idInfo : this.idInfoProductivo, id: this.infoProductivo.beneficiario.id}).then((response)=>{
                     if(response.body.generalidades != null){
                         this.generalidades.id = response.body.generalidades.id;
                         this.generalidades.idProductivo = response.body.generalidades.id_info_productivo;
@@ -2112,11 +2591,17 @@
                         this.generalidades.idTiempoRecorrido = response.body.generalidades.id_tiempo_recorrido;
                         this.generalidades.idTipologiaFamilia = response.body.generalidades.id_tipologia_familia;
                         this.generalidades.id_tipo_proyecto = response.body.generalidades.id_tipo_proyecto;
+                        this.bandera = response.body.bandera;
+                        this.infoProductivoAnterior = response.body.infoProductivo;
+                        if (response.body.bandera == 1) {
+                            this.generalidades.id = '';
+                            this.generalidades.idProductivo = this.idInfoProductivo;
+                        }
                     }
 
                 },(response)=>{
-                    notificarFail('', 'Tenemos problemas al cargar la informacion general ' + + response.status+' '+ response.statusText);
-                });
+                   // notificarFail('', 'Tenemos problemas al cargar la informacion general ' + + response.status+' '+ response.statusText);
+                });                
             }
 
 
@@ -2161,3 +2646,4 @@
 @include('subsidios_productivos.diagnostico.bovinos.table_bovinos')
 @include('subsidios_productivos.diagnostico.especies_menores.table_especies_menores')
 @include('subsidios_productivos.diagnostico.parts.form_cierre')
+@include('subsidios_productivos.diagnostico.fortalecimiento_estructura.table_fortalecimiento')

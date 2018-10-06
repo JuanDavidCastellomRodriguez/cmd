@@ -8,14 +8,14 @@
     <div class="container" id="app">
         <div class="row" style="margin-top: 10px;">
             <div>
-                <h3>Fases de los Subsidios</h3>
+                <h3>Fases de los Beneficios</h3>
                 <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-agregar-fase" >
                     Nuevo
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                 </button>
 
             </div>
-            <div class="col-lg-6 pull-right" style="text-align: right">
+            <!--<div class="col-lg-6 pull-right" style="text-align: right">
                 <form class="form-inline" style="display: inline-block; padding-top: 20px;  margin-bottom: 10px;">
                     <div class="form-group">
                         <label v-show="filtrado">Filtro:  @{{ $data.filtroActual }}   <span class="glyphicon glyphicon-remove" v-on:click="limpiarFiltro()" aria-hidden="true"></span> </label>
@@ -23,7 +23,7 @@
                     </div>
                     <button type="submit" class="btn btn-default" v-on:click.prevent="buscarData()">Buscar</button>
                 </form>
-            </div>
+            </div>-->
             <div class="col-lg-6" style="padding-left: 0">
 
                 <nav v-if="pagination.last_page > 1">
@@ -53,7 +53,6 @@
                 <tr>
                     <th>Fecha</th>
                     <th>Nombre</th>
-                    <th>Vereda</th>
                     <th>Orden de Servicio</th>
                     <th>Opciones</th>
                 </tr>
@@ -61,8 +60,7 @@
 
                     <td>@{{ info.fecha_fase }}</td>
                     <td>@{{ info.nombre_fase }}</td>
-                    <td>@{{ info.vereda }}</td>
-                    <td>@{{ info.orden }}</td>
+                    <td>@{{ info.orden.consecutivo }}</td>
                     <td>
                         @{{ info.veredas_fase.pivot = '' }}
                         <a  class="btn btn-sm btn-default" title="Ver" v-on:click="editFase(info)" >Ver/Editar</a>

@@ -5,15 +5,19 @@ namespace App\Http\Controllers;
 use App\Predio;
 use App\Subsidio;
 use App\InformacionVivienda;
+use App\ArchivoBeneficiario;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+
 
 class SubsidiosController extends Controller
 {
     public function getSubsidios(Request $request){
 
-        $subsidios = Subsidio::where('id_tipo_subsidio',$request->tipoSubsidio)->Buscar($request->buscar)->paginate(10);
+        $subsidios = Subsidio::where('id_tipo_subsidio',$request->tipoSubsidio)->Buscar($request->buscar)->orderBy('id', 'desc')->paginate(10);
         //return $subsidios->total();
         $data = new Collection();
         $pagination = "";
@@ -25,10 +29,10 @@ class SubsidiosController extends Controller
                 //$puntos = $puntos.'{ position: { lat:'.$subs->InformacionVivienda->Predio->latitud.', lng:'.$subs->InformacionVivienda->Predio->latitud .'}},';
 
                 $data->add([
-                    'vereda' => $subs->Vereda->vereda."(".$subs->Vereda->Municipio->municipio.")",
+                    'vereda' => $subs->id_vereda != null ? $subs->Vereda->vereda."(".$subs->Vereda->Municipio->municipio.")" : null,
                     'beneficiario' => $subs->Beneficiario->nombres." ". $subs->Beneficiario->apellidos." (".$subs->Beneficiario->no_cedula.")",
-                    'predio' => $subs->InformacionVivienda->id_predio,
-                    'nombre_predio' => $subs->InformacionVivienda->Predio,
+                    'predio' => $subs->id_info_vivienda != null ? $subs->InformacionVivienda->id_predio : null,
+                    'nombre_predio' => $subs->id_info_vivienda != null ? $subs->InformacionVivienda->Predio : null,
                     'id' => $subs->id,
                     //'campo'=> $subs->Vereda->Campo
                     'consecutivo' => $subs->consecutivo,
@@ -79,8 +83,7 @@ class SubsidiosController extends Controller
         return view('subsidios_productivos.index');
     }
 
-    public function guardarSubsidio(Request $request){
-
+    public function guardarSubsidio(Request $request){       
         try{
             $request =  json_decode($request->getContent());
             $consecutivo = 1;
@@ -90,7 +93,7 @@ class SubsidiosController extends Controller
             }
 
             $id = '';
-
+            
             if($request->subsidio->id_beneficiario == ''){
                 $idBeneficiario = BeneficiariosController::guardarBeneficiario($request->beneficiario);
                 if($idBeneficiario != 0){
@@ -107,7 +110,7 @@ class SubsidiosController extends Controller
                     $subsidio->observaciones = $request->subsidio->observaciones;
 
                     $subsidio->save();
-                    $id = $subsidio->id;
+                    $id = $subsidio->id;                    
 
                     return response()->json([
                         'estado' => 'ok',
@@ -134,6 +137,7 @@ class SubsidiosController extends Controller
                 $subsidio->save();
                 $id = $subsidio->id;
 
+                
                 return response()->json([
                     'estado' => 'ok',
                     'id' => $id,
@@ -187,7 +191,7 @@ class SubsidiosController extends Controller
 
         return response()->json([
             'estado' => 'ok',
-            'data' => $subsidios,
+            'data' => $subsidios->get(),
 
             //'data' =>$this->tabularInfo($subsidios,$request->campo) ,
             //'data' =>$subsidios->InformacionVivienda()->getResults(),
@@ -196,6 +200,48 @@ class SubsidiosController extends Controller
             //'data' => $subsidios,
         ]);
 
+    }
+    public function guardarArchivos(Request $request)
+    {
+        try {
+            $archivos = $request->file('files');
+            if ($request->idPredio != '') {
+                $idPredio = $request->idPredio;
+            }else{
+                $idPredio = null;
+            }
+            
+            //var_dump($archivos);
+            //$keys = array_keys($archivos);
+            //$count = count(get_object_vars($archivos));
+            //dd(gettype($request->archivo));
+            $destino = public_path('/img/vivienda/beneficiarios/');
+            if (count($archivos) > 0) {
+                foreach ($archivos as $files) {
+                    $imageData = $files;
+                    $fileName = Carbon::now()->timestamp . $files->getClientOriginalName();
+                    $upload_success = $files->move($destino, $fileName);
+                    $fil = new ArchivoBeneficiario();
+                    $fil->nombres = $files->getClientOriginalName();
+                    $fil->ruta = '/img/vivienda/beneficiarios/'.$fileName;
+                    $fil->id_beneficiario = $request->id_beneficiario;
+                    $fil->id_predio = $idPredio;
+                    $fil->tipo_subsidio = $request->tipo_subsidio;
+                    $fil->save();
+                }
+            }
+
+            return response()->json([
+                'estado' => 'ok',
+
+            ]);
+        } catch (\Exception $ee) {
+            return response()->json([
+                'estado' => 'fail',
+                'error' => $ee->getMessage(),
+                'trace' => $ee->getTrace(),
+            ]);
+        }
     }
 
 

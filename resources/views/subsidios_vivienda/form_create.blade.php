@@ -4,7 +4,7 @@
             <form class="form" v-on:submit.prevent="guardarSubsidio()" >
                 <div class="modal-header">
 
-                    <h4 class="modal-title">Nuevo Subsidio</h4>
+                    <h4 class="modal-title">Nuevo Beneficio de Vivienda</h4>
                 </div>
                 <div class="modal-body">
                     <div class="row">
@@ -24,7 +24,7 @@
                                 <label for="exampleInputName2">Datos</label>
                                 <input type="text"  disabled class="form-control" id="exampleInputName2" v-model="beneficiario">
                             </div>
-                            <div class="col-lg-12" style="margin: 0; padding: 0;" v-show="esNuevoBeneficiario">
+                            <div class="col-lg-12" style="margin: 0; padding: 0;" v-if="esNuevoBeneficiario">
                                 <div class="form-group col-lg-6 col-sm-12 ">
                                     <label for="exampleInputName2">Nombres</label>
                                     <input type="text"  class="form-control" id="exampleInputName2" v-model="nuevoBeneficiario.nombres">
@@ -49,17 +49,9 @@
                         </div>
                         <div class="col-lg-12" style="margin: 15px 0 0 0; padding: 0;">
                             <div class=" form-group col-lg-6 col-sm-12">
-                                <label for="exampleInputName2">Fecha Subsidio</label>
+                                <label for="exampleInputName2">Fecha de Caracterización</label>
                                 <input type="text" name="fecha_subsidio" id="fecha_subsidio" class="form-control" required v-model="nuevoSubsidio.fecha_inicio">
-                            </div>
-                            <div class="form-group col-lg-6 col-sm-12">
-                                <label for="exampleInputName2">Valor Subsidio (en Pesos)</label>
-                                <input type="number" required class="form-control" id="exampleInputName2" v-model.number="nuevoSubsidio.valor">
-                            </div>
-                            <div class="form-group col-lg-6 col-sm-12">
-                                <label for="exampleInputName2">Aporte Beneficiario (en Pesos)</label>
-                                <input type="number" required class="form-control" id="exampleInputName2" v-model.number="nuevoSubsidio.valor_beneficiario">
-                            </div>
+                            </div>          
 
                             <div class="form-group has-feedback col-lg-6 col-sm-12">
                                 <label for="exampleInputName2">Fase</label>
@@ -81,20 +73,32 @@
 
                             <div class="form-group has-feedback col-lg-12 col-sm-12">
                                 <label for="exampleInputName2">Observaciones</label>
-                                <textarea v-model="nuevoSubsidio.observaciones" class="form-control"></textarea>
+                                <textarea v-model="nuevoSubsidio.observaciones" class="form-control" name="observaciones"></textarea>                                
                                 <span class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 25px;"></span>
                             </div>
                         </div>
+                    </div>
+                    <div class="row"> 
 
-
-
+                        <div class="checkbox" style="margin-left: 20px;">
+                            <label>
+                                <input type="checkbox" v-model="subirMas"> ¿Subir archivos?
+                            </label>
+                        </div>
+                        <div v-show="subirMas">
+                            <div class="col-md-12" >
+                                <div class="col-md-12">
+                                    <input type="file" id="archivo" name="archivo" @change="procesarFiles"  ref="files" multiple class="form-control" accept=".xlsx,.xls,image/*,.doc, .docx,.ppt, .pptx,.txt,.pdf">    
+                                </div>
+                            </div>
+                        </div>
 
                     </div>
                 </div>
                 <div class="modal-footer">
                     <i  v-show="loading" class="fa fa-spinner fa-spin"></i>
                     <button type="button" class="btn btn-default" data-dismiss="modal" @click="formReset()" >Cancelar</button>
-                    <button type="submit"  class="btn btn-default "  id="btn-guardar">Crear Subsidio</button>
+                    <button type="submit"  class="btn btn-default "  id="btn-guardar">Crear Beneficio</button>
                 </div>
             </form>
         </div><!-- /.modal-content -->

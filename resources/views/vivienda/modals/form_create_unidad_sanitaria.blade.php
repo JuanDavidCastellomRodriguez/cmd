@@ -38,7 +38,7 @@
                             <div class="col-lg-12" style="padding-left: 0; ">
                                 <div class="form-group col-lg-6 col-sm-12 col-md-6">
                                     <label for="exampleInputName2">Material</label>
-                                    <select v-model="nuevaUnidadSanitaria.id_tipo_muro" class="form-control">
+                                    <select required="required" v-model="nuevaUnidadSanitaria.id_tipo_muro" class="form-control">
                                         <option value="" disabled>Seleccione...</option>
                                         <option v-for="muro in tipomuro" :value="muro.id" >@{{ muro.tipo_muro }}</option>
                                     </select>
@@ -90,7 +90,7 @@
                             <div class="col-lg-12" style="padding-left: 0; ">
                                 <div class="form-group col-lg-6 col-sm-12 col-md-6">
                                     <label for="exampleInputName2">Material</label>
-                                    <select v-model="nuevaUnidadSanitaria.id_tipo_cubierta" class="form-control">
+                                    <select required="required" v-model="nuevaUnidadSanitaria.id_tipo_cubierta" class="form-control">
                                         <option value="" disabled>Seleccione...</option>
                                         <option v-for="cubierta in tipocubierta" :value="cubierta.id" >@{{ cubierta.tipo_cubierta }}</option>
                                     </select>
@@ -102,7 +102,7 @@
                             <div class="col-lg-12" style="padding-left: 0; ">
                                 <div class="form-group col-lg-6 col-sm-12 col-md-6">
                                     <label for="exampleInputName2">Material</label>
-                                    <select v-model="nuevaUnidadSanitaria.id_tipo_piso" class="form-control">
+                                    <select required="required" v-model="nuevaUnidadSanitaria.id_tipo_piso" class="form-control">
                                         <option value="" disabled>Seleccione...</option>
                                         <option v-for="piso in tipopiso" :value="piso.id" >@{{ piso.tipo_piso }}</option>
                                     </select>
@@ -130,7 +130,7 @@
                             <div class="col-lg-12" style="padding-left: 0;" v-if="nuevaUnidadSanitaria.ventanas">
                                 <div class="form-group col-lg-6 col-sm-12 col-md-6">
                                     <label for="exampleInputName2">Material Ventana</label>
-                                    <select v-model="nuevaUnidadSanitaria.id_material_ventanas" class="form-control">
+                                    <select required="required" v-model="nuevaUnidadSanitaria.id_material_ventanas" class="form-control">
                                         <option value="" disabled>Seleccione...</option>
                                         <option v-for="ventana in materialventanas" :value="ventana.id">@{{ ventana.material_ventanas }}</option>
                                     </select>
@@ -188,7 +188,7 @@
                             <div class="col-lg-12" style="padding-left: 0; " v-if="nuevaUnidadSanitaria.tanque_elevado">
                                 <div class="form-group col-lg-6 col-sm-12 col-md-6">
                                     <label for="exampleInputName2">Material</label>
-                                    <select v-model="nuevaUnidadSanitaria.id_materiales_tanques_elevados" class="form-control">
+                                    <select required="required" v-model="nuevaUnidadSanitaria.id_materiales_tanques_elevados" class="form-control">
                                         <option value="" disabled>Seleccione...</option>
                                         <option v-for="material in materialesTanqueElevado" :value="material.id" >@{{ material.material_tanque_elevado }}</option>
                                     </select>
@@ -209,14 +209,14 @@
                             <div class="col-lg-12" style="padding-left: 0; " v-if="nuevaUnidadSanitaria.tanque_lavadero">
                                 <div class="form-group col-lg-6 col-sm-12 col-md-6">
                                     <label for="exampleInputName2">Material</label>
-                                    <select v-model="nuevaUnidadSanitaria.id_materiales_tanques_lavaderos" class="form-control">
+                                    <select required="required" v-model="nuevaUnidadSanitaria.id_materiales_tanques_lavaderos" class="form-control">
                                         <option value="" disabled>Seleccione...</option>
                                         <option v-for="material in materialesTanqueLavadero" :value="material.id" >@{{ material.material_tanque_lavadero }}</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-lg-6 col-sm-12 col-md-6">
                                     <label for="exampleInputName2">Acabados</label>
-                                    <select v-model="nuevaUnidadSanitaria.id_acabados_tanques_lavaderos" class="form-control">
+                                    <select required="required" v-model="nuevaUnidadSanitaria.id_acabados_tanques_lavaderos" class="form-control">
                                         <option value="" disabled>Seleccione...</option>
                                         <option v-for="material in acabadosTanqueLavadero" :value="material.id" >@{{ material.acabados_tanque }}</option>
                                     </select>
@@ -227,14 +227,14 @@
                         <div class="col-lg-12" style="padding-left: 0;margin-top: 20px; " >
                             <div class="form-group col-lg-6 col-sm-12 col-md-6">
                                 <label for="exampleInputName2">Estado General</label>
-                                <select v-model="nuevaUnidadSanitaria.id_estado_vivienda" class="form-control">
+                                <select required="required" v-model="nuevaUnidadSanitaria.id_estado_vivienda" class="form-control">
                                     <option value="" disabled>Seleccione...</option>
                                     <option v-for="estado in estadovivienda" :value="estado.id" >@{{ estado.estado_vivienda }}</option>
                                 </select>
                             </div>
                             <div class="form-group col-lg-6 col-sm-12 col-md-6">
                                 <label for="exampleInputName2">Tipo Unidad</label>
-                                <select v-model="nuevaUnidadSanitaria.id_tipo_unidad_sanitaria" class="form-control">
+                                <select required="required" v-model="nuevaUnidadSanitaria.id_tipo_unidad_sanitaria" class="form-control">
                                     <option value="" disabled>Seleccione...</option>
                                     <option v-for="tipo in tipoUnidadesSanitarias" :value="tipo.id" >@{{ tipo.tipo_unidad_sanitaria }}</option>
                                 </select>

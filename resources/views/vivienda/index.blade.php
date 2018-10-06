@@ -6,7 +6,7 @@
     <div class="container" id="app">
         <div class="row" style="margin-top: 10px;">
             <div>
-                <h3>Subsidios de Vivienda</h3>
+                <h3>Beneficios de Vivienda</h3>
                 <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-agregar" >
                     Nuevo
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
@@ -76,7 +76,7 @@
                                 element: '#modal-agregar',
                                 //icon: 'glyphicon glyphicon-warning-sign',
                                 title: 'Leventamiento Informacion',
-                                message: 'Error al guardar ' + response.body.error,
+                                message: 'Error al guardar ',
                                 z_index: 1052,
                             })
 
@@ -90,7 +90,8 @@
                             element: '#modal-agregar',
                             //icon: 'glyphicon glyphicon-warning-sign',
                             title: 'Leventamiento Informacion',
-                            message: 'Error en el servidor ' + response.status+' '+ response.statusText,
+                            //message: 'Error en el servidor ' + response.status+' '+ response.statusText,
+                            message: 'Error en el servidor ',
                             z_index: 1052,
                         })
 

@@ -30,8 +30,36 @@ class InformacionVivienda extends Model
     public function PersonasCargo(){
         return $this->hasMany('App\PersonasCargo','id_informacion','id');
     }
+
     public function Subsidio(){
         return $this->belongsTo('App\Subsidio','id','id_info_vivienda');
     }
 
+    public function Habitacione(){
+        return $this->belongsTo('App\Habitacione','id','id_informacion');
+    }
+
+    public function Cocina(){
+        return $this->belongsTo('App\Cocina','id','id_informacion');
+    }
+
+    public function UnidadesSanitaria(){
+        return $this->belongsTo('App\UnidadesSanitaria','id','id_informacion');
+    }
+
+    public function TenenciaTierra(){
+        return $this->belongsTo('App\TenenciaTierra','id','id_informacion');
+    }
+
+    public function Generalidade(){
+        return $this->belongsTo('App\Generalidade','id','id_informacion');
+    }
+
+    public function ServiciosPublico(){
+        return $this->hasOne('App\ServiciosPublico','id_informacion','id');
+    }
+
+    public function Indicadore(){
+        return $this->hasOne('App\Indicadore','id_informacion','id');
+    }
 }

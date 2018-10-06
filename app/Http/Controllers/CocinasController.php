@@ -3,15 +3,33 @@
 namespace App\Http\Controllers;
 
 use App\Cocina;
+use App\Subsidio;
+use App\InformacionVivienda;
 use Illuminate\Http\Request;
 
 class CocinasController extends Controller
 {
     public function getAllCocinas(Request $request){
         try{
+            $cocina = Cocina::where('id_informacion', $request->idInfo)->where('id_tipo_visita',$request->tipo_visita)->get()->first();
+            if ($cocina === null) {
+            $subsidio = Subsidio::where('id_beneficiario', $request->id)
+                                    ->where('id_info_vivienda', '<', $request->idInfo)
+                                    ->orderBy('created_at', 'desc')->first();
+            $info = InformacionVivienda::where('id', $subsidio->id_info_vivienda)->first();
+            $cocina = Cocina::where('id_informacion', $info->id)->where('id_tipo_visita',$request->tipo_visita)->get()->first();
+            $bandera = 1;
+            }else {
+                $info = '';
+                $bandera = 0;
+            }
+
+
             return response()->json([
                 'estado' => 'ok',
-                'cocinas' => Cocina::where('id_informacion', $request->idInfo)->where('id_tipo_visita',$request->tipo_visita)->get()->first()
+                'cocinas' => $cocina,
+                'bandera' => $bandera,
+                'infoVivienda' => $info
             ]);
         }catch (\Exception $ee){
             return response()->json([
@@ -28,6 +46,15 @@ class CocinasController extends Controller
                 $cocina = Cocina::find($request->cocina->id);
                 $cocina->estructura_viga = $request->cocina->estructura_viga;
                 $cocina->estructura_columna = $request->cocina->estructura_columna;
+                $cocina->otra_estructura = $request->cocina->otra_estructura;
+                $cocina->descripcion_otra_estructura = $request->cocina->descripcion_otra_estructura;
+                $cocina->descripcion_otro_muro = $request->cocina->descripcion_otro_muro;
+                $cocina->descripcion_otra_cubierta = $request->cocina->descripcion_otra_cubierta;
+                $cocina->descripcion_otro_piso = $request->cocina->descripcion_otro_piso;
+                $cocina->descripcion_otra_ventana = $request->cocina->descripcion_otra_ventana;
+                $cocina->descripcion_otra_puerta = $request->cocina->descripcion_otra_puerta;
+                $cocina->descripcion_otro_material_estufa = $request->cocina->descripcion_otro_material_estufa;
+                $cocina->descripcion_otro_material_meson = $request->cocina->descripcion_otro_material_meson;
                 $cocina->panete_interno = $request->cocina->panete_interno;
                 $cocina->panete_externo = $request->cocina->panete_externo;
                 $cocina->estuco = $request->cocina->estuco;
@@ -50,7 +77,9 @@ class CocinasController extends Controller
                 $cocina->piso_deteriorado = $request->cocina->piso_deteriorado;
                 $cocina->nombre = $request->cocina->nombre;
                 $cocina->puertas = $request->cocina->puertas;
+                $cocina->puerta_deteriorado = $request->cocina->puerta_deteriorado;
                 $cocina->ventanas = $request->cocina->ventanas;
+                $cocina->ventana_deteriorado = $request->cocina->ventana_deteriorado;
                 $cocina->estufa = $request->cocina->estufa;
                 $cocina->id_elemento_cocina = $request->cocina->id_fuente_energia_cocinas;
 
@@ -66,6 +95,15 @@ class CocinasController extends Controller
                 $cocina->id_tipo_visita = $request->cocina->id_tipo_visita;
                 $cocina->estructura_viga = $request->cocina->estructura_viga;
                 $cocina->estructura_columna = $request->cocina->estructura_columna;
+                $cocina->otra_estructura = $request->cocina->otra_estructura;
+                $cocina->descripcion_otra_estructura = $request->cocina->descripcion_otra_estructura;
+                $cocina->descripcion_otro_muro = $request->cocina->descripcion_otro_muro;
+                $cocina->descripcion_otra_cubierta = $request->cocina->descripcion_otra_cubierta;
+                $cocina->descripcion_otro_piso = $request->cocina->descripcion_otro_piso;
+                $cocina->descripcion_otra_ventana = $request->cocina->descripcion_otra_ventana;
+                $cocina->descripcion_otra_puerta = $request->cocina->descripcion_otra_puerta;
+                $cocina->descripcion_otro_material_estufa = $request->cocina->descripcion_otro_material_estufa;
+                $cocina->descripcion_otro_material_meson = $request->cocina->descripcion_otro_material_meson;
                 $cocina->panete_interno = $request->cocina->panete_interno;
                 $cocina->panete_externo = $request->cocina->panete_externo;
                 $cocina->estuco = $request->cocina->estuco;
@@ -88,7 +126,9 @@ class CocinasController extends Controller
                 $cocina->piso_deteriorado = $request->cocina->piso_deteriorado;
                 $cocina->nombre = $request->cocina->nombre;
                 $cocina->puertas = $request->cocina->puertas;
+                $cocina->puerta_deteriorado = $request->cocina->puerta_deteriorado;
                 $cocina->ventanas = $request->cocina->ventanas;
+                $cocina->ventana_deteriorado = $request->cocina->ventana_deteriorado;
                 $cocina->estufa = $request->cocina->estufa;
                 $cocina->id_elemento_cocina = $request->cocina->id_fuente_energia_cocinas;
                 $cocina->save();

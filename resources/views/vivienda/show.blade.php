@@ -25,9 +25,40 @@
 @endsection
 @section('content')
     <div class="container" id="app">
-        <div class="row" style="margin-top: 10px;">
+        <div class="row" style="margin-top: 50px;">
+            
+<div class="modal fade" tabindex="-1" role="dialog" id="modal-datos-estado" name="modal-datos-estado">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
 
-            <h3>Levantamiento Información (Subsidios de Vivienda) No <b> @{{ infoVivienda.consecutivo }}</b></h3>
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Reporte del estado general de la vivienda</h4>
+            </div>
+            <div class="modal-body">
+                <label for="">
+                    Estado general de las habitaciones: @{{ estado_habitacion }}<br>
+                    Estado general de la cocina: @{{ estado_cocina }}<br>
+                    Estado general de las unidades sanitarias: @{{ estado_unidad }}<br>
+
+                </label>
+            </div>
+            <div class="modal-footer">
+                <i  v-show="loading" class="fa fa-spinner fa-spin"></i>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Regresar</button>
+            </div>
+
+            
+        </div>
+    </div>
+</div>
+
+            <!--<button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-datos-estado" style="margin-bottom: 15px;">
+                Agregar
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+            </button>-->
+
+            <h3>Levantamiento Información (Beneficio de Vivienda) No <b> @{{ infoVivienda.consecutivo }}</b></h3>
             <p><b>Beneficiario: </b> @{{ infoVivienda.beneficiario.nombre +' ('+ infoVivienda.beneficiario.documento +')' }} </p>
             <section class="col-lg-2 col-sm-4" id="seccion-menu-lateral">
                 <ul class="nav nav-tabs" role="tablist">
@@ -35,7 +66,7 @@
                     <li role="presentation" class="active" ><a  class="red geopark white-text" href="#predio" aria-controls="predio" role="tab" data-toggle="tab" >Predio</a></li>
                     <li role="presentation"><a  class="red geopark white-text" href="#general" aria-controls="general" role="tab" data-toggle="tab" >General</a></li>
                     <li role="presentation"><a class="red geopark white-text" href="#habitantes" aria-controls="habitantes" role="tab" data-toggle="tab">Habitante(s)</a></li>
-                    <li role="presentation"><a class="red geopark white-text" href="#p-cargos" aria-controls="p-cargos" role="tab" data-toggle="tab">Persona(s) a Cargo</a></li>
+                    <!--<li role="presentation"><a class="red geopark white-text" href="#p-cargos" aria-controls="p-cargos" role="tab" data-toggle="tab">Persona(s) a Cargo</a></li>-->
                     <li>Vivienda</li>
                     <li role="presentation"><a class="red geopark white-text" href="#habitaciones" aria-controls="habitaciones" role="tab" data-toggle="tab">Habitaciones</a></li>
                     <li role="presentation"><a  class="red geopark white-text" href="#cocinas" aria-controls="cocinas" role="tab" data-toggle="tab">Cocina(s)</a></li>
@@ -49,31 +80,31 @@
                 <div class="tab-content">
                     <div role="tabpanel" class="tab-pane active" id="predio">
 
-                        <form-predio :token="token" :departamentos="departamentos" :idinfo="idInfoVivienda" :idpredio="idPredio" ></form-predio>
+                        <form-predio :token="token" :departamentos="departamentos" :idinfo="idInfoVivienda" :idpredio="idPredio" :id="infoVivienda.beneficiario.id" :nombre="infoVivienda.beneficiario.nombre" :documento="infoVivienda.beneficiario.documento"></form-predio>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="habitantes">
-                        <beneficiarios :token="token" :idinfo="idInfoVivienda" :generos="generos" :niveles="nivelesEducativos"></beneficiarios>
+                        <beneficiarios :token="token" :idinfo="idInfoVivienda" :generos="generos" :niveles="nivelesEducativos" :idpredio="idPredio" :id="infoVivienda.beneficiario.id" :nombre="infoVivienda.beneficiario.nombre" :documento="infoVivienda.beneficiario.documento"></beneficiarios>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="general">
                         @include('vivienda.parts.form_inicial')
                     </div>
-                    <div role="tabpanel" class="tab-pane" id="p-cargos">
+                    <!--<div role="tabpanel" class="tab-pane" id="p-cargos">
                         <personas-cargo :idinfo="idInfoVivienda" :niveles="nivelesEducativos" :generos="generos"></personas-cargo>
-                    </div>
+                    </div>-->
                     <div role="tabpanel" class="tab-pane" id="habitaciones">
-                        <table-habitaciones :idinfo="idInfoVivienda" :tipomuro="tipoMuro" :tipopiso="tipoPiso" :tipocubierta="tipoCubierta" :materialpuertas="materialPuertas" :materialventanas="materialVentanas" :estadovivienda="estadoVivienda"></table-habitaciones>
+                        <table-habitaciones :idinfo="idInfoVivienda" :tipomuro="tipoMuro" :tipopiso="tipoPiso" :tipocubierta="tipoCubierta" :materialpuertas="materialPuertas" :materialventanas="materialVentanas" :estadovivienda="estadoVivienda" :idpredio="idPredio" :id="infoVivienda.beneficiario.id" :nombre="infoVivienda.beneficiario.nombre" :documento="infoVivienda.beneficiario.documento"></table-habitaciones>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="cocinas">
-                        <table-cocinas :idinfo="idInfoVivienda" :tipomuro="tipoMuro" :tipopiso="tipoPiso" :tipocubierta="tipoCubierta" :materialpuertas="materialPuertas" :materialventanas="materialVentanas" :estadovivienda="estadoVivienda"></table-cocinas>
+                        <table-cocinas :idinfo="idInfoVivienda" :tipomuro="tipoMuro" :tipopiso="tipoPiso" :tipocubierta="tipoCubierta" :materialpuertas="materialPuertas" :materialventanas="materialVentanas" :estadovivienda="estadoVivienda" :id="infoVivienda.beneficiario.id" :nombre="infoVivienda.beneficiario.nombre" :documento="infoVivienda.beneficiario.documento"></table-cocinas>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="u_sanitarias">
-                        <table-unidades-sanitarias :idinfo="idInfoVivienda" :tipomuro="tipoMuro" :tipopiso="tipoPiso" :tipocubierta="tipoCubierta" :materialpuertas="materialPuertas" :materialventanas="materialVentanas" :estadovivienda="estadoVivienda"></table-unidades-sanitarias>
+                        <table-unidades-sanitarias :idinfo="idInfoVivienda" :tipomuro="tipoMuro" :tipopiso="tipoPiso" :tipocubierta="tipoCubierta" :materialpuertas="materialPuertas" :materialventanas="materialVentanas" :estadovivienda="estadoVivienda" :id="infoVivienda.beneficiario.id" :nombre="infoVivienda.beneficiario.nombre" :documento="infoVivienda.beneficiario.documento"></table-unidades-sanitarias>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="s_publicos">
-                        <servicios-publicos :idinfo="idInfoVivienda"></servicios-publicos>
+                        <servicios-publicos :idinfo="idInfoVivienda" :id="infoVivienda.beneficiario.id" :nombre="infoVivienda.beneficiario.nombre" :documento="infoVivienda.beneficiario.documento"></servicios-publicos>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="cierre">
-                        <cierre :idinfo="idInfoVivienda" :estadovivienda="estadoVivienda"></cierre>
+                        <cierre :idinfo="idInfoVivienda" :estadovivienda="estadoVivienda" :id="infoVivienda.beneficiario.id" :idpredio="idPredio"></cierre>
                     </div>
                 </div>
             </section>
@@ -85,6 +116,8 @@
 
 
     </div>
+
+
 @endsection
 @section('scripts')
     <script src="{{asset('js/bootstrap-datepicker.min.js','') }} "></script>
@@ -92,7 +125,7 @@
     <script>
         Vue.http.headers.common['X-CSRF-TOKEN'] = $("#token").attr("value");
 
-    Vue.component('personas-cargo',{
+    /* Vue.component('personas-cargo',{
        template : '#personas-cargo',
         props: ['idinfo','niveles','generos'],
         data : function () {
@@ -186,31 +219,39 @@
             });
         },
 
-    });
+    });*/
     Vue.component('beneficiarios',{
             template : '#beneficiarios',
-            props : ['idinfo', 'generos', 'niveles'],
+            props : ['idinfo', 'generos', 'niveles', 'idpredio', 'id', 'nombre', 'documento'],
             data : function () {
                 return {
-                    beneficiarios : '',
+                    beneficiarios : [],
                     nuevoBeneficiario : {
                         id :'',
-                        no_cedula : '',
-                        nombres : '',
-                        apellidos : '',
-                        fecha_nacimiento : '',
-                        no_celular : '',
-                        correo_electronico : '',
+                        no_cedula : '00000',
+                        nombres : 'Nombre',
+                        apellidos : 'Apellidos',
+                        fecha_nacimiento : '2000-01-01',
+                        no_celular : '000000',
+                        correo_electronico : 'example.com',
                         ocupacion : '',
                         id_estado_civil : '',
                         id_nivel_educativo : '',
+                        estudia: '',
+                        descripcion_estudio: '',
                         id_genero : '',
                         cabeza_hogar : true,
+                        id_tipo_persona_a_cargo: '',
+                        id_parentesco: ''
                     },
                     beneficiarioToRemove : '',
                     creandoNuevoBeneficiario : false,
                     loading : false,
                     estadosCiviles : '',
+                    tipo_personas: '',
+                    bandera: '',
+                    viviendaAnterior: '',
+                    parentescos: ''
 
 
 
@@ -247,7 +288,7 @@
                         this.loading = true;
                         this.$http.post('/vivienda/habitantes/buscar',{no_cedula : this.nuevoBeneficiario.no_cedula,tipoSubsidio : 1}).then((response)=>{
                             if(response.body.estado == 'ok'){
-                                this.nuevoBeneficiario = response.body.data;
+                                this.nuevoBeneficiario = response.body.habitante;
                                 this.creandoNuevoBeneficiario = false;
                                 //this.formReset();
                             }else{
@@ -257,7 +298,8 @@
                             this.loading = false
 
                         },(error)=>{
-                            notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                            //notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                            //notificarFail('', 'Error en el servidor ');
                         })
 
                     }else{
@@ -266,15 +308,29 @@
                     }
 
                 },
+                guardarBeneficiarioAnterior: function (idBeneficiario) {
+                    this.$http.post('/guardar/beneficiarioAnterior', {id: idBeneficiario, idInfo: this.idinfo, tipo: 1}).then((response)=>{
+                        if(response.body.estado == 'ok'){
+                            this.tipo_personas = response.body.data;
+                        }
+                    }, (error)=>{
+                        //notificarFail('', 'Error al cargar el tipo de Personas a Cargo ' + error.status+' '+ error.statusText);
+                    });
+                },
                 
                 guardarBeneficiario : function () {
                     var esnuevo = true;
                     var id = this.nuevoBeneficiario.id;
-                    this.beneficiarios.forEach(function (beneficiario) {
+                    /*this.beneficiarios.forEach(function(beneficiario){
                         if(beneficiario.id == id){
-                            esnuevo = false
+                            esnuevo = false;
                         }
-                    })
+                    });*/
+                    for (var i = 0; i < this.beneficiarios.length; i++) {
+                        if(this.beneficiarios[i].id == id){
+                            esnuevo = false;
+                        }
+                    }
 
                     if(esnuevo){
                         this.$http.post('/vivienda/habitantes/guardar',{idInfo : this.idinfo, habitante : this.nuevoBeneficiario, tipoSubsidio : 1 }).then((response)=>{
@@ -285,15 +341,17 @@
                                 this.beneficiarios.push(response.body.habitante);
                                 $("#modal-agregar-beneficiario").modal('hide');
                                 notificarOk('', 'Habitante agregado correctamente');
+                                this.bandera = response.body.bandera;
                                 this.formReset();
 
                             }else{
-                                notificarFail('', 'Error en el servidor ' + response.body.error);
+                                //notificarFail('', 'Error en el servidor ' + response.body.error);
+                                //notificarFail('', 'Error en el servidor ');
                             }
 
                         },(error)=>{
-
-                            notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                            //notificarFail('', 'Error en el servidor ');
+                            //notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
                         });
                     }else{
                         notificarFail('', 'El Habitante ya existe en este proyecto');
@@ -310,28 +368,53 @@
                             this.beneficiarios.splice(this.beneficiarios.indexOf(this.beneficiarioToRemove),1);
                         }else{
                             $("#modal-confirm-delete-beneficiario").modal('hide');
-                            notificarFail('', 'Error en el servidor ' + response.body.error);
+                            //notificarFail('', 'Error en el servidor ' + response.body.error);
+                          //  notificarFail('', 'Error en el servidor ');
                         }
                     },(error)=>{
                         $("#modal-confirm-delete-beneficiario").modal('hide');
-                        notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                        //notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                        //notificarFail('', 'Error en el servidor ');
                         this.loading = false;
                     });
 
+                },
+                eliminarTempo: function (habitante) {
+                    this.beneficiarios.splice(this.beneficiarios.indexOf(habitante),1);
                 }
                 
             },
             created (){
-                this.$http.post('/vivienda/habitantes/get', {_token : this.token, idInfo : this.idinfo,tipoSubsidio : 1 }).then((response)=>{
+                this.$http.post('/vivienda/habitantes/get', {_token : this.token, idInfo : parseInt(this.idinfo),tipoSubsidio : 1, idPredio : this.idpredio, id: this.id }).then((response)=>{
                     this.beneficiarios = response.body.data;
+                    this.bandera = response.body.bandera;
+                    this.viviendaAnterior = response.body.infoVivienda;
                 }, (error)=>{
-                    notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                    //notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                    //notificarFail('', 'Error en el servidor ');
                 });
 
                 this.$http.post('/getestadosciviles').then((response)=>{
                     this.estadosCiviles = response.body.data;
                 }, (error)=>{
-                    notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                    //notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                    //notificarFail('', 'Error en el servidor ');
+                });
+
+                this.$http.post('/gettipopersonascargo').then((response)=>{
+                if(response.body.estado == 'ok'){
+                    this.tipo_personas = response.body.data;
+                    }
+                }, (error)=>{
+                    //notificarFail('', 'Error al cargar el tipo de Personas a Cargo ' + error.status+' '+ error.statusText);
+                });
+
+                this.$http.post('/get_parentesco').then((response)=>{
+                if(response.body.estado == 'ok'){
+                    this.parentescos = response.body.parentesco;
+                    }
+                }, (error)=>{
+                    //notificarFail('', 'Error al cargar el tipo de Personas a Cargo ' + error.status+' '+ error.statusText);
                 });
 
 
@@ -356,7 +439,7 @@
         });
     Vue.component('form-predio',{
             template : '#form-predio-template',
-            props: ['token', 'departamentos','idinfo','idpredio'],
+            props: ['token', 'departamentos','idinfo','idpredio', 'id', 'nombre', 'documento'],
             data : function () {
                 return  {
                     predio:{
@@ -371,7 +454,7 @@
                         idDepartamento : '',
                     },
                     propietarioPredio:{
-                        id : '',
+                        id : this.idpredio,
                         noCedula : '',
                         nombres: '',
                         apellidos: '',
@@ -385,15 +468,22 @@
                         pdf :'',
                         id_informacion :this.idinfo,
                         id_opcion : '',
-                        id_tipo_tenencia_tierras : ''
+                        id_tipo_tenencia_tierras : '',
+                        otra_tenencia: '',
+                        otra_opcion: ''
 
                     },
+                    info_vivienda: '',
+                    idBeneficiario: this.id,
+                    nombreBeneficiario: this.nombre,
+                    documentoBeneficiario: this.documento,
                     municipios : '',
                     veredas : '',
                     predioEditado : false,
                     opcionesTenencia : '',
                     tipoTenencia : '',
                     pdf : '',
+                    bandera: ''
                 }
             },
             methods:{
@@ -417,12 +507,13 @@
                             this.propietarioPredio.id = response.body.id_propietario;
                             notificarOk('Predio', 'Datos guardados Correctamente');
                         }else{
-                            notificarFail('Predio', 'Error al guardar ' + response.body.error);
+                            notificarFail('Predio', 'Error al guardar ');
                         }
 
                     },(response)=>{
                         $("#btn-guardar").button('reset');
-                        notificarFail('Predio', 'Error en el servidor ' + response.status+' '+ response.statusText);
+                        //notificarFail('Predio', 'Error en el servidor ' + response.status+' '+ response.statusText);
+                        notificarFail('Predio', 'Error en el servidor ');
 
                     });
                 },
@@ -453,6 +544,38 @@
                     };
                     reader.readAsDataURL(file);
                     */
+                },
+                resetPredio: function () {
+                    this.predio = {
+                        id:'',
+                        nombre: '',
+                        direccion: '',
+                        idVereda : '',
+                        latitud: '',
+                        longitud : '',
+                        msnm : '',
+                        idMunicipio : '',
+                        idDepartamento : '',
+                    },
+                    this.propietarioPredio = {
+                        noCedula : '',
+                        nombres: '',
+                        apellidos: '',
+                        telefono:'',
+                        idPredio: '',
+                        editado : false
+                    },
+                    this.tenenciaPredio = {
+                        id : '',
+                        area_predio_has :'',
+                        pdf :'',
+                        id_informacion : this.idinfo,
+                        id_opcion : '',
+                        id_tipo_tenencia_tierras : '',
+                        otra_tenencia: '',
+                        otra_opcion: ''
+
+                    }
                 }
             },
             watch: {
@@ -468,12 +591,12 @@
             },
             mounted(){
                 if(this.idpredio != null){
-                    this.$http.post('/vivienda/getpredio',{ idPredio : this.idpredio, idInfo : this.idinfo }).then((response)=>{
+                    this.$http.post('/vivienda/getpredio',{ id: this.idBeneficiario, idPredio : this.idpredio, idInfo : parseInt(this.idinfo) }).then((response)=>{
 
                         this.changeDepartamento(response.body.departamento, response.body.municipio);
                         this.changeMunicipio(response.body.municipio,response.body.predio.id_vereda);
 
-                        this.predio.id = response.body.predio.id;
+                        
                         this.predio.nombre = response.body.predio.nombre_predio;
                         this.predio.direccion = response.body.predio.direccion;
                         this.predio.latitud = response.body.predio.latitud;
@@ -490,14 +613,22 @@
                             this.propietarioPredio.idPredio = response.body.propietario.id_predio;
                         }
 
-
+                        this.info_vivienda = response.body.infoVivienda;
                         this.predioEditado = false;
-                        this.tenenciaPredio = response.body.tenencia;
+                        this.tenenciaPredio.area_predio_has = response.body.tenencia.area_predio_has;
+                        this.tenenciaPredio.id_opcion = response.body.tenencia.id_opcion;
+                        this.tenenciaPredio.otra_opcion = response.body.tenencia.otra_opcion;
+                        this.tenenciaPredio.id_tipo_tenencia_tierras = response.body.tenencia.id_tipo_tenencia_tierras;
+                        this.tenenciaPredio.otra_tenencia = response.body.tenencia.otra_tenencia;
+                        this.bandera = response.body.bandera;
+                        if (response.body.bandera == 0) {
+                            this.predio.id = response.body.predio.id;
+                        }
                         console.log(response.body.tenencia);
 
 
                     },(response)=>{
-                        notificarFail('Predio', 'Tenemos problemas al cargar la informacion del predio ' + + response.status+' '+ response.statusText);
+                       // notificarFail('Predio', 'Tenemos problemas al cargar la informacion del predio ' + + response.status+' '+ response.statusText);
                     });
                 }
             },
@@ -507,17 +638,18 @@
                          this.opcionesTenencia = response.body.opciones;
                          this.tipoTenencia = response.body.tipo;
                      }else{
-                         notificarFail('', 'Error al cargar datos ' + response.body.error);
+                         //notificarFail('', 'Error al cargar datos ' + response.body.error);
                      }
                  },(error)=>{
-                     notificarFail('', 'Error en el servidor ' + response.status+' '+ response.statusText);
+                     //notificarFail('', 'Error en el servidor ' + response.status+' '+ response.statusText);
+                     //notificarFail('', 'Error en el servidor ');
                  });
             }
 
         });
     Vue.component('table-habitaciones',{
         template : '#table-habitaciones',
-        props : ['idinfo','tipomuro', 'tipopiso', 'tipocubierta','materialpuertas', 'materialventanas','estadovivienda'],
+        props : ['idinfo','tipomuro', 'tipopiso', 'tipocubierta','materialpuertas', 'materialventanas','estadovivienda', 'id', 'idpredio', 'nombre', 'documento'],
         data : function(){
             return{
                 habitaciones : '',
@@ -527,6 +659,84 @@
                     nombre : '',
                     estructura_viga : false,
                     estructura_columna : false,
+                    otra_estructura: false,
+                    descripcion_otra_estructura: '',
+                    descripcion_otro_muro: '',
+                    descripcion_otra_cubierta: '',
+                    descripcion_otro_piso: '',
+                    descripcion_otra_ventana: '',
+                    descripcion_otra_puerta: '',
+                    panete_interno : false,
+                    panete_externo : false,
+                    estuco : false,
+                    pintura : false,
+                    cantidad_puertas : 0,
+                    cantidad_ventanas : 0,
+                    ventanas : false,
+                    ventana_externa_deteriorado: false,
+                    puertas : false,
+                    puerta_externa_deteriorado: false,
+                    observaciones : '',
+                    piso_deteriorado : false,
+                    id_estado_vivienda : null,
+                    id_tipo_muro : null,
+                    id_tipo_piso : null,
+                    id_tipo_cubierta : null,
+                    id_material_puertas : null,
+                    id_material_ventanas : null,
+                    id_tipo_visita : 1,
+                    ventanas_internas: false,
+                    ventana_interna_deteriorado: false,
+                    puertas_internas: false,
+                    puerta_interna_deteriorado: false,
+                    cantidad_ventanas_internas: 0,
+                    cantidad_puertas_internas: 0,
+                    id_material_ventanas_internas: null,
+                    id_material_puertas_internas: null,
+                    descripcion_otra_puerta_interna: '',
+                    descripcion_otra_ventana_interna: ''
+
+                },
+                habitacionToDelete : '',
+                habitacionToEdit :'',
+                loading : false,
+                infoVivienda: '',
+                bandera: ''
+
+            }
+        },
+        methods :{
+            guardarHabitacion : function () {
+                this.$http.post('/vivienda/habitaciones/guardarhabitacion',{habitacion : this.nuevaHabitacion }).then((response)=>{
+                   if(response.body.estado == 'ok'){
+                       if(response.body.edicion){
+                           notificarOk('', 'Habitación editada correctamente');
+                       }else{
+                           notificarOk('', 'Habitación agregada correctamente');
+                       }
+
+                   }else{
+                       //notificarFail('', 'ERROR: ' + response.body.error);
+                   }
+                }, (error)=>{
+
+                });
+
+            },
+            resetHabitacion: function () {
+                this.nuevaHabitacion = {
+                    id : '',
+                    id_informacion : this.idinfo,
+                    nombre : '',
+                    estructura_viga : false,
+                    estructura_columna : false,
+                    otra_estructura: false,
+                    descripcion_otra_estructura: '',
+                    descripcion_otro_muro: '',
+                    descripcion_otra_cubierta: '',
+                    descripcion_otro_piso: '',
+                    descripcion_otra_ventana: '',
+                    descripcion_otra_puerta: '',
                     panete_interno : false,
                     panete_externo : false,
                     estuco : false,
@@ -544,58 +754,49 @@
                     id_material_puertas : null,
                     id_material_ventanas : null,
                     id_tipo_visita : 1,
+                    ventanas_internas: false,
+                    puertas_internas: false,
+                    puerta_interna_deteriorado:false,
+                    cantidad_ventanas_internas: 0,
+                    cantidad_puertas_internas: 0,
+                    id_material_ventanas_internas: null,
+                    id_material_puertas_internas: null,
+                    descripcion_otra_puerta_interna: '',
+                    descripcion_otra_ventana_interna: ''
 
-                },
-                habitacionToDelete : '',
-                habitacionToEdit :'',
-                loading : false,
-
+                }
             }
-        },
-        methods :{
-            guardarHabitacion : function () {
-                this.$http.post('/vivienda/habitaciones/guardarhabitacion',{habitacion : this.nuevaHabitacion }).then((response)=>{
-                   if(response.body.estado == 'ok'){
-                       if(response.body.edicion){
-                           notificarOk('', 'Habitación editada correctamente');
-                       }else{
-                           notificarOk('', 'Habitación agregada correctamente');
-                       }
-
-                   }else{
-                       notificarFail('', 'ERROR: ' + response.body.error);
-                   }
-                }, (error)=>{
-
-                });
-
-            },
 
 
 
 
         },
 
-        mounted(){
-            this.$http.post('/vivienda/habitaciones/getallhabitaciones',{idInfo : this.idinfo, tipo_visita : 1}).then((responde)=>{
+        mounted(){  ///El error está en el parámetro  this.idinfo
+            this.$http.post('/vivienda/habitaciones/getallhabitaciones',{idInfo : this.idinfo, tipo_visita : 1, id: this.id, idPredio: this.idpredio}).then((responde)=>{
                 if(responde.body.estado == 'ok'){
                     if(responde.body.habitaciones != null){
                         this.nuevaHabitacion = responde.body.habitaciones;
+                        this.bandera = responde.body.bandera;
+                        if (responde.body.bandera == 1) {
+                            this.nuevaHabitacion.id = '';
+                            this.nuevaHabitacion.id_informacion = this.idinfo
+                        }
+                        this.infoVivienda = responde.body.infoVivienda;
                     }
 
                 }
             },(error)=>{
-                notificarFail('', 'ERROR: '+error.status+' '+ error.statusText);
+                //notificarFail('', 'ERROR: '+error.status+' '+ error.statusText);
             });
         }
 
     });
     Vue.component('table-unidades-sanitarias',{
         template : '#table-unidades-sanitarias',
-        props : ['idinfo','tipomuro', 'tipopiso', 'tipocubierta','materialpuertas', 'materialventanas','estadovivienda'],
+        props : ['idinfo','tipomuro', 'tipopiso', 'tipocubierta','materialpuertas', 'materialventanas','estadovivienda', 'id', 'nombre', 'documento'],
         data : function(){
             return{
-
                 ElementosSanitario : '',
                 tipoUnidadesSanitarias :'',
                 materialesTanqueElevado : '',
@@ -608,6 +809,83 @@
                     nombre : '',
                     estructura_viga : false,
                     estructura_columna : false,
+                    otra_estructura: false,
+                    descripcion_estructura: '',
+                    descripcion_muro: '',
+                    descripcion_cubierta: '',
+                    descripcion_piso: '',
+                    descripcion_ventana: '',
+                    descripcion_puerta: '',
+                    panete_interno : false,
+                    panete_externo : false,
+                    estuco : false,
+                    pintura : false,
+                    cantidad_puertas : 0,
+                    cantidad_ventanas : 0,
+                    muros_enchapado : false,
+                    ventanas : false,
+                    ventana_deteriorado: false,
+                    puertas : false,
+                    puerta_deteriorado: false,
+                    observaciones : '',
+                    piso_deteriorado : false,
+                    id_estado_vivienda : null,
+                    id_tipo_muro : null,
+                    id_tipo_piso : null,
+                    id_tipo_cubierta : null,
+                    id_material_puertas : null,
+                    id_material_ventanas : null,
+                    id_tipo_unidad_sanitaria : null,
+                    id_tipo_visita : 1,
+                    tanque_elevado : false,
+                    tanque_lavadero : false,
+                    id_materiales_tanques_elevados : null,
+                    id_materiales_tanques_lavaderos : null,
+                    id_acabados_tanques_lavaderos : null,
+                    elementos : [],
+
+                },
+                unidadToDelete : '',
+                unidadToEdit :'',
+                loading : false,
+                infoVivienda: '',
+                bandera: ''
+
+            }
+        },
+        methods :{
+            guardarUnidadSanitaria : function () {
+                this.$http.post('/subsidios/vivienda/diagnostico/usanitaria/guardarunidad',{unidad : this.nuevaUnidadSanitaria }).then((response)=>{
+                    if(response.body.estado == 'ok'){
+                        if(response.body.edicion){
+                            notificarOk('', 'Unidad Sanitaria editada correctamente');
+                        }else{
+                            this.nuevaUnidadSanitaria.id = response.body.id;
+                            notificarOk('', 'Unidad Sanitaria agregada correctamente');
+                        }
+
+                    }else{
+                        //notificarFail('', 'ERROR: ' + response.body.error);
+                    }
+                }, (error)=>{
+
+                });
+
+            },
+            resetUnidad: function () {
+                this.nuevaUnidadSanitaria = {
+                    id : '',
+                    id_informacion : this.idinfo,
+                    nombre : '',
+                    estructura_viga : false,
+                    estructura_columna : false,
+                    otra_estructura: '',
+                    descripcion_otra_estructura: '',
+                    descripcion_otro_muro: '',
+                    descripcion_otra_cubierta: '',
+                    descripcion_otro_piso: '',
+                    descripcion_otra_ventana: '',
+                    descripcion_otra_puerta: '',
                     panete_interno : false,
                     panete_externo : false,
                     estuco : false,
@@ -634,32 +912,8 @@
                     id_acabados_tanques_lavaderos : null,
                     elementos : [],
 
-                },
-                unidadToDelete : '',
-                unidadToEdit :'',
-                loading : false,
-
+                }
             }
-        },
-        methods :{
-            guardarUnidadSanitaria : function () {
-                this.$http.post('/subsidios/vivienda/diagnostico/usanitaria/guardarunidad',{unidad : this.nuevaUnidadSanitaria }).then((response)=>{
-                    if(response.body.estado == 'ok'){
-                        if(response.body.edicion){
-                            notificarOk('', 'Unidad Sanitaria editada correctamente');
-                        }else{
-                            this.nuevaUnidadSanitaria.id = response.body.id;
-                            notificarOk('', 'Unidad Sanitaria agregada correctamente');
-                        }
-
-                    }else{
-                        notificarFail('', 'ERROR: ' + response.body.error);
-                    }
-                }, (error)=>{
-
-                });
-
-            },
 
         },
         created() {
@@ -672,27 +926,33 @@
                     this.acabadosTanqueLavadero = response.body.acabadosTanque;
                }
             }, (error)=>{
-                notificarFail('', 'ERROR: '+error.status+' '+ error.statusText);
+                //notificarFail('', 'ERROR: '+error.status+' '+ error.statusText);
             });
 
         },
         mounted(){
-            this.$http.post('/subsidios/vivienda/diagnostico/usanitaria/getallunidades',{id : this.idinfo, tipo_visita : 1}).then((responde)=>{
+            this.$http.post('/subsidios/vivienda/diagnostico/usanitaria/getallunidades',{idInfo : this.idinfo, tipo_visita : 1, id: this.id}).then((responde)=>{
                 if(responde.body.estado == 'ok'){
                     if(responde.body.data != null){
                         this.nuevaUnidadSanitaria = responde.body.data;
+                        this.infoVivienda = responde.body.infoVivienda;
+                        this.bandera = responde.body.bandera;
+                        if (responde.body.bandera == 1) {
+                            this.nuevaUnidadSanitaria.id = '';
+                            this.nuevaUnidadSanitaria.id_informacion = this.idinfo; 
+                        }
                     }
 
                 }
             },(error)=>{
-                notificarFail('', 'ERROR: '+error.status+' '+ error.statusText);
+                //notificarFail('', 'ERROR: '+error.status+' '+ error.statusText);
             });
         }
 
     });
     Vue.component('table-cocinas',{
             template : '#table-cocinas',
-            props : ['idinfo','tipomuro', 'tipopiso', 'tipocubierta','materialpuertas', 'materialventanas','estadovivienda'],
+            props : ['idinfo','tipomuro', 'tipopiso', 'tipocubierta','materialpuertas', 'materialventanas','estadovivienda', 'id', 'nombre', 'documento'],
             data : function(){
                 return{
                     tipoMuro : '',
@@ -710,6 +970,86 @@
                         nombre : '',
                         estructura_viga : false,
                         estructura_columna : false,
+                        otra_estructura: false,
+                        descripcion_otra_estructura: '',
+                        descripcion_otro_muro: '',
+                        descripcion_otra_cubierta: '',
+                        descripcion_otro_piso: '',
+                        descripcion_otra_ventana: '',
+                        descripcion_otra_puerta: '',
+                        descripcion_otro_material_estufa: '',                    
+                        descripcion_otro_material_meson: '',
+                        panete_interno : false,
+                        panete_externo : false,
+                        estuco : false,
+                        pintura : false,
+                        cantidad_puertas : 0,
+                        cantidad_ventanas : 0,
+                        muros_enchapado : false,
+                        ventanas : false,
+                        ventana_deteriorado: false,
+                        puertas : false,
+                        puerta_deteriorado: false,
+                        observaciones : '',
+                        piso_deteriorado : false,
+                        id_estado_vivienda : null,
+                        id_tipo_muro : null,
+                        id_tipo_piso : null,
+                        id_tipo_cubierta : null,
+                        id_material_puertas : null,
+                        id_material_ventanas : null,
+                        id_tipo_meson : null,
+                        id_elemento_cocina : null,
+                        id_fuente_energia_cocinas : null,
+                        id_tipo_visita : 1,
+                        estufa : false,
+                        meson : false,
+                        lavaplatos : false,
+
+                    },
+                    cocinaToDelete : '',
+                    cocinaToEdit :'',
+                    loading : false,
+                    infoVivienda: '',
+                    bandera: ''
+
+                }
+            },
+            methods :{
+                guardarCocina : function () {
+                    this.$http.post('/vivienda/cocinas/guardarcocina',{cocina : this.nuevaCocina }).then((response)=>{
+                        if(response.body.estado == 'ok'){
+                            if(response.body.edicion){
+                                notificarOk('', 'Cocina editada correctamente');
+                            }else{
+                                this.nuevaCocina.id = response.body.id;
+                                notificarOk('', 'Cocina agregada correctamente');
+                            }
+
+                        }else{
+                           // notificarFail('', 'ERROR: ' + response.body.error);
+                        }
+                    }, (error)=>{
+
+                    });
+
+                },
+                resetCocina: function () {
+                    this.nuevaCocina = {
+                        id : '',
+                        id_informacion : this.idinfo,
+                        nombre : '',
+                        estructura_viga : false,
+                        estructura_columna : false,
+                        otra_estructura: false,
+                        descripcion_otra_estructura: '',
+                        descripcion_otro_muro: '',
+                        descripcion_otra_cubierta: '',
+                        descripcion_otro_piso: '',
+                        descripcion_otra_ventana: '',
+                        descripcion_otra_puerta: '',
+                        descripcion_otro_material_estufa: '',                    
+                        descripcion_otro_material_meson: '',
                         panete_interno : false,
                         panete_externo : false,
                         estuco : false,
@@ -733,35 +1073,10 @@
                         id_tipo_visita : 1,
                         estufa : false,
                         meson : false,
-                        lavaplato : false,
+                        lavaplatos : false,
 
-                    },
-                    cocinaToDelete : '',
-                    cocinaToEdit :'',
-                    loading : false,
-
+                    }
                 }
-            },
-            methods :{
-                guardarCocina : function () {
-                    this.$http.post('/vivienda/cocinas/guardarcocina',{cocina : this.nuevaCocina }).then((response)=>{
-                        if(response.body.estado == 'ok'){
-                            if(response.body.edicion){
-                                notificarOk('', 'Cocina editada correctamente');
-                            }else{
-                                this.nuevaCocina.id = response.body.id;
-                                notificarOk('', 'Cocina agregada correctamente');
-                            }
-
-                        }else{
-                            notificarFail('', 'ERROR: ' + response.body.error);
-                        }
-                    }, (error)=>{
-
-                    });
-
-                },
-
 
 
             },
@@ -772,27 +1087,33 @@
                         this.elementosCocina = response.body.elementosCocina;
                     }
                 }, (error)=>{
-                    notificarFail('', 'ERROR: '+error.status+' '+ error.statusText);
+                    //notificarFail('', 'ERROR: '+error.status+' '+ error.statusText);
                 });
 
             },
             mounted(){
-                this.$http.post('/vivienda/cocinas/getallcocinas',{idInfo : this.idinfo, tipo_visita : 1}).then((responde)=>{
+                this.$http.post('/vivienda/cocinas/getallcocinas',{idInfo : this.idinfo, tipo_visita : 1, id: this.id}).then((responde)=>{
                     if(responde.body.estado == 'ok'){
                         if(responde.body.cocinas != null){
                             this.nuevaCocina = responde.body.cocinas;
+                            this.infoVivienda = responde.body.infoVivienda;
+                            this.bandera = responde.body.bandera;
+                            if (responde.body.bandera == 1) {
+                                this.nuevaCocina.id = '';
+                                this.nuevaCocina.id_informacion = this.idinfo;
+                            }
                         }
 
                     }
                 },(error)=>{
-                    notificarFail('', 'ERROR: '+error.status+' '+ error.statusText);
+                   // notificarFail('', 'ERROR: '+error.status+' '+ error.statusText);
                 });
             }
 
         });
     Vue.component('servicios-publicos',{
         template : '#servicios-publicos',
-        props : ['idinfo'],
+        props : ['idinfo', 'id', 'nombre', 'documento'],
         data : function () {
             return {
                 servicios : {
@@ -812,6 +1133,8 @@
                 fuenteAgua : '',
                 gas : '',
                 residuosSolidos : '',
+                bandera: '',
+                infoVivienda: ''
             }
         },
         methods:{
@@ -823,13 +1146,27 @@
                             this.servicios.id = response.body.id;
                         }
                     }else{
-                        notificarFail('', 'Error en el servidor ' + response.body.error);
+                        //notificarFail('', 'Error en el servidor ' + response.body.error);
+                       // notificarFail('', 'Error en el servidor ');
                     }
 
                 }, (error)=> {
-                    notificarFail('', 'ERROR: '+error.status+' '+ error.statusText);
+                    //notificarFail('', 'ERROR: '+error.status+' '+ error.statusText);
                 });
 
+            },
+            resetServicios: function () {
+                this.servicios = {
+                    id :'',
+                    id_informacion : this.idinfo,
+                    id_fuente_agua : '',
+                    id_sistemas_tratamiento_aguas : '',
+                    tratamiento_agua : false,
+                    id_metodo_disposicion_basura : '',
+                    id_gas : '',
+                    id_fuente_energia_electrica : '',
+                    comunicaciones : [],
+                }
             }
 
         },
@@ -844,51 +1181,111 @@
 
 
           },(error)=>{
-              notificarFail('', 'ERROR: '+error.status+' '+ error.statusText);
+              //notificarFail('', 'ERROR: '+error.status+' '+ error.statusText);
           });
 
 
         },
         mounted(){
-            this.$http.post('/subsidios/vivienda/diagnostico/servicios/getallservicios',{id : this.idinfo }).then((response)=>{
+            this.$http.post('/subsidios/vivienda/diagnostico/servicios/getallservicios',{idInfo : this.idinfo, id: this.id }).then((response)=>{
                 if(response.body.estado == 'ok' ){
 
                     this.servicios = response.body.data;
-
+                    this.bandera = response.body.bandera;
+                    this.infoVivienda = response.body.infoVivienda;
+                    if (response.body.bandera == 1) {
+                        this.servicios.id = '';
+                        this.servicios.id_informacion = this.idinfo;
+                    }
 
 
                 }
 
             },(error)=>{
-                notificarFail('', 'ERROR: '+error.status+' '+ error.statusText);
+                //notificarFail('', 'ERROR: '+error.status+' '+ error.statusText);
             });
         }
     });
     Vue.component('cierre', {
        template : '#form-cierre',
-        props : ['idinfo','estadovivienda'],
+        props : ['idinfo','estadovivienda', 'id', 'idpredio'],
         data : function () {
             return {
                 image: [],
                 loading :false,
                 images :[],
                 subirMas : false,
+                subirMasArchivos : false,
                 cierre : {
-                    indicadores : {
-                        habitaciones :0,
-                        hacinamiento : false,
-                        saneamientoBasico : false,
-                        condicionesSegEst: false,
-                    },
-
-                    riesgos : [],
-                    estadoVivienda: '',
+                    no_habitaciones :0,
+                    hacinamiento : false,
+                    saneamiento_basico : false,
+                    condiciones_seguridad: false,
+                    id_informacion : this.idinfo,
+                    no_personas_vivienda: 0,
+                    id : '',
+                    zonas_riesgos : [],
+                    estados_vivienda_id: '',
+                    tipos_infraestructuras : [],
+                    infraestructura_cercana : 0,
+                    propiedad_geopark : 0,
+                    obra_proyectada: '',
+                    archivo: null,
+                    otra_infraestructura: false,
+                    cual_infraestructura: ''
 
                 },
                 riesgos: '',
+                tipos_infraestructuras: '',
+                tipos_riesgos: '',
+                idPredio: this.idpredio,
+                otra_infraestructura: false
             }
         },
         methods: {
+            procesarFiles (e){
+                    this.cierre.archivo = e.target.files
+                    //alert('procesado')
+                    //console.log(this.nuevoPlan.archivo)       
+                 },
+            subirArchivos(){
+                if(this.subirMasArchivos == true && this.cierre.archivo.length > 0){
+                    this.loading = true;
+                    var archivos = new FormData()
+                        for(var i = 0 ;i<this.cierre.archivo.length; i++){
+                            let file = this.cierre.archivo[i] 
+                            archivos.append('files['+i+']',file)
+                        }
+                        archivos.append('id_beneficiario', this.id)
+                        archivos.append('idPredio', this.idPredio)
+                        archivos.append('tipo_subsidio', 1)
+                    this.$http.post('/guardarArchivos', archivos).then((response)=>{
+                        notificarOk("Archivos guradados exitosamente");
+                        this.loading = false;
+                        this.cierre.archivo = null;
+                        //this.pagination = response.body.pagination;
+
+                    }, (error)=>{
+                        notificarFail('', 'Error:  ' + response.body.error);
+                    });
+
+                }
+            },
+            
+            guardarIndicadores(){
+                this.$http.post('/subsidios/vivienda/diagnostico/cierre/save-indicadores',this.cierre).then((response)=>{
+                    if(response.body.estado === 'ok'){
+                        this.cierre.id = response.body.id;
+                        notificarOk("", "Cierre Guardado");
+                    }else{
+                        notificarFail("", "Error al guardar ");
+                    }
+
+                },(error)=>{
+                   // notificarFail("",""+error);
+                })
+            },
+            
             onFileChange(e) {
                 var files = e.target.files || e.dataTransfer.files;
                 if (!files.length)
@@ -937,21 +1334,60 @@
                     }
 
                 },(error)=>{
-
+                   // notificarFail("",""+error)
                 })
             }
         },
-        mounted(){
+        mounted(){           
+
            this.$http.post('/subsidios/vivienda/diagnostico/cierre/todasimagenes', {id :this.idinfo, tipo : 1 }).then((response)=>{
                this.images = response.body.data;
            }, (error)=>{
-
+                //notificarFail("",""+error)
            });
-           this.$http.post('/subsidios/vivienda/diagnostico/cierre/riesgos').then((response)=>{
+           this.$http.post('/subsidios/vivienda/diagnostico/cierre/complementos', {id: this.idinfo}).then((response)=>{
                this.riesgos = response.body.data;
-           }, (error)=>{
+               if(response.body.indicadores != null){
+                   this.cierre = response.body.indicadores;
+               }
 
+           }, (error)=>{
+               //notificarFail("",""+error)
            });
+
+           this.$http.post('/subsidios/vivienda/diagnostico/cierre/tipoinfraestructura', {id: this.idinfo}).then((response)=>{
+               this.tipos_infraestructuras = response.body.data;
+               if(response.body.indicadores != null){
+                   this.cierre = response.body.indicadores;
+               }
+
+           }, (error)=>{
+               //notificarFail("",""+error)
+           });
+
+
+           this.$http.post('/subsidios/vivienda/diagnostico/cierre/tiporiesgo', {id: this.idinfo}).then((response)=>{
+               this.tipos_riesgos = response.body.data;
+               if(response.body.indicadores != null){
+                   this.cierre = response.body.indicadores;
+               }
+
+           }, (error)=>{
+               //notificarFail("",""+error)
+           });
+
+
+           this.$http.post('/subsidios/vivienda/diagnostico/cierre/datoshabitacion', {id: this.idinfo}).then((response)=>{
+               this.habitaciones = response.body.data;
+               if(response.body.indicadores != null){
+                   this.cierre = response.body.indicadores;
+               }
+
+           }, (error)=>{
+               //notificarFail("",""+error)
+           });
+
+
         }
     });
     var app = new Vue({
@@ -966,9 +1402,10 @@
                     consecutivo : '{{$info->consecutivo}}',
                     respondePropietario: '{{$info->responde_propietario}}',
                     beneficiario : {
+                        id: {{ $info->Subsidio->Beneficiario->id}},
                         nombre : "{{ $info->Subsidio->Beneficiario->nombres .' '.$info->Subsidio->Beneficiario->apellidos}}",
-                        documento : "{{ $info->Subsidio->Beneficiario->no_cedula }}"
-                    },
+                        documento : "{{ $info->Subsidio->Beneficiario->no_cedula }}",
+                    },                    
                     programaSocial:'{{$info->beficiarios_prog_inv_social}}',
                     numeroFamiliasVivienda: '{{$info->no_familias_vivienda}}',
                     idPredio : '{{$info->id_predio}}',
@@ -988,6 +1425,8 @@
                     idEstadoVia:'',
                     idTiempoRecorrido:'',
                     idTipologiaFamilia:'',
+                    relacion_otro: '',
+                    descripcion_relacion: '',
                     editado : false
                 },
                 idVereda :'',
@@ -1005,7 +1444,12 @@
                 tipoCubierta: '',
                 materialPuertas : '',
                 materialVentanas : '',
-                estadoVivienda : ''
+                estadoVivienda : '',
+                estado_habitacion: 'Ninguno',
+                estado_cocina: 'Ninguno',
+                estado_unidad: 'Ninguno',
+                viviendaAnterior: '',
+                bandera: ''
 
             },
             methods:{
@@ -1022,11 +1466,12 @@
                             this.generalidades.id = response.body.idGeneralidades;
 
                         }else{
-                            notificarFail('', 'Error al guardar ' + response.body.error);
+                            notificarFail('', 'Error al guardar ');
                         }
 
                     }, (error)=>{
-                        notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                        //notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                        //notificarFail('', 'Error en el servidor ');
                     });
 
                 },
@@ -1060,6 +1505,22 @@
                         this.tipologiasFamilia = response.body.data
                     })
                 },
+                resetInicial: function () {
+                    this.generalidades = {
+                        id: '',
+                        idInformacion: this.idInfoVivienda,
+                        fechaViveVereda:'',
+                        fechaViveVivienda : '',
+                        idTipoVehiculo : '',
+                        idTipoViaAcceso:'',
+                        idEstadoVia:'',
+                        idTiempoRecorrido:'',
+                        idTipologiaFamilia:'',
+                        relacion_otro: '',
+                        descripcion_relacion: '',
+                        editado : false,
+                    }
+                }
 
             },
             watch: {
@@ -1073,16 +1534,27 @@
                 this.getTiemposRecorrido();
                 this.getTipologiaFamilia();
 
+                this.$http.post('/estadosCierre', {id: this.idInfoVivienda}).then((response)=>{
+                    this.estado_habitacion = response.body.habitacion;
+                    this.estado_cocina = response.body.cocina;
+                    this.estado_unidad = response.body.unidad;
+                }, (error)=>{
+                    //notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                    //notificarFail('', 'Error en el servidor ');
+                });
+
                 this.$http.post('/getniveleseducativos').then((response)=>{
                     this.nivelesEducativos = response.body.data;
                 }, (error)=>{
-                    notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                    //notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                    //notificarFail('', 'Error en el servidor ');
                 });
 
                 this.$http.post('/getgeneros').then((response)=>{
                     this.generos = response.body.data;
                 }, (error)=>{
-                    notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                    //notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
+                    //notificarFail('', 'Error en el servidor ');
                 });
 
                 this.$http.post('/vivienda/getselectsgenericos').then((response)=>{
@@ -1095,17 +1567,16 @@
                         this.estadoVivienda = response.body.estadoVivienda;
 
                     }else{
-                        notificarFail('', 'Error al cargar informacion de Habitaciones' + response.body.error);
+                      //  notificarFail('', 'Error al cargar informacion de Habitaciones' + response.body.error);
                     }
                 }, (error)=>{
-                    notificarFail('', 'ERROR: '+error.status+' '+ error.statusText);
+                    //notificarFail('', 'ERROR: '+error.status+' '+ error.statusText);
                 })
 
             },
             mounted(){
-                this.$http.post('/vivienda/getgeneralidades', {_token: this.token, idInfo : this.idInfoVivienda}).then((response)=>{
+                this.$http.post('/vivienda/getgeneralidades', {_token: this.token, idInfo : this.idInfoVivienda, id: this.infoVivienda.beneficiario.id, idpredio: this.idPredio}).then((response)=>{
                     if(response.body.generalidades != null){
-                        this.generalidades.id = response.body.generalidades.id;
                         this.generalidades.idInformacion = response.body.generalidades.id_informacion;
                         this.generalidades.fechaViveVereda = response.body.generalidades.fecha_vive_vereda;
                         this.generalidades.fechaViveVivienda = response.body.generalidades.fecha_vive_vivienda;
@@ -1114,10 +1585,17 @@
                         this.generalidades.idEstadoVia = response.body.generalidades.id_estado_via;
                         this.generalidades.idTiempoRecorrido = response.body.generalidades.id_tiempo_recorrido;
                         this.generalidades.idTipologiaFamilia = response.body.generalidades.id_tipologia_familia;
+                        this.generalidades.relacion_otro = response.body.generalidades.relacion_otro;
+                        this.generalidades.descripcion_relacion = response.body.generalidades.descripcion_relacion;
+                        this.viviendaAnterior = response.body.info_vivienda;
+                        this.bandera = response.body.bandera;
+                        if (response.body.bandera == 0) {
+                            this.generalidades.id = response.body.generalidades.id;
+                        }
                     }
 
                 },(response)=>{
-                    notificarFail('', 'Tenemos problemas al cargar la informacion general ' + + response.status+' '+ response.statusText);
+                   // notificarFail('', 'Tenemos problemas al cargar la informacion general ' + + response.status+' '+ response.statusText);
                 });
             }
 

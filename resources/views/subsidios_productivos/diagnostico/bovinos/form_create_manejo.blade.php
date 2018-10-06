@@ -11,23 +11,23 @@
                     <div class="row">
                         <div class="form-group col-lg-4 col-sm-12 col-md-6 ">
                             <label for="exampleInputName2">Actividad</label>
-                            <select v-model="nuevoManejo.id_actividad_manejo" class="form-control" >
+                            <select required="required" v-model="nuevoManejo.id_actividad_manejo" class="form-control" >
                                 <option value="" disabled>Seleccione...</option>
                                 <option v-for="manejo in actividadesManejo" :value="manejo.id" >@{{ manejo.nombre_actividad }}</option>
                             </select>
                         </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Producto</label>
-                            <input type="text" required class="form-control" id="exampleInputName2" v-model="nuevoManejo.producto_actividad">
+                            <input type="text" required="required" class="form-control" id="exampleInputName2" v-model="nuevoManejo.producto_actividad">
                         </div>
 
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Cantidad</label>
-                            <input type="number" required class="form-control" id="exampleInputName2" v-model="nuevoManejo.cantidad">
+                            <input type="number" required="required" class="form-control" id="exampleInputName2" v-model="nuevoManejo.cantidad">
                         </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Periodicidad</label>
-                            <input type="number" required class="form-control" id="exampleInputName2" v-model="nuevoManejo.periodicidad">
+                            <input type="number" required="required" class="form-control" id="exampleInputName2" v-model="nuevoManejo.periodicidad">
                         </div>
 
 

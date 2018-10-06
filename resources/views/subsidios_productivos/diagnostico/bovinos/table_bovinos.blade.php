@@ -13,6 +13,7 @@
                 <div id="tab-bovinos" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
                     <div class="panel-body">
                         <button style="margin-bottom: 10px" type="button"  class="btn btn-sm btn-success" data-toggle="modal" data-target="#modal-agregar-bovino" >Agregar</button>
+                        <p v-if="banderaB == 1"><strong>Nota.</strong>La informacion de los bovinos fue tomada del <strong>Levantamiento de informacion Beneficio No @{{ infoProductivo.consecutivo }}</strong> del beneficiario <strong>@{{ nombre }} CC. @{{ documento }}.</strong>Por favor verifica su validez, y si es correcta Guarda, sino agrega nueva informacion.</p>
                         <table style="font-size: 12px" class="table table-responsive">
                             <tr>
                                 <th>Tipo</th>
@@ -26,8 +27,12 @@
                                 <td>@{{ bovino.raza.raza }}</td>
                                 <td>@{{ bovino.tipo_propiedad.tipo_propiedad }}</td>
                                 <td>@{{ bovino.cantidad }}</td>
-                                <td>
+                                <td v-if="banderaB == 0">
                                     <button type="button" class="btn btn-default btn-sm" v-on:click="prepareToDelete(bovino)" data-toggle="modal" data-target="#modal-confirm-delete-bovino" >Eliminar</button>
+                                </td>
+                                <td v-if="banderaB == 1">
+                                    <button id="btnBovino" type="button" class="btn btn-default btn-sm" v-on:click="guardarBovinoAnterior(bovino)">Guardar</button>
+                                    <button id="btnBovino" type="button" class="btn btn-default btn-sm" v-on:click="borralTemporalBovino(bovino)">Eliminar</button>
                                 </td>
                             </tr>
 
@@ -46,6 +51,7 @@
                 <div id="manejo-animales" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
                     <div class="panel-body">
                         <button style="margin-bottom: 10px" type="button"  class="btn btn-sm btn-success" data-toggle="modal" data-target="#modal-agregar-manejo-bovino" >Agregar</button>
+                        <p v-if="banderaM == 1"><strong>Nota.</strong>La informacion del manejo de animales fue tomada del <strong>Levantamiento de informacion Beneficio No @{{ infoProductivo.consecutivo }}</strong> del beneficiario <strong>@{{ nombre }} CC. @{{ documento }}.</strong>Por favor verifica su validez, y si es correcta Guarda, sino agrega nueva informacion.</p>
                         <table style="font-size: 12px" class="table table-responsive">
                             <tr>
                                 <th>Actividad</th>
@@ -59,8 +65,12 @@
                                 <td>@{{ manejo.producto_actividad }}</td>
                                 <td>@{{ manejo.periodicidad }}</td>
                                 <td>@{{ manejo.cantidad }}</td>
-                                <td>
+                                <td v-if="banderaM == 0">
                                     <button type="button" class="btn btn-default btn-sm" v-on:click="prepareToDeleteManejo(manejo)" data-toggle="modal" data-target="#modal-confirm-delete-manejo-bovino" >Eliminar</button>
+                                </td>
+                                <td v-if="banderaM == 1">
+                                    <button id="btnManejo" type="button" class="btn btn-default btn-sm" v-on:click="guardarManejoAnterior(manejo)">Guardar</button>
+                                    <button id="btnManejo" type="button" class="btn btn-default btn-sm" v-on:click="borralTemporalManejo(manejo)">Eliminar</button>
                                 </td>
                             </tr>
 
@@ -80,6 +90,7 @@
                 <div id="ordenio-bovinos" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
                     <div class="panel-body">
                         <button style="margin-bottom: 10px" type="button"  class="btn btn-sm btn-success" data-toggle="modal" data-target="#modal-agregar-ordenio-bovino" >Agregar</button>
+                        <p v-if="banderaM == 1"><strong>Nota.</strong>La informacion del ordeño fue tomada del <strong>Levantamiento de informacion Beneficio No @{{ infoProductivo.consecutivo }}</strong> del beneficiario <strong>@{{ nombre }} CC. @{{ documento }}.</strong>Por favor verifica su validez, y si es correcta Guarda, sino agrega nueva informacion.</p>
                         <table style="font-size: 12px" class="table table-responsive">
                             <tr>
                                 <th>Unidad</th>
@@ -97,8 +108,12 @@
                                 <td>@{{ ordenio.cantidad_autoconsumo }}</td>
                                 <td>@{{ ordenio.cantidad_cuaja }}</td>
                                 <td>@{{ ordenio.cantidad_venta }}</td>
-                                <td>
+                                <td v-if="banderaO == 0">
                                     <button type="button" class="btn btn-default btn-sm" v-on:click="prepareToDeleteOrdenio(ordenio)" data-toggle="modal" data-target="#modal-confirm-delete-ordenio-bovino" >Eliminar</button>
+                                </td>
+                                <td v-if="banderaO == 1">
+                                    <button id="btnOrdenio" type="button" class="btn btn-default btn-sm" v-on:click="guardarOrdenioAnterior(ordenio)">Guardar</button>
+                                    <button id="btnOrdenio" type="button" class="btn btn-default btn-sm" v-on:click="borralTemporalOrdenio(ordenio)">Eliminar</button>
                                 </td>
                             </tr>
 
@@ -106,7 +121,7 @@
                     </div>
                 </div>
             </div>
-            <div class="panel panel-default">
+            <!--<div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingThree">
                     <h4 class="panel-title">
                         <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion-bovinos" href="#produccion-bovinos" aria-expanded="false" aria-controls="collapseThree">
@@ -119,7 +134,7 @@
                         Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
                     </div>
                 </div>
-            </div>
+            </div>-->
         </div>
 
 

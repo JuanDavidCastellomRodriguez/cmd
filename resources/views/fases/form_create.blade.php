@@ -36,7 +36,7 @@
                             </div>
                             <div class="form-group has-feedback col-lg-6 col-sm-12" v-if="editarFase">
                                 <label for="exampleInputName2">Estado</label>
-                                <select class="form-control" v-model="nuevaFase.estado">
+                                <select class="form-control" v-model="nuevaFase.estado" required>
                                     <option value="">Seleccione...</option>
                                     <option value="0">Inactiva</option>
                                     <option value="1">Activa</option>

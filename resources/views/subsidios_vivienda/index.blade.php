@@ -4,9 +4,9 @@
 @endsection
 @section('content')
     <div class="container" id="app">
-        <div class="row" style="margin-top: 10px;">
+        <div class="row" style="margin-top: 60px;">
             <div>
-                <h3>Subsidios de Vivienda</h3>
+                <h3>Beneficios de Vivienda</h3>
                 <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-agregar-subsidio" >
                     Nuevo
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
@@ -119,7 +119,7 @@
         var app = new Vue({
             el : '#app',
             data : {
-                esNuevoBeneficiario : false,
+                esNuevoBeneficiario : true,
                 nuevoBeneficiario : {
                     no_cedula : '',
                     nombres : '',
@@ -141,19 +141,19 @@
                     porcentaje_ejecucion : 0,
                     entregado : false,
                     obras_en_construccion : false,
-                    observaciones : ''
-
-
+                    observaciones : 'Ninguna',
+                    archivo: null
                 },
                 subsidios : '',
                 veredas : '',
                 fases: '',
                 loading : false,
                 nuevoDiagnostico : {
-                    fechaEncuesta: '',
-                    respondePropietario: '',
-                    programaSocial:'',
-                    numeroFamiliasVivienda: '',
+                    fecha_encuesta: '',
+                    responde_propietario: false,
+                    programa_social: false,
+                    caso_especial: false,
+                    no_familias_vivienda: '',
                     subsidio : ''
 
                 },
@@ -171,7 +171,8 @@
                 offset : 4,
                 buscar : '',
                 filtrado : false,
-                filtroActual : ''
+                filtroActual : '',
+                subirMas : false,
 
 
 
@@ -217,18 +218,34 @@
                     this.getVueItems(page);
                 },
                 guardarSubsidio : function () {
+                    //var idPredio = '';
+                    if (this.subirMas == true && this.nuevoSubsidio.archivo.length > 0) {
+                        //alert("entre")
+                        var archivos = new FormData()
+                        for(var i = 0 ;i<this.nuevoSubsidio.archivo.length; i++){
+                            let file = this.nuevoSubsidio.archivo[i] 
+                            archivos.append('files['+i+']',file)
+                        }
+                    }
                     var data = '';
-                    if(this.nuevoSubsidio.id_beneficiario != ''){
+                    
+                    if(this.nuevoSubsidio.id_beneficiario != '' && this.nuevoSubsidio.id_vereda != ''
+                       && this.nuevoSubsidio.id_fase != '' && this.nuevoSubsidio.observaciones != ''
+                        ){
                         data = {
                             subsidio :this.nuevoSubsidio
                         }
-                    }else{
+                    }else if (this.nuevoSubsidio.id_vereda != '' && this.nuevoSubsidio.id_fase != '' 
+                              && this.nuevoSubsidio.observaciones != ''){                        
                         data = {
                             subsidio : this.nuevoSubsidio,
                             beneficiario : this.nuevoBeneficiario
                         }
                     }
-                    this.$http.post('/subsidios/guardarsubsidio', data).then((response)=>{
+                    //alert('Por favor completar todos los campos.');
+                    if (data.subsidio.id_vereda != '' && data.subsidio.id_fase != '' 
+                              && data.subsidio.observaciones != '') {
+                        this.$http.post('/subsidios/guardarsubsidio', data ).then((response)=>{
 
                         if(response.body.estado == 'ok'){
                             this.nuevoSubsidio.id = response.body.id;
@@ -237,9 +254,27 @@
                             this.nuevoSubsidio.beneficiario = response.body.beneficiario;
                             this.nuevoSubsidio.consecutivo = response.body.consecutivo;
                             this.subsidios.push(this.nuevoSubsidio);
+                            this.getVueItems(1);
                             $("#modal-agregar-subsidio").modal('hide');
                             this.formReset();
                             notificarOk('', "Subsidio de vivienda creado correctamente");
+
+                            //alert(response.body.idBeneficiario);
+                            if (this.subirMas == true){
+                                //alert("entre")
+                                var idPredio = ''
+                                archivos.append('id_beneficiario', response.body.idBeneficiario);
+                                archivos.append('idPredio', idPredio);
+                                archivos.append('tipo_subsidio', this.nuevoSubsidio.id_tipo_subsidio);
+                                this.$http.post('/guardarArchivos', archivos).then((response)=>{
+                                    notificarOk("Archivos guradados exitosamente");
+                                    //this.pagination = response.body.pagination;
+
+                                }, (error)=>{
+                                    notificarFail('', 'Error:  ' + response.body.error);
+                                });
+                            }
+                            
 
                         }else{
                             notificarFail('', 'Error:  ' + response.body.error);
@@ -247,11 +282,18 @@
 
                         }
 
-                    },(error)=>{
-                        notificarFail('', 'Error:  ' + error.status+' '+ error.statusText);
-                    });
+                        },(error)=>{
+                            notificarFail('', 'Error:  ' + error.status+' '+ error.statusText);
+                        });
+                    }
+                    
 
                 },
+                procesarFiles (e){
+                    this.nuevoSubsidio.archivo = e.target.files
+                    //alert('procesado')
+                    //console.log(this.nuevoPlan.archivo)       
+                 },
 
                 guardarDiagnostico : function () {
                     this.$http.post('/vivienda', this.nuevoDiagnostico).then((response)=>{
@@ -261,14 +303,14 @@
                             notificarFail('', 'Error:  ' + response.body.error);
                         }
                     },(error)=>{
-                        notificarFail('', 'Error:  ' + error.status+' '+ error.statusText);
+                        notificarFail('', response.body.mensaje);
                     });
 
                 },
 
                 buscarBeneficiario : function (cedula) {
                     //this.formReset();
-                    $("#txt-buscar-beneficiario").attr('disabled','disabled');
+                    //alert("entre")
                     this.beneficiario = '';
                     this.nuevoBeneficiario.no_cedula = cedula;
                     if(cedula != ''){
@@ -276,12 +318,14 @@
                         this.$http.post('/beneficiarios/buscarbeneficiario',{no_cedula : cedula}).then((response)=>{
                             if(response.body.estado == 'ok'){
                                 if(response.body.data != null){
+                                    $("#txt-buscar-beneficiario").attr('disabled','disabled');
                                     this.nuevoSubsidio.id_beneficiario = response.body.data.id;
                                     this.esNuevoBeneficiario = false
                                     this.beneficiario = response.body.data.nombres + ' '+ response.body.data.apellidos
                                 }else{
                                     this.esNuevoBeneficiario = true;
                                     notificarFail('', 'Beneficiario no encontrado, se creará uno nuevo ' );
+                                    //$("#txt-buscar-beneficiario").removeAttr('disabled');
                                 }
                             }else{
                                 notificarFail('', 'Error:  ' + error.status+' '+ error.statusText);
@@ -304,13 +348,15 @@
                         id_vereda:'',
                         fecha_inicio : '',
                         valor : 0,
+                        valor_beneficiario: 0,
                         id_info_vivienda : null,
                         id_info_productivo : null,
                         porcentaje_ejecucion : null,
                         entregado : false,
                         obras_en_construccion : false,
                     };
-
+                    $("#txt-buscar-beneficiario").removeAttr('disabled');
+                    this.esNuevoBeneficiario = true,
                     this.nuevoBeneficiario = {
                         no_cedula : '',
                             nombres : '',

@@ -38,7 +38,7 @@
                                 <div class="col-lg-12" style="padding-left: 0; ">
                                     <div class="form-group col-lg-4 col-sm-12 col-md-6">
                                         <label for="exampleInputName2">Material</label>
-                                        <select v-model="nuevaHabitacion.id_tipo_muro" class="form-control">
+                                        <select required="required" v-model="nuevaHabitacion.id_tipo_muro" class="form-control">
                                             <option value="" disabled>Seleccione...</option>
                                             <option v-for="muro in tipomuro" :value="muro.id" >@{{ muro.tipo_muro }}</option>
                                         </select>
@@ -82,7 +82,7 @@
                                 <div class="col-lg-12" style="padding-left: 0; ">
                                     <div class="form-group col-lg-4 col-sm-12 col-md-6">
                                         <label for="exampleInputName2">Material</label>
-                                        <select v-model="nuevaHabitacion.id_tipo_cubierta" class="form-control">
+                                        <select required="required" v-model="nuevaHabitacion.id_tipo_cubierta" class="form-control">
                                             <option value="" disabled>Seleccione...</option>
                                             <option v-for="cubierta in tipocubierta" :value="cubierta.id" >@{{ cubierta.tipo_cubierta }}</option>
                                         </select>
@@ -94,7 +94,7 @@
                                 <div class="col-lg-12" style="padding-left: 0; ">
                                     <div class="form-group col-lg-4 col-sm-12 col-md-6">
                                         <label for="exampleInputName2">Material</label>
-                                        <select v-model="nuevaHabitacion.id_tipo_piso" class="form-control">
+                                        <select required="required" v-model="nuevaHabitacion.id_tipo_piso" class="form-control">
                                             <option value="" disabled>Seleccione...</option>
                                             <option v-for="piso in tipopiso" :value="piso.id" >@{{ piso.tipo_piso }}</option>
                                         </select>
@@ -122,7 +122,7 @@
                                 <div class="col-lg-12" style="padding-left: 0;" v-if="nuevaHabitacion.ventanas">
                                     <div class="form-group col-lg-4 col-sm-12 col-md-6">
                                         <label for="exampleInputName2">Material Ventana</label>
-                                        <select v-model="nuevaHabitacion.id_material_ventanas" class="form-control">
+                                        <select required="required" v-model="nuevaHabitacion.id_material_ventanas" class="form-control">
                                             <option value="" disabled>Seleccione...</option>
                                             <option v-for="ventana in materialventanas" :value="ventana.id">@{{ ventana.material_ventanas }}</option>
                                         </select>
@@ -143,7 +143,7 @@
                                 <div class="col-lg-12" style="padding-left: 0;" v-if="nuevaHabitacion.puertas">
                                     <div class="form-group col-lg-4 col-sm-12 col-md-6">
                                         <label for="exampleInputName2">Material Puertas</label>
-                                        <select v-model="nuevaHabitacion.id_material_puertas" class="form-control">
+                                        <select required="required" v-model="nuevaHabitacion.id_material_puertas" class="form-control">
                                             <option value="" disabled>Seleccione...</option>
                                             <option v-for="puerta in materialpuertas" :value="puerta.id" >@{{ puerta.material_puertas }}</option>
                                         </select>
@@ -156,7 +156,7 @@
                                 <div class="col-lg-12" style="padding-left: 0; ">
                                     <div class="form-group col-lg-4 col-sm-12 col-md-6">
                                         <label for="exampleInputName2">Estado General de la Habitación</label>
-                                        <select v-model="nuevaHabitacion.id_estado_vivienda" class="form-control">
+                                        <select required="required" v-model="nuevaHabitacion.id_estado_vivienda" class="form-control">
                                             <option value="" disabled>Seleccione...</option>
                                             <option v-for="estado in estadovivienda" :value="estado.id" >@{{ estado.estado_vivienda }}</option>
                                         </select>

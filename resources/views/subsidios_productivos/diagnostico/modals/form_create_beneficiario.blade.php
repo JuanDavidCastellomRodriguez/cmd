@@ -11,7 +11,7 @@
                         <div class="form-group col-lg-4 col-sm-12 col-md-6 ">
                             <label for="exampleInputName2">Documento de Identidad</label>
                             <div class="input-group">
-                                <input type="text" required class="form-control"  id="txt-buscar-beneficiario" v-model="nuevoBeneficiario.no_cedula">
+                                <input type="text" class="form-control"  id="txt-buscar-beneficiario" v-model="nuevoBeneficiario.no_cedula">
                                 <div class="input-group-addon">
                                     <a href="#" title="Buscar" v-on:click="buscarBeneficiario()" ><span class="glyphicon glyphicon-search" aria-hidden="true"></span></a>
                                 </div>
@@ -19,50 +19,69 @@
                         </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Nombres</label>
-                            <input type="text" required class="form-control" id="exampleInputName2" v-model="nuevoBeneficiario.nombres">
+                            <input type="text" class="form-control" id="exampleInputName2" v-model="nuevoBeneficiario.nombres">
                         </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Apellidos</label>
-                            <input type="text" required class="form-control" id="exampleInputName2" v-model="nuevoBeneficiario.apellidos">
+                            <input type="text" class="form-control" id="exampleInputName2" v-model="nuevoBeneficiario.apellidos">
                         </div>
 
                         <div class=" form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Fecha Nacimiento</label>
-                            <input type="text"  name="fecha_nacimiento-beneficiario" id="fecha_nacimiento-beneficiario" class="form-control datepickers" required v-model="nuevoBeneficiario.fecha_nacimiento">
+                            <input required="required" type="text"  name="fecha_nacimiento-beneficiario" id="fecha_nacimiento-beneficiario" class="form-control datepickers" v-model="nuevoBeneficiario.fecha_nacimiento">
                         </div>
 
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Celular</label>
-                            <input type="text" required class="form-control" id="exampleInputName2" v-model="nuevoBeneficiario.no_celular">
+                            <input required="required" type="text" class="form-control" id="exampleInputName2" v-model="nuevoBeneficiario.no_celular">
                         </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Correo Electronico</label>
-                            <input type="text" required class="form-control" id="exampleInputName2" v-model="nuevoBeneficiario.correo_electronico">
+                            <input  type="text" class="form-control" id="exampleInputName2" v-model="nuevoBeneficiario.correo_electronico">
                         </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Estado Civil</label>
-                            <select v-model="nuevoBeneficiario.id_estado_civil" class="form-control">
+                            <select required="required" v-model="nuevoBeneficiario.id_estado_civil" class="form-control">
                                 <option value="" disabled>Seleccione...</option>
                                 <option v-for="estado in estadosCiviles" :value="estado.id">@{{ estado.estado_civil }}</option>
                             </select>
                         </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Nivel Educativo</label>
-                            <select v-model="nuevoBeneficiario.id_nivel_educativo" class="form-control">
+                            <select required="required" v-model="nuevoBeneficiario.id_nivel_educativo" class="form-control">
                                 <option value="" disabled>Seleccione...</option>
                                 <option v-for="nivel in niveles" :value="nivel.id" >@{{ nivel.nivel_educativo }}</option>
                             </select>
                         </div>
+                        <div class="form-group col-lg-4 col-sm-12 col-md-6">                            
+                            <label for="exampleInputName2">Actualmente, estudia</label>
+                            <select required="required" v-model="nuevoBeneficiario.estudia" class="form-control">
+                              <option disabled value="">Seleccione..</option>
+                              <option id="si" value="si">Si</option>
+                              <option id="no" value="no">No</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-4 col-sm-12 col-md-6" v-if="nuevoBeneficiario.estudia == 'si'">      
+                            <label>¿Qué estudia actualmente?</label>
+                            <input type="text" class="form-control" v-model="nuevoBeneficiario.descripcion_estudio">                         
+                        </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Genero</label>
-                            <select v-model="nuevoBeneficiario.id_genero" class="form-control">
+                            <select required="required" v-model="nuevoBeneficiario.id_genero" class="form-control">
                                 <option value="" disabled>Seleccione...</option>
                                 <option v-for="genero in generos" :value="genero.id">@{{ genero.genero }}</option>
                             </select>
                         </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
+                            <label for="exampleInputName2">Tipo persona a cargo</label>
+                            <select required="required" v-model="nuevoBeneficiario.id_tipo_persona_a_cargo" class="form-control">
+                                <option value="" disabled>Seleccione...</option>
+                                <option v-for="tipo in tipo_personas" :value="tipo.id" >@{{ tipo.tipo_persona }}</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Ocupacion</label>
-                            <input type="text" required class="form-control" id="exampleInputName2" v-model.number="nuevoBeneficiario.ocupacion">
+                            <input required="required" type="text" required class="form-control" id="exampleInputName2" v-model.number="nuevoBeneficiario.ocupacion">
                         </div>
                         <div class="form-group col-lg-4 col-sm-12 col-md-6">
                             <label for="exampleInputName2">Cabeza de Hogar</label>
@@ -70,7 +89,13 @@
                                 <label><input type="checkbox" v-model="nuevoBeneficiario.cabeza_hogar">Si</label>
                             </div>
                         </div>
-
+                        <div class="form-group col-lg-4 col-sm-12 col-md-6">
+                            <label for="exampleInputName2">Parentesco</label>
+                            <select required="required" v-model="nuevoBeneficiario.id_parentesco" class="form-control">
+                                <option value="" disabled>Seleccione...</option>
+                                <option v-for="parentesco in parentescos" :value="parentesco.id">@{{ parentesco.parentesco }}</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">

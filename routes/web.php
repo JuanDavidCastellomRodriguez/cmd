@@ -16,14 +16,19 @@ Route::get('/', function () {
     //return view('auth.login');
 });
 
+Route::post('/createUser', 'CreateUserController@createNewUser');
+Route::post('/validarestado', 'UsersController@validateActivate');
+
 Auth::routes();
 
 Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/home', 'HomeController@index');
+    Route::get('/infraestructura_comunitaria', 'InfraestructuraComunitariaController@index');
     Route::resource('vivienda','ViviendasController');
     Route::post('/vivienda/guardarpredio','ViviendasController@guardarPredio');
-
+    
+    Route::post('/getmunicipiosbycampo', 'SelectsController@getMunicipiosByCampo');
     Route::post('/getdepartamentos','SelectsController@getDepartamentos');
     Route::post('/getmunicipios','SelectsController@getMunicipios');
     Route::post('/getveredas','SelectsController@getVeredas');
@@ -116,9 +121,13 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/subsidios/productivos/diagnostico/guardarmanejobovino', "BovinosController@guardarManejoBovino");
     Route::post('/subsidios/productivos/diagnostico/guardarordeniobovino', "BovinosController@guardarOrdenioBovino");
     Route::post('/subsidios/productivos/diagnostico/eliminarordeniobovino', "BovinosController@eliminarOrdenioBovino");
+
     Route::post('/subsidios/productivos/diagnostico/cierre/agregarimagenes', 'ProductivosController@agregarFotos');
     Route::post('/subsidios/productivos/diagnostico/cierre/todasimagenes', 'ProductivosController@todasImagenes');
+    Route::post('/subsidios/productivos/diagnostico/cierre/info-cierre', 'ProductivosController@getInfoCierre');
     Route::post('/subsidios/productivos/diagnostico/cierre/borrarimagen', 'ProductivosController@borrarImagen');
+    Route::post('/subsidios/productivos/diagnostico/cierre/save-cierre', 'ProductivosController@SaveCierre');
+
     Route::post('/subsidios/productivos/diagnostico/especies/todaslasespecies', 'ProductivosController@getDataOtrasEspecies');
     Route::post('/subsidios/productivos/diagnostico/especies/guardaraveespecies', 'ProductivosController@guardarAvesEspecies');
     Route::post('/subsidios/productivos/diagnostico/especies/eliminaraveespecies', 'ProductivosController@eliminarAvesEspecies');
@@ -144,10 +153,14 @@ Route::group(['middleware' => ['auth']], function () {
 
 
     Route::resource('subsidios/informes', 'InformesController' );
-
+    //Route::resource('subsidios/mapa/', 'MapaController' );
     Route::resource('subsidios/mapa/', 'MapaController' );
+    Route::resource('subsidios/mapa/guardar', 'MapaController@guardarsitio' );
+
+    Route::resource('subsidios/mapa/fases', 'MapaController@getFases' );
 
     Route::get('/informes/getdiagnosticovivienda/{id}', 'InformesController@reporteDiagnosticoVivienda');
+    Route::get('/informes/getdiagnosticoproductivo/{id}', 'InformesController@reporteDiagnosticoProductivo');
 
     Route::post('/informes/getdatareport', 'InformesController@getDataReport');
     Route::post('/subsidios/vivienda/diagnostico/usanitaria/getallunidades', 'UnidadesSanitariasController@getAllUnidades');
@@ -156,10 +169,19 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::post('/subsidios/vivienda/diagnostico/servicios/getallservicios', 'ServiciosPublicosController@getAllServicios');
     Route::post('/subsidios/vivienda/diagnostico/servicios/guardarservicios', 'ServiciosPublicosController@guardarServicios');
+    
+
     Route::post('/subsidios/vivienda/diagnostico/cierre/agregarimagenes', 'ViviendasController@agregarFotos');
     Route::post('/subsidios/vivienda/diagnostico/cierre/todasimagenes', 'ViviendasController@todasImagenes');
     Route::post('/subsidios/vivienda/diagnostico/cierre/borrarimagen', 'ViviendasController@borrarImagen');
-    Route::post('/subsidios/vivienda/diagnostico/cierre/riesgos', 'ViviendasController@getRiesgos');
+    Route::post('/subsidios/vivienda/diagnostico/cierre/complementos', 'ViviendasController@getComplementosCierre');
+    Route::post('/subsidios/vivienda/diagnostico/cierre/tipoinfraestructura', 'ViviendasController@getComplementosCierreTipoInfraestructura');
+    Route::post('/subsidios/vivienda/diagnostico/cierre/tiporiesgo', 'ViviendasController@getComplementosCierreTipoRiesgo');
+    Route::post('/subsidios/vivienda/diagnostico/cierre/datoshabitacion', 'ViviendasController@getdatoshabitacion');
+
+    Route::post('/subsidios/vivienda/diagnostico/cierre/save-indicadores', 'ViviendasController@saveIndicadores');
+
+    
 
     Route::post('/fases/getfases', 'FasesController@getAllFases');
     Route::post('/fases/getpaginatefases', 'FasesController@getPaginateFases');
@@ -175,6 +197,65 @@ Route::group(['middleware' => ['auth']], function () {
 
 
     Route::post('/campos/listabyfase', 'CamposController@getCamposByFase');
+
+    Route::post('/getselectstipovisita', 'SelectsController@getSelectsTipoVisita');
+    Route::post('/subsidios/vivienda/visitas/guardarvisita', 'VisitasController@saveNuevaVisita');
+
+    Route::resource('/crear_vereda', 'CrearVereda');
+    Route::post('/crear_vereda/nuevaVereda', 'CrearVereda@nuevaVereda');
+    Route::post('/obtenerVeredas','SelectsController@getVeredasAll');
+    Route::post('/crear_vereda/getinfo','CrearVereda@getVeredaPagination');
+    Route::post('/getvisitas','VisitasController@getVisitas');
+
+    Route::post('/subsidios/visitas/agregarimagenesvisita', 'VisitasController@agregarFotosVisita');
+    Route::post('/subsidios/visitas/todasimagenesvisita', 'VisitasController@todasImagenesVisita');
+    Route::post('/subsidios/visitas/borrarimagenvisita', 'VisitasController@borrarImagenVisita');
+
+    Route::post('/estadosCierre', 'VisitasController@getEstadosALL');
+
+    Route::resource('/gestion_usuarios', 'CreateUserController');
+    Route::post('/getusers', 'CreateUserController@getUsers');
+    Route::post('/cambiarestado', 'CreateUserController@changeState');
+    Route::post('/buscarUsuario', 'CreateUserController@buscarUsuario');
+    Route::post('/editarUsuario', 'CreateUserController@editarUsuario');
+
+    Route::post('/subsidios/productivos/cultivos/borrarSemilla', 'CultivosController@borrarSemilla');
+    
+    Route::resource('/PlanDesarrollo', 'PlanesDesarrolloController');
+    Route::post('/getplanes', 'PlanesDesarrolloController@getPlanes');
+    Route::post('/guardarplan', 'PlanesDesarrolloController@guardarPlan');
+
+    Route::post('/guardar/beneficiarioAnterior', 'HabitantesController@beneficiarioAnterior');
+    Route::post('/subsidios/productivos/diagnostico/getpredioAnterior', 'ProductivosController@predioAnterior');
+    Route::post('/subsidios/productivos/diagnostico/getgeneralidadesAnterior', 'ProductivosController@getgeneralidadesAnterior');
+    Route::post('/guardar/manoAnterior', 'FlujoManoObraController@guardarManoAnterior');
+    Route::post('/guardar/potreroAnterior', 'InformacionLotesController@guardarPotreroAnterior');
+    Route::post('/guardar/cultivoAnterior', 'CultivosController@guardarCultivoAnterior');
+
+    Route::post('/guardar/bovinoAnterior', 'BovinosController@guardarBovinoAnterior');
+    Route::post('/guardar/manejoAnterior', 'BovinosController@guardarManejoAnterior');
+    Route::post('/guardar/ordenioAnterior', 'BovinosController@guardarOrdenioAnterior');
+
+    Route::post('/guardar/aveAnterior', 'ProductivosController@guardarAveAnterior');
+    Route::post('/guardar/cerdoAnterior', 'ProductivosController@guardarCerdoAnterior');
+    Route::post('/guardar/pezAnterior', 'ProductivosController@guardarPezAnterior');
+    Route::post('/guardar/otraAnterior', 'ProductivosController@guardarOtraAnterior');
+
+    Route::post('/get_parentesco', 'SelectsController@parentesco');
+    Route::post('/guardar/fortalecimiento', 'FortalecimientoInfraestructuraController@guardar');
+    Route::post('/get/fortalecimientos', 'FortalecimientoInfraestructuraController@obtener');
+    Route::post('/borrar/fortalecimiento', 'FortalecimientoInfraestructuraController@borrar');
+
+    Route::post('/nueva_infraestructura_comunitaria', 'InfraestructuraComunitariaController@guardarObra');
+    Route::post('/getObras', 'InfraestructuraComunitariaController@getObras');
+    Route::post('/getImagenes', 'InfraestructuraComunitariaController@getImagenes');
+    Route::post('/guardarArchivos', "SubsidiosController@guardarArchivos");
+    Route::post('/get/otra_infraestructura', 'ViviendasController@getOtraInfraestructura');
+
+    Route::post('/exportExcel', 'InformesController@ExportExcel'); 
+
+
+
 
 
 });
