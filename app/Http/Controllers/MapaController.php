@@ -27,6 +27,10 @@ class MapaController extends Controller
     {
 		return view('mapa.guardar_sitio');
     }
+
+    public function vermapa(){
+        return 'Prueba';
+    }
     
 
 }
