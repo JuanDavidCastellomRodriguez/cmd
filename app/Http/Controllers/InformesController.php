@@ -532,13 +532,5 @@ class InformesController extends Controller
         $writer->save(storage_path().'/'.Carbon::now()->timestamp.'file.xlsx');
         
     }
-
-    public function something(Request $request)
-    {
-        try{
-
-        }catch(\Exception $exception){
-            
-        }
-    }
+    
 }
