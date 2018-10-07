@@ -12,9 +12,6 @@ class MapaController extends Controller
 
     public function index()
     {
-       	//return view('mapa.index');
-        //return view('maps.php');
-		//return redirect()->route('http://localhost/cmd/resources/views/mapa/maps.php');
 		return view('mapa.maps');
     }
 
