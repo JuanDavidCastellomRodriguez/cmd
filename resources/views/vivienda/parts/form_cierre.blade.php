@@ -135,6 +135,7 @@
                     <label for="exampleInputName2">Obra proyectada</label>
                     <textarea class="form-control" id="exampleInputName2" v-model="cierre.obra_proyectada"></textarea>
                 </div>
+                
             </div>
             
             <div class="row" style="text-align: right">

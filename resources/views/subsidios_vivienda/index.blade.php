@@ -13,13 +13,56 @@
                 </button>
 
             </div>
-            <div class="col-lg-6 pull-right" style="text-align: right">
-                <form class="form-inline" style="display: inline-block; padding-top: 20px; ">
+            <div class="col-lg-12 pull-left" style="text-align: left">
+                <form class="form-inline" style="display: inline-block; padding-top: 20px;">
+
                     <div class="form-group">
-                        <label v-show="filtrado" data-toggle="tooltip" data-placement="top" title="Limpiar Filtro" >Filtro:  @{{ $data.filtroActual }}    <span class="glyphicon glyphicon-remove red-text "  v-on:click="limpiarFiltro()"  aria-hidden="true"></span> </label>
+                    <!--<label v-show="filtrado" data-toggle="tooltip" data-placement="top" title="Limpiar Filtro" >Filtro:  @{{ /*$data.filtroActual*/ }}    <span class="glyphicon glyphicon-remove red-text "  v-on:click="limpiarFiltro()"  aria-hidden="true"></span> </label>-->
+                        
+                        <div class="form-group has-feedback col-lg-2 col-sm-3 col-md-2">
+                        <label for="exampleInputName2">Orden de Servicio</label>
+                        <select class="form-control" v-model="nuevaConsulta.ordenServicio" v-on:change="changeOrden($event.target.value)"  required>
+                            <option value=""  >Seleccione...</option>
+                            <option v-for="orden in ordenes" :value="orden.id">@{{ orden.consecutivo + orden.objeto  }}</option>
+                        </select>
+                        </div>
+
+                        
+                        <div class="form-group has-feedback col-lg-2 col-sm-3 col-md-2">
+                        <label for="exampleInputName2">Campos</label>
+                        <select class="form-control" v-model="nuevaConsulta.campo" id="campo"  required @change="getMunicipioByCampo($event.target.value)">
+                            <option value="9999"  >Todos</option>
+                            <option v-for="campo in campos" :value="campo.id">@{{ campo.nombre_campo  }}</option>
+                        </select>
+                        </div>
+
+                        <div class="form-group has-feedback col-lg-2 col-sm-3 col-md-2">
+                        <label for="exampleInputName2">Municipios</label>
+                        <select class="form-control" v-model="nuevaConsulta.municipio" id="municipio"  required @change="getVeredaByMunicipio($event.target.value)">
+                            <option value="9999"  >Todos</option>
+                            <option v-for="municipio in municipios" :value="municipio.id">@{{ municipio.municipio  }}</option>
+                        </select>
+                        </div>
+                        
+                        <div class="form-group has-feedback col-lg-2 col-sm-3 col-md-2">
+                        <label for="exampleInputName2">Veredas</label>
+                        <select class="form-control" v-model="nuevaConsulta.vereda" id="vereda"  required>
+                            <option value="9999"  >Todos</option>
+                            <option v-for="vereda in veredas" :value="vereda.id">@{{ vereda.vereda  }}</option>
+                        </select>
+                        </div>
+
+                        <div class="form-group has-feedback col-lg-2 col-sm-3 col-md-2">
+                        <label for="exampleInputName2">No. de identificación</label>
                         <input type="text" required class="form-control" v-model="buscar" placeholder="Buscar">
+                        </div>
+
+                        <div class="form-group has-feedback col-lg-2 col-sm-3 col-md-2">
+                                <label for="exampleInputName2">Buscar</label><br>
+                            <button type="submit" class="btn btn-default" v-on:click.prevent="buscarData()">Buscar</button>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-default" v-on:click.prevent="buscarData()">Buscar</button>
+                    
                 </form>
             </div>
             <div class="col-lg-6" style="padding-left: 0">
@@ -144,6 +187,24 @@
                     observaciones : 'Ninguna',
                     archivo: null
                 },
+
+                nuevaConsulta : {
+                    ordenServicio : '',
+                    campo : '9999',
+                    tipo : '9999',
+                    fase : '9999',
+                    municipio: '9999',
+                    vereda: '9999',
+                    municipio: '9999',
+                    vereda: '9999'
+                },
+
+                ordenes : '',
+                fases : '',
+                campos : '',
+                vistas : 1,
+                tiposSubsidio : '',
+
                 subsidios : '',
                 veredas : '',
                 fases: '',
@@ -397,7 +458,7 @@
                         this.filtrado = true;
                         this.filtroActual = this.buscar
                     }
-                    this.$http.post('/subsidios/getinfo',{tipoSubsidio: 1, buscar : this.buscar}).then((response)=>{
+                    this.$http.post('/subsidios/getinfo',{tipoSubsidio: 1, buscar : this.buscar, id_orden : this.id_orden}).then((response)=>{
                         this.subsidios = response.body.data;
                         this.pagination = response.body.pagination;
 
@@ -418,12 +479,47 @@
 
                     }, (error)=>{
 
-                    });
+                    });              
 
                 }
 
+                /*getVeredaByMunicipio: function (id_municipio) {
+                    this.$http.post('/getveredas', {id: id_municipio}).then((response)=>{
+                        this.veredas = response.body.data;
+                        //this.predio.idMunicipio = municipio;
+                    }, (error)=>{
+
+                    });
+                },
+
+                getMunicipioByCampo: function (id_campo) {
+                    this.$http.post('/getmunicipiosbycampo', {id: id_campo}).then((response)=>{
+                        this.municipios = response.body.data;
+                        //this.predio.idMunicipio = municipio;
+                    }, (error)=>{
+
+                    });
+                }*/
+
             },
             created(){
+
+                this.$http.post('/gettipossubsidios').then((response)=>{
+                    this.tiposSubsidio = response.body.data
+                    //this.predio.idMunicipio = municipio;
+                });
+                this.$http.post('/ordenes/lista').then((response)=>{
+                    this.ordenes = response.body.data;
+                },(error)=>{
+
+                });
+
+                this.$http.post('/campos/listabyfase').then((response)=>{
+                    this.campos = response.body.data;
+                },(error)=>{
+
+                });
+
                 this.getFases()
             },
             mounted(){
