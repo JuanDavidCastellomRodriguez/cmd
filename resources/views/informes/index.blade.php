@@ -20,14 +20,14 @@
                     </select>
                     <span class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 25px;"></span>
                 </div>
-                <div class="form-group has-feedback col-lg-2 col-sm-3 col-md-2">
+                <!--<div class="form-group has-feedback col-lg-2 col-sm-3 col-md-2">
                     <label for="exampleInputName2">Fase</label>
                     <select class="form-control" v-model="nuevaConsulta.fase"  id="fase" required>
                         <option value="9999"  >Todos</option>
                         <option v-for="fase in fases" :value="fase.id">@{{ fase.nombre_fase  }}</option>
                     </select>
                     <span class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 25px;"></span>
-                </div>
+                </div>-->
 
                 <div class="form-group has-feedback col-lg-2 col-sm-3 col-md-2">
                     <label for="exampleInputName2">Tipo de Beneficio</label>
@@ -1103,10 +1103,10 @@
 
             created(){
 
-                /*this.$http.post('/getmunicipios', {id: 85}).then((response)=>{
+                this.$http.post('/getmunicipios', {id: 85}).then((response)=>{
                     this.municipios = response.body.data
                     //this.predio.idMunicipio = municipio;
-                });*/
+                });
                 this.$http.post('/gettipossubsidios').then((response)=>{
                     this.tiposSubsidio = response.body.data
                     //this.predio.idMunicipio = municipio;
