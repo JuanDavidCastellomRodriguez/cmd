@@ -15,6 +15,10 @@
             </div>
             <div class="col-lg-6 pull-right" style="text-align: right">
                 <form class="form-inline" style="display: inline-block; padding-top: 20px; ">
+                    <div class="form-group" style="margin-right: 30px;">
+                        <label>Casos especiales</label>
+                        <input type="checkbox" required class="form-control" v-model="caso_especial">
+                    </div>
                     <div class="form-group">
                         <label v-show="filtrado" data-toggle="tooltip" data-placement="top" title="Limpiar Filtro">Filtro:  @{{ $data.filtroActual }}   <span class="glyphicon glyphicon-remove red-text" v-on:click="limpiarFiltro()" aria-hidden="true"></span> </label>
                         <input type="text" required class="form-control" v-model="buscar" placeholder="Buscar">
@@ -191,6 +195,7 @@
                 filtrado : false,
                 filtroActual : '',
                 subirMas : false,
+                caso_especial: false
 
 
 
@@ -415,7 +420,7 @@
                         this.filtrado = true;
                         this.filtroActual = this.buscar
                     }
-                    this.$http.post('/subsidios/getinfo',{tipoSubsidio: 1, buscar : this.buscar, id_orden : this.id_orden}).then((response)=>{
+                    this.$http.post('/subsidios/getinfo',{tipoSubsidio: 1, buscar : this.buscar, caso_especial : this.caso_especial}).then((response)=>{
                         this.subsidios = response.body.data;
                         this.pagination = response.body.pagination;
 

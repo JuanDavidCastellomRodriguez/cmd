@@ -16,8 +16,15 @@ use Illuminate\Support\Facades\Validator;
 class SubsidiosController extends Controller
 {
     public function getSubsidios(Request $request){
-
-        $subsidios = Subsidio::where('id_tipo_subsidio',$request->tipoSubsidio)->Buscar($request->buscar)->orderBy('id', 'desc')->paginate(10);
+        if ($request->caso_especial) {
+            $subsidios = Subsidio::where('id_tipo_subsidio',$request->tipoSubsidio)
+                                    ->where('caso_especial', 1)
+                                    ->Buscar($request->buscar)->orderBy('id', 'desc')->paginate(10);
+        } else {
+            $subsidios = Subsidio::where('id_tipo_subsidio',$request->tipoSubsidio)->Buscar($request->buscar)->orderBy('id', 'desc')->paginate(10);
+        }
+        
+        
         //return $subsidios->total();
         $data = new Collection();
         $pagination = "";
