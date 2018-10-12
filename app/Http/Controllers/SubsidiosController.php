@@ -54,6 +54,7 @@ class SubsidiosController extends Controller
                     'porcentaje_ejecucion' => $subs->porcentaje_ejecucion,
                     'entregado' => $subs->entregado,
                     'obras_en_construccion' => $subs->obras_en_construccion,
+                    'caso_especial' => $subs->caso_especial,
 
                 ]);
 

@@ -58,6 +58,7 @@
                     <th>Vereda</th>
                     <th>Fase</th>
                     <th>Beneficiario</th>
+                    <th>Caso Especial</th>
                     <th>Valor</th>
                     <th>Ejecutado</th>
                     <th>Diagnostico</th>
@@ -69,6 +70,8 @@
                     <td>@{{ info.vereda }}</td>
                     <td>@{{ info.fase }}</td>
                     <td>@{{ info.beneficiario }}</td>
+                    <td v-if="info.caso_especial === 1">Si</td>
+                    <td v-else>No</td>
                     <td>@{{ info.valor }}</td>
                     <td>@{{ info.porcentaje_ejecucion+' %' }}</td>
                     <td>
