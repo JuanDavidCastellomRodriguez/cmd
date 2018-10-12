@@ -13,7 +13,7 @@
                 </button>
 
             </div>
-            <div class="col-lg-6 pull-right" style="text-align: right">
+            <div class="col-lg-6 pull-right" style="text-align: right">                
                 <form class="form-inline" style="display: inline-block; padding-top: 20px; ">
                     <div class="form-group" style="margin-right: 30px;">
                         <label>Casos especiales</label>
@@ -24,6 +24,9 @@
                         <input type="text" required class="form-control" v-model="buscar" placeholder="Buscar">
                     </div>
                     <button type="submit" class="btn btn-default" v-on:click.prevent="buscarData()">Buscar</button>
+                    <button type="button" class="btn btn-default" style="margin-left: 30px;" v-on:click.prevent="generarExcel()">
+                        Exportar Excel
+                    </button>
                 </form>
             </div>
             <div class="col-lg-6" style="padding-left: 0">
@@ -58,7 +61,7 @@
                     <th>Vereda</th>
                     <th>Fase</th>
                     <th>Beneficiario</th>
-                    <th>Caso Especial</th>
+                    <th>Especial</th>
                     <th>Valor</th>
                     <th>Ejecutado</th>
                     <th>Diagnostico</th>
@@ -70,8 +73,7 @@
                     <td>@{{ info.vereda }}</td>
                     <td>@{{ info.fase }}</td>
                     <td>@{{ info.beneficiario }}</td>
-                    <td v-if="info.caso_especial === 1">Si</td>
-                    <td v-else>No</td>
+                    <td>@{{ info.caso_especial }}</td>
                     <td>@{{ info.valor }}</td>
                     <td>@{{ info.porcentaje_ejecucion+' %' }}</td>
                     <td>
@@ -229,6 +231,18 @@
                 }
             },
             methods:{
+                generarExcel: function(){
+                    this.$http.post('/subsidios/excel', { data: this.subsidios}).then((response)=>{
+                        if(response.body.estado == 'ok'){
+                            notificarOk('', 'Excel creado');
+                        }else{
+                            notificarFail('', 'Error:  ' + response.body.error);
+                        }
+                    },(error)=>{
+                        notificarFail('', response.body.mensaje);
+                    });
+
+                },
                 getVueItems: function(page){
                     this.subsidios = '';
 

@@ -252,7 +252,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/guardarArchivos', "SubsidiosController@guardarArchivos");
     Route::post('/get/otra_infraestructura', 'ViviendasController@getOtraInfraestructura');
 
-    Route::post('/exportExcel', 'InformesController@ExportExcel'); 
+    Route::post('/exportExcel', 'InformesController@ExportExcel');
+    Route::post('/subsidios/excel', 'SubsidiosController@crearExcel');
+    
 
 
 

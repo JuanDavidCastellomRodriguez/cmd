@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-
+use Excel;
 
 class SubsidiosController extends Controller
 {
@@ -34,31 +34,36 @@ class SubsidiosController extends Controller
             foreach ($subsidios as $subs){
 
                 //$puntos = $puntos.'{ position: { lat:'.$subs->InformacionVivienda->Predio->latitud.', lng:'.$subs->InformacionVivienda->Predio->latitud .'}},';
-
+                
                 $data->add([
-                    'vereda' => $subs->id_vereda != null ? $subs->Vereda->vereda."(".$subs->Vereda->Municipio->municipio.")" : null,
-                    'beneficiario' => $subs->Beneficiario->nombres." ". $subs->Beneficiario->apellidos." (".$subs->Beneficiario->no_cedula.")",
-                    'predio' => $subs->id_info_vivienda != null ? $subs->InformacionVivienda->id_predio : null,
-                    'nombre_predio' => $subs->id_info_vivienda != null ? $subs->InformacionVivienda->Predio : null,
                     'id' => $subs->id,
-                    //'campo'=> $subs->Vereda->Campo
+                    'id_tipo_subsidio' => $subs->id_tipo_subsidio == 1 ?'Beneficio vivienda' : 'Proyecto productivo',
                     'consecutivo' => $subs->consecutivo,
-                    'id_tipo_subsidio' => $subs->id_tipo_subsidio,
-                    'id_fase' => $subs->id_fase,
-                    'fase' => $subs->Fase->nombre_fase,
                     'fecha_inicio' => $subs->fecha_inicio,
-                    'valor' => $subs->valor,
-                    'valor_beneficiario' => $subs->valor_beneficiario,
+                    'municipio' => $subs->Municipio->municipio,
+                    'vereda' => $subs->id_vereda != null ? $subs->Vereda->vereda."(".$subs->Vereda->Municipio->municipio.")" : null,
+                    'fase' => $subs->Fase->nombre_fase,
+                    'id_fase' => $subs->id_fase,
+                    'cedula_beneficiario' => $subs->Beneficiario->no_cedula,
+                    'beneficiario' => $subs->Beneficiario->nombres." ". $subs->Beneficiario->apellidos." (".$subs->Beneficiario->no_cedula.")",
+                    //'predio' => $subs->id_info_vivienda != null ? $subs->InformacionVivienda->id_predio : null,
+                    //'nombre_predio' => $subs->id_info_vivienda != null ? $subs->InformacionVivienda->Predio : null,
+                    //'campo'=> $subs->Vereda->Campo
+                    'orden_servicio' => $subs->OrdenServicio->consecutivo,
+                    'caso_especial' => $subs->caso_especial == 1 ? 'Si' : 'No',
+                    'valor' => $subs->valor != 0 ? $subs->valor: '0',
+                    'valor_beneficiario' => $subs->valor_beneficiario != 0 ? $subs->valor_beneficiario : '0',
+                    'porcentaje_ejecucion' => $subs->porcentaje_ejecucion != 0 ? $subs->porcentaje_ejecucion : '0',
                     'id_info_vivienda' => $subs->id_info_vivienda,
                     'id_info_productivo' => $subs->id_info_productivo,
-                    'porcentaje_ejecucion' => $subs->porcentaje_ejecucion,
-                    'entregado' => $subs->entregado,
-                    'obras_en_construccion' => $subs->obras_en_construccion,
-                    'caso_especial' => $subs->caso_especial,
+                    //'entregado' => $subs->entregado,
+                    //'obras_en_construccion' => $subs->obras_en_construccion,
 
                 ]);
 
             }
+            
+
             $pagination = ([
                 'current_page' =>$subsidios->currentPage(),
                 'from' => $subsidios->firstItem(),
@@ -250,6 +255,68 @@ class SubsidiosController extends Controller
                 'trace' => $ee->getTrace(),
             ]);
         }
+    }
+
+    public function crearExcel(Request $request){
+        //dd($request->data);
+        $arrayName = array();
+        $arrayName = $request->data;
+        //unset($arrayName['id'], $arrayName['id_tipo_subsidio'], $arrayName['id_fase'], $arrayName['id_info_vivienda'], $arrayName['id_info_productivo']);
+        $i=0;
+        //unset($arrayName[0]);
+        foreach ($arrayName as $key => $value) {
+            foreach ($arrayName[$key] as $key2 => $value2) {
+                //array_unshift($arrayName[$key], $key2);
+                if ($key2 == 'id' || $key2 == 'id_info_vivienda' || $key2 == 'id_info_productivo' || $key2 == 'id_fase') {
+                    unset($arrayName[$key][$key2]);
+                }
+            }
+        }
+        //dd($arrayName);
+        $excel = new \PHPExcel();
+
+        //$excel->createSheet();
+        $excel->setActiveSheetIndex(0)
+                ->setCellValue('A1', 'Tipo beneficio')
+                ->setCellValue('B1', 'Consecutivo')
+                ->setCellValue('C1', 'Fecha Inicio')
+                ->setCellValue('D1', 'Municipio')
+                ->setCellValue('E1', 'Vereda')
+                ->setCellValue('F1', 'Fase')
+                ->setCellValue('G1', 'Identificacion')
+                ->setCellValue('H1', 'Beneficiario')
+                ->setCellValue('I1', 'Orden Servicio (Consecutivo)')
+                ->setCellValue('J1', 'Caso Espcial')
+                ->setCellValue('K1', 'Valor inversion (pesos)')
+                ->setCellValue('L1', 'Aporte beneficiario')
+                ->setCellValue('M1', 'Porcentaje ejecucion %');
+
+        $excel->getActiveSheet()->setTitle('Listado de beneficios');
+
+        $objWorksheet = $excel->getActiveSheet();
+        $objWorksheet->fromArray($arrayName, null, 'A2');
+        
+        //echo count($arrayName);
+        /*$dataseriesLabels1 = array(
+            new \PHPExcel_Chart_DataSeriesValues('String', '', NULL, 1),
+        );
+        $dataSeriesValues1 = array(
+            new \PHPExcel_Chart_DataSeriesValues('Number', '!$B$1:$B$'.count($arrayName), NULL),
+        );
+        for ($i=1; $i <= count($arrayName); $i++) { 
+            $xAxisTickValues = array(
+                new \PHPExcel_Chart_DataSeriesValues('String', 'ChartTest!$A$1:$A$'.$i, NULL), //  Jan to Dec
+            );
+            # code...
+        }*/
+        
+        $writer = new \PHPExcel_Writer_Excel2007($excel);
+        $writer->save(storage_path().'/'.Carbon::now()->timestamp.'listado.xlsx');
+
+        return response()->json([
+            'estado' => 'ok',
+
+        ]);
     }
 
 
