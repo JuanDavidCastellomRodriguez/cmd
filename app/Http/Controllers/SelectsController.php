@@ -65,6 +65,7 @@ use App\UnidadProducto;
 use App\Vereda;
 use App\TipoVisita;
 use App\TipoMejoramiento;
+use App\OrdenServicio;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -477,6 +478,25 @@ class SelectsController extends Controller
                 'actividades' => ActividadManejoAnimale::all(),
                 'frecuencia' => FrecuenciaOrdenio::all(),
                 'unidades' => UnidadesOrdenio::all(),
+
+
+            ]);
+
+        }catch (\Exception $ee){
+            return response()->json([
+                'estado' => 'fail',
+                'error' => $ee->getMessage(),
+            ]);
+        }
+    }
+
+
+    public function getSelectsOrdenes(){
+        try{
+            return response()->json([
+                'estado' => 'ok',
+                'ordenes'=> OrdenServicio::all(),
+
 
 
             ]);

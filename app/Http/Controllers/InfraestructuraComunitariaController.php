@@ -18,9 +18,35 @@ class InfraestructuraComunitariaController extends Controller
 
     public function getObras(Request $request){
         try{
+            $datosinfraestructura  = InfraestructuraComunitaria::all();
+            
+
+            $data = new Collection();
+            if(count($datosinfraestructura) > 0){
+                
+                foreach ($datosinfraestructura as $plan){
+                    //echo $plan->id;                    
+                    
+                    $data->add([
+                        'id' => $plan->id,
+                        'fecha' => $plan->fecha,
+                        'nombre_obra' => $plan->nombre_obra,
+                        'descripcion' => $plan->descripcion,
+                        'orden' => $plan->OrdenServicio->consecutivo,
+                        'municipio_vereda' => $plan->Municipio->municipio.' - '.$plan->Vereda->vereda,
+                        'valor_inversion' => $plan->valor_inversion,
+                        'recibe' => $plan->nombre_recibe.' ('.$plan->identificacion_recibe.')'    
+                    ]);
+                    
+                    
+                    
+                }
+    
+            }
+            //dd($data);
             return response()->json([
                 'estado' => 'ok',
-                'data' =>  InfraestructuraComunitaria::all(),
+                'data' =>  $data,
 
             ]);
 

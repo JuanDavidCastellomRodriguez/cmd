@@ -20,10 +20,25 @@
                         </div>
                         <div class=" form-group col-lg-6 col-sm-12">
                             <label for="exampleInputName2">Nombre de quien recibe</label>
-                            <input type="text"  id="nombre_obra" class="form-control" required v-model="nuevaObra.nombre_recibe">
+                            <input type="text"  id="nombre_recibe" class="form-control" required v-model="nuevaObra.nombre_recibe">
                         </div>
-                        <div class="form-group col-lg-6 col-sm-12 modal-header" style="margin: 15px 0 0 0; padding: 0;">
-                            <div class=" form-group col-lg-12 col-sm-12">
+
+                        <div class=" form-group col-lg-6 col-sm-12">
+                            <label for="exampleInputName2">Identificación de quien recibe</label>
+                            <input type="text"  id="identificacion_recibe" class="form-control" required v-model="nuevaObra.identificacion_recibe">
+                        </div>
+
+                        
+                            <div class=" form-group col-lg-6 col-sm-12">
+                                <label for="exampleInputName2">No. Orden</label>
+                                <select class="form-control" v-model="nuevaObra.id_orden" required>
+                                    <option value="" disabled >Seleccione...</option>
+                                    <option v-for="orden in ordenes" :value="orden.id">@{{ orden.consecutivo  }}</option>
+                                </select>
+                                <span class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 25px;"></span>
+                            </div>                         
+                        
+                            <div class=" form-group col-lg-6 col-sm-12">
                                 <label for="exampleInputName2">Municipio</label>
                                 <select class="form-control" v-model="nuevaObra.municipio_id" v-on:change="getVeredas($event.target.value)" required>
                                     <option value="" disabled >Seleccione...</option>
@@ -31,9 +46,9 @@
                                 </select>
                                 <span class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 25px;"></span>
                             </div>                         
-                        </div>
-                        <div class="form-group col-lg-6 col-sm-12 modal-header" style="margin: 15px 0 0 0; padding: 0;">
-                            <div class=" form-group col-lg-12 col-sm-12">
+                        
+                        
+                            <div class=" form-group col-lg-6 col-sm-12">
                                 <label for="exampleInputName2">Vereda</label>
                                 <select class="form-control" v-model="nuevaObra.vereda_id" required>
                                     <option value="" disabled >Seleccione...</option>
@@ -41,7 +56,7 @@
                                 </select>
                                 <span class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 25px;"></span>
                             </div>                         
-                        </div>
+                        
                         <div class="form-group col-lg-6 col-sm-12">
                             <label for="exampleInputName2">Valor de inversion (en Pesos)</label>
                             <input type="number" required class="form-control" id="exampleInputName2" v-model="nuevaObra.valor">

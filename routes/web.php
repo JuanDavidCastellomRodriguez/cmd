@@ -254,6 +254,8 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::post('/exportExcel', 'InformesController@ExportExcel'); 
 
+    Route::post('/getordenes', 'SelectsController@getSelectsOrdenes'); 
+
 
 
 

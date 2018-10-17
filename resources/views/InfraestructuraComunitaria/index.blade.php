@@ -16,6 +16,8 @@
             <th>Fecha</th>
             <th>Nombre</th>
             <th>Descripcion</th>
+            <th>No. orden</th>
+            <th>Ubicación</th>
             <th>Valor inversion</th>
             <th>Recibe</th>
             <th>Imagenes</th>
@@ -24,8 +26,10 @@
             <td>@{{ obra.fecha }}</td>
             <td>@{{ obra.nombre_obra }}</td>
             <td>@{{ obra.descripcion }}</td>               
+            <td>@{{ obra.orden }}</td>
+            <td>@{{ obra.municipio_vereda }}</td>
             <td>@{{ obra.valor_inversion }}</td>
-            <td>@{{ obra.nombre_recibe }}</td>
+            <td>@{{ obra.recibe }}</td>
             <td style="width: 134px;">
                 <button type="button" class="btn btn-default" data-toggle="modal" data-target="#imagenes" v-on:click="pasarParametro(obra.id)">
                     Ver Imagenes                        
@@ -90,6 +94,7 @@
             veredas: '',
             obras: '',
             imagenes: '',
+            ordenes:'',
             parametros: []
         },        
         methods:{
@@ -198,6 +203,12 @@
         created(){
         	this.$http.post('/getmunicipios', {id: 85}).then((response)=>{
                     this.municipios = response.body.data;
+                },(error)=>{
+
+                });
+
+            this.$http.post('/getordenes').then((response)=>{
+                    this.ordenes = response.body.ordenes;
                 },(error)=>{
 
                 });
