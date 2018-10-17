@@ -67,7 +67,9 @@ class InfraestructuraComunitariaController extends Controller
     		$obra->id_municipio = $request->nuevaObra->municipio_id;
     		$obra->id_vereda = $request->nuevaObra->vereda_id;
     		$obra->nombre_obra = $request->nuevaObra->nombre_obra;
-    		$obra->nombre_recibe = $request->nuevaObra->nombre_recibe;
+            $obra->nombre_recibe = $request->nuevaObra->nombre_recibe;
+            $obra->identificacion_recibe = $request->nuevaObra->identificacion_recibe;
+            $obra->id_orden = $request->nuevaObra->id_orden;
     		$obra->descripcion = $request->nuevaObra->descripcion;
     		$obra->valor_inversion = $request->nuevaObra->valor;
     		$obra->fecha = $request->nuevaObra->fecha;

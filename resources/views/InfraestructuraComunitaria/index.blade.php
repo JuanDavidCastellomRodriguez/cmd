@@ -82,6 +82,8 @@
                 fecha: '',
                 nombre_obra: '',
                 nombre_recibe: '',
+                identificacion_recibe: '',
+                id_orden: '',
                 valor: '',
                 descripcion: ''
             },
