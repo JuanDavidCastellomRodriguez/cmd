@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Predio;
 use App\Subsidio;
+use App\Municipio;
+use App\Vereda;
 use App\InformacionVivienda;
 use App\ArchivoBeneficiario;
 use Carbon\Carbon;
@@ -102,7 +104,12 @@ class SubsidiosController extends Controller
     public function guardarSubsidio(Request $request){       
         try{
             $request =  json_decode($request->getContent());
+            //dd($request);
             $consecutivo = 1;
+            $vere = Vereda::find($request->subsidio->id_vereda);
+            //dd($vere->id_municipio);
+            $muni = Municipio::find($vere->id_municipio);
+            //dd($muni);
             $last = Subsidio::where('id_tipo_subsidio', $request->subsidio->id_tipo_subsidio)->get()->last();
             if($last != null){
                 $consecutivo = $last->consecutivo + 1;
@@ -118,6 +125,8 @@ class SubsidiosController extends Controller
                     $subsidio->consecutivo = $consecutivo;
                     $subsidio->id_tipo_subsidio = $request->subsidio->id_tipo_subsidio;
                     $subsidio->id_fase = $request->subsidio->id_fase;
+                    $subsidio->id_orden = $request->subsidio->id_orden;
+                    $subsidio->id_municipio = $muni->id;
                     $subsidio->id_vereda = $request->subsidio->id_vereda;
                     $subsidio->fecha_inicio = $request->subsidio->fecha_inicio;
                     $subsidio->valor = $request->subsidio->valor;
@@ -144,6 +153,8 @@ class SubsidiosController extends Controller
                 $subsidio->id_tipo_subsidio = $request->subsidio->id_tipo_subsidio;
                 $subsidio->consecutivo = $consecutivo;
                 $subsidio->id_fase = $request->subsidio->id_fase;
+                $subsidio->id_orden = $request->subsidio->id_orden;
+                $subsidio->id_municipio = $muni->id;
                 $subsidio->id_vereda = $request->subsidio->id_vereda;
                 $subsidio->fecha_inicio = $request->subsidio->fecha_inicio;
                 $subsidio->valor = $request->subsidio->valor;

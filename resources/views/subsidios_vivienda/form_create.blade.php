@@ -54,18 +54,27 @@
                             </div>          
 
                             <div class="form-group has-feedback col-lg-6 col-sm-12">
+                                <label for="exampleInputName2">Orden de Servicio</label>
+                                <select class="form-control" v-model="nuevoSubsidio.id_orden" v-on:change="obtenerFasesByOrden($event.target.value)" required>
+                                    <option value="" disabled  >Seleccione...</option>
+                                    <option v-for="orden in ordenes" :value="orden.id">@{{ orden.consecutivo  }}</option>
+                                </select>
+                                <span class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 25px;"></span>
+                            </div>
+
+                            <div class=" form-group col-lg-6 col-sm-12">
                                 <label for="exampleInputName2">Fase</label>
                                 <select class="form-control" v-model="nuevoSubsidio.id_fase" v-on:change="obtenerVeredas($event.target.value)" required>
-                                    <option value="" disabled  >Seleccione...</option>
+                                    <option value="" disabled >Seleccione...</option>
                                     <option v-for="fase in fases" :value="fase.id">@{{ fase.nombre_fase  }}</option>
                                 </select>
                                 <span class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 25px;"></span>
                             </div>
 
-                            <div class="form-group has-feedback col-lg-6 col-sm-12">
+                            <div class=" form-group col-lg-6 col-sm-12">
                                 <label for="exampleInputName2">Vereda</label>
                                 <select class="form-control" v-model="nuevoSubsidio.id_vereda" required>
-                                    <option value="" disabled  >Seleccione...</option>
+                                    <option value="" disabled >Seleccione...</option>
                                     <option v-for="vereda in veredas" :value="vereda.id">@{{ vereda.vereda  }}</option>
                                 </select>
                                 <span class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 25px;"></span>

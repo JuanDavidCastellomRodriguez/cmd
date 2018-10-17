@@ -142,6 +142,7 @@
                     id_tipo_subsidio : 1,
                     id_fase : '',
                     id_vereda : '',
+                    id_orden: '',
                     fecha_inicio : '',
                     valor : 0,
                     valor_beneficiario : 0,
@@ -460,18 +461,18 @@
 
                     });              
 
-                }
-
-                /*getVeredaByMunicipio: function (id_municipio) {
-                    this.$http.post('/getveredas', {id: id_municipio}).then((response)=>{
-                        this.veredas = response.body.data;
+                },
+                
+                obtenerFasesByOrden: function (id_orden) {
+                    this.$http.post('/getfasesbyorden', {id: id_orden}).then((response)=>{
+                        this.fases = response.body.data;
                         //this.predio.idMunicipio = municipio;
                     }, (error)=>{
 
                     });
                 },
 
-                getMunicipioByCampo: function (id_campo) {
+                /*getMunicipioByCampo: function (id_campo) {
                     this.$http.post('/getmunicipiosbycampo', {id: id_campo}).then((response)=>{
                         this.municipios = response.body.data;
                         //this.predio.idMunicipio = municipio;
@@ -488,7 +489,13 @@
                     //this.predio.idMunicipio = municipio;
                 });
 
-                this.getFases()
+                this.$http.post('/getordenes').then((response)=>{
+                    this.ordenes = response.body.ordenes;
+                },(error)=>{
+
+                });
+
+                //this.getFases()
             },
             mounted(){
                 $('#fecha_subsidio').datepicker({

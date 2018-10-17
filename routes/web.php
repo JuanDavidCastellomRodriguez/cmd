@@ -257,6 +257,7 @@ Route::group(['middleware' => ['auth']], function () {
     
 
     Route::post('/getordenes', 'SelectsController@getSelectsOrdenes'); 
+    Route::post('/getfasesbyorden', 'SelectsController@getFasesByOrden'); 
 
 
 

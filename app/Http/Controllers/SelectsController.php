@@ -72,6 +72,14 @@ use Illuminate\Support\Facades\DB;
 class SelectsController extends Controller
 {
     //
+    public function getFasesByOrden(Request $request){
+        $fases = Fase::where('id_orden_servicio', $request->id)->get();
+        return response()->json([
+            'estado' => 'ok',
+            'data' => $fases
+        ]);
+    }
+
     public function getDepartamentos(){
         $departamentos = Departamento::all();
         return response()->json([
