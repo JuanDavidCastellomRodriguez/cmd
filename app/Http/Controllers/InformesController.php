@@ -388,9 +388,6 @@ class InformesController extends Controller
         return  $pdf->stream('invoice.pdf');
         //return view('informes.diagnostico_vivienda', compact('info_vivienda'));
 
-
-        //comentrio para juanchoooo pkkkkkk Parece que si 3 2 1
-
     }
 
     public function reporteDiagnosticoProductivo($id){
@@ -401,9 +398,6 @@ class InformesController extends Controller
         $pdf->loadView('informes.diagnostico_productivo',compact('info_productivo'));
         return  $pdf->stream('invoice.pdf');
         //return view('informes.diagnostico_vivienda', compact('info_vivienda'));
-
-
-        //comentrio para juanchoooo pkkkkkk Parece que si 3 2 1
 
     }
 

@@ -11,6 +11,16 @@ class Subsidio extends Model
         return $this->hasOne('App\Vereda','id','id_vereda');
     }
 
+    public function Municipio(){
+
+        return $this->hasOne('App\Municipio','id','id_municipio');
+    }
+
+    public function OrdenServicio(){
+
+        return $this->hasOne('App\OrdenServicio','id','id_orden');
+    }
+
     public function Fase(){
 
         return $this->hasOne('App\Fase','id','id_fase');
@@ -50,7 +60,16 @@ class Subsidio extends Model
                     ->orWhere('no_cedula', 'like','%'.$data.'%');
             })->orWhereHas('Fase',function ($query) use ($data){
                $query->where('nombre_fase','like','%'.$data.'%');
-            });
+            })->orWhereHas('OrdenServicio',function ($query) use ($data){
+                $query->where('consecutivo','like','%'.$data.'%');
+             })->orWhereHas('Municipio',function ($query) use ($data){
+                $query->where('municipio','like','%'.$data.'%');
+             })->orWhereHas('Vereda',function ($query) use ($data){
+                $query->where('vereda','like','%'.$data.'%');
+             })->orWhereHas('Vereda',function ($query) use ($data){
+                $query->where('vereda','like','%'.$data.'%')
+                ->orWhere('id_campo', 'like','%'.$data.'%');
+             });
     }
     public function Campos(){
         return $this->hasManyThrough('App\Campo','App\Vereda','id_subsidio', 'id_campo','id');

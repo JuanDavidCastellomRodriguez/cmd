@@ -15,6 +15,10 @@
             </div>
             <div class="col-lg-6 pull-right" style="text-align: right">
                 <form class="form-inline" style="display: inline-block; padding-top: 20px; ">
+                    <div class="form-group" style="margin-right: 30px;">
+                        <label>Casos especiales</label>
+                        <input type="checkbox" required class="form-control" v-model="caso_especial">
+                    </div>
                     <div class="form-group">
                         <label v-show="filtrado" data-toggle="tooltip" data-placement="top" title="Limpiar Filtro">Filtro:  @{{ $data.filtroActual }}   <span class="glyphicon glyphicon-remove red-text" v-on:click="limpiarFiltro()" aria-hidden="true"></span> </label>
                         <input type="text" required class="form-control" v-model="buscar" placeholder="Buscar">
@@ -54,6 +58,7 @@
                     <th>Vereda</th>
                     <th>Fase</th>
                     <th>Beneficiario</th>
+                    <th>Caso Especial</th>
                     <th>Valor</th>
                     <th>Ejecutado</th>
                     <th>Diagnostico</th>
@@ -65,6 +70,8 @@
                     <td>@{{ info.vereda }}</td>
                     <td>@{{ info.fase }}</td>
                     <td>@{{ info.beneficiario }}</td>
+                    <td v-if="info.caso_especial === 1">Si</td>
+                    <td v-else>No</td>
                     <td>@{{ info.valor }}</td>
                     <td>@{{ info.porcentaje_ejecucion+' %' }}</td>
                     <td>
@@ -173,7 +180,8 @@
                 buscar : '',
                 filtrado : false,
                 filtroActual : '',
-                subirMas: false
+                subirMas: false,
+                caso_especial: false
 
 
 
@@ -395,7 +403,7 @@
                         this.filtrado = true;
                         this.filtroActual = this.buscar
                     }
-                    this.$http.post('/subsidios/getinfo',{tipoSubsidio: 2, buscar : this.buscar}).then((response)=>{
+                    this.$http.post('/subsidios/getinfo',{tipoSubsidio: 2, buscar : this.buscar, caso_especial: this.caso_especial}).then((response)=>{
                         this.subsidios = response.body.data;
                         this.pagination = response.body.pagination;
 
