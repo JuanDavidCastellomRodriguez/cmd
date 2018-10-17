@@ -24,6 +24,9 @@
                         <input type="text" required class="form-control" v-model="buscar" placeholder="Buscar">
                     </div>
                     <button type="submit" class="btn btn-default" v-on:click.prevent="buscarData()">Buscar</button>
+                    <button type="button" class="btn btn-default" style="margin-left: 30px;" v-on:click.prevent="generarExcel()">
+                        Exportar Excel
+                    </button>
                 </form>
             </div>
             <div class="col-lg-6" style="padding-left: 0">
@@ -212,6 +215,18 @@
                 }
             },
             methods:{
+                generarExcel: function(){
+                    this.$http.post('/subsidios/excel', { data: this.subsidios}).then((response)=>{
+                        if(response.body.estado == 'ok'){
+                            notificarOk('', 'Excel creado');
+                        }else{
+                            notificarFail('', 'Error:  ' + response.body.error);
+                        }
+                    },(error)=>{
+                        notificarFail('', response.body.mensaje);
+                    });
+
+                },
                 getVueItems: function(page){
                     this.subsidios = '';
 

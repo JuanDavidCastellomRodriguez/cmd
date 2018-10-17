@@ -12,6 +12,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Excel;
+use PHPExcel_Style_Fill;
+use PHPExcel_Style_Border;
+use PHPExcel_Style_Color;
 
 class SubsidiosController extends Controller
 {
@@ -272,7 +275,7 @@ class SubsidiosController extends Controller
                 }
             }
         }
-        //dd($arrayName);
+        //dd(count($arrayName[0]));
         $excel = new \PHPExcel();
 
         //$excel->createSheet();
@@ -292,6 +295,47 @@ class SubsidiosController extends Controller
                 ->setCellValue('M1', 'Porcentaje ejecucion %');
 
         $excel->getActiveSheet()->setTitle('Listado de beneficios');
+
+        $excel->getActiveSheet()->getColumnDimension('A')->setAutoSize(true);
+        $excel->getActiveSheet()->getColumnDimension('B')->setAutoSize(true);
+        $excel->getActiveSheet()->getColumnDimension('C')->setAutoSize(true);
+        $excel->getActiveSheet()->getColumnDimension('D')->setAutoSize(true);
+        $excel->getActiveSheet()->getColumnDimension('E')->setAutoSize(true);
+        $excel->getActiveSheet()->getColumnDimension('F')->setAutoSize(true);
+        $excel->getActiveSheet()->getColumnDimension('G')->setAutoSize(true);
+        $excel->getActiveSheet()->getColumnDimension('H')->setAutoSize(true);
+        $excel->getActiveSheet()->getColumnDimension('I')->setAutoSize(true);
+        $excel->getActiveSheet()->getColumnDimension('J')->setAutoSize(true);
+        $excel->getActiveSheet()->getColumnDimension('K')->setAutoSize(true);
+        $excel->getActiveSheet()->getColumnDimension('L')->setAutoSize(true);
+        $excel->getActiveSheet()->getColumnDimension('M')->setAutoSize(true);
+
+        $excel->getActiveSheet()->getStyle('A1:M1')->applyFromArray(
+            array(
+                'fill' => array(
+                    'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                    'color' => array('rgb' => '17ac2f')
+                ),
+                'borders' => array(
+                    'allborders' => array(
+                      'style' => PHPExcel_Style_Border::BORDER_THIN
+                    )
+                  )
+            )
+        );
+
+        $excel->getActiveSheet()->getStyle('A1:M'.(count($arrayName)+1))->applyFromArray(
+            array(
+                'fill' => array(
+                    'type' => PHPExcel_Style_Fill::FILL_SOLID
+                ),
+                'borders' => array(
+                    'allborders' => array(
+                      'style' => PHPExcel_Style_Border::BORDER_THIN
+                    )
+                  )
+            )
+        );       
 
         $objWorksheet = $excel->getActiveSheet();
         $objWorksheet->fromArray($arrayName, null, 'A2');
