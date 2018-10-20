@@ -1232,14 +1232,16 @@
                     obra_proyectada: '',
                     archivo: null,
                     otra_infraestructura: false,
-                    cual_infraestructura: ''
+                    cual_infraestructura: '',
+                    caso_especial: false,
+                    razon_especial: '',
 
                 },
                 riesgos: '',
                 tipos_infraestructuras: '',
                 tipos_riesgos: '',
                 idPredio: this.idpredio,
-                otra_infraestructura: false
+                otra_infraestructura: false,
             }
         },
         methods: {
@@ -1338,7 +1340,13 @@
                 })
             }
         },
-        mounted(){           
+        mounted(){
+            this.$http.post('/subsidios/vivienda/diagnostico/cierre/caso_especial', {id :this.idinfo, tipo : 1 }).then((response)=>{
+               this.cierre.caso_especial = response.body.caso;
+               this.cierre.razon_especial = response.body.razon;
+           }, (error)=>{
+                //notificarFail("",""+error)
+           });        
 
            this.$http.post('/subsidios/vivienda/diagnostico/cierre/todasimagenes', {id :this.idinfo, tipo : 1 }).then((response)=>{
                this.images = response.body.data;

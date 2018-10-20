@@ -612,6 +612,18 @@ class ViviendasController extends Controller
         ]);
     }
 
+    public function getCasoEspecial(Request $request){
+        //dd($request->id);
+        $caso_especial = Subsidio::where('id_tipo_subsidio',1)->where('id_info_vivienda', $request->id)->firstOrFail();
+        //dd($caso_especial);
+        return response()->json([
+            'estado' => 'ok',
+            'caso' => $caso_especial->caso_especial == 1 ? true : false,
+            'razon' => $caso_especial->razon_especial,
+
+        ]);
+    }
+
 
     public function getComplementosCierreTipoInfraestructura(Request $request){
 
@@ -669,7 +681,14 @@ class ViviendasController extends Controller
                 $indicadores->otra_infraestructura = $request->otra_infraestructura;
                 $indicadores->cual_infraestructura = $request->cual_infraestructura;
 
-                $indicadores->save();
+                $indicadores->save();    
+                
+                Subsidio::where('id_info_vivienda', $request->id_informacion)
+                    ->where('id_tipo_subsidio', 1)
+                    ->update([
+                        'caso_especial' => $request->caso_especial,
+                        'razon_especial' => $request->razon_especial,
+                    ]);
             }else{
                 $indicadores = Indicadore::find($request->id);
                 $indicadores->hacinamiento = $request->hacinamiento;
@@ -688,6 +707,13 @@ class ViviendasController extends Controller
                 $indicadores->obra_proyectada = $request->obra_proyectada;
 
                 $indicadores->save();
+
+                Subsidio::where('id_info_vivienda', $request->id_informacion)
+                    ->where('id_tipo_subsidio', 1)
+                    ->update([
+                        'caso_especial' => $request->caso_especial,
+                        'razon_especial' => $request->razon_especial,
+                    ]);
             }
 
             return response()->json([

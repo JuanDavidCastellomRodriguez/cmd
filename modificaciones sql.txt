@@ -1,3 +1,7 @@
 ALTER TABLE `infraestructura_comunitarias` ADD `identificacion_recibe` VARCHAR(30) NOT NULL AFTER `nombre_recibe`, ADD `id_orden` INT NOT NULL AFTER `identificacion_recibe`;
 
 UPDATE `cmd`.`infraestructura_comunitarias` SET `identificacion_recibe` = '23423423', `id_orden` = '1' WHERE `infraestructura_comunitarias`.`id` = 1; UPDATE `cmd`.`infraestructura_comunitarias` SET `identificacion_recibe` = '2342423', `id_orden` = '1' WHERE `infraestructura_comunitarias`.`id` = 2; UPDATE `cmd`.`infraestructura_comunitarias` SET `identificacion_recibe` = '23423423423', `id_orden` = '1' WHERE `infraestructura_comunitarias`.`id` = 3; UPDATE `cmd`.`infraestructura_comunitarias` SET `identificacion_recibe` = '23423423', `id_orden` = '1' WHERE `infraestructura_comunitarias`.`id` = 4; UPDATE `cmd`.`infraestructura_comunitarias` SET `identificacion_recibe` = '2424234', `id_orden` = '1' WHERE `infraestructura_comunitarias`.`id` = 5; UPDATE `cmd`.`infraestructura_comunitarias` SET `identificacion_recibe` = '3423423', `id_orden` = '1' WHERE `infraestructura_comunitarias`.`id` = 6;
+
+
+ALTER TABLE `cmd`.`subsidios` 
+ADD COLUMN `razon_especial` VARCHAR(100) NULL DEFAULT NULL AFTER `caso_especial`;

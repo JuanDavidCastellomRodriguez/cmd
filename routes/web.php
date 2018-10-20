@@ -258,6 +258,8 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::post('/getordenes', 'SelectsController@getSelectsOrdenes'); 
     Route::post('/getfasesbyorden', 'SelectsController@getFasesByOrden'); 
+    Route::post('/subsidios/vivienda/diagnostico/cierre/caso_especial', 'ViviendasController@getCasoEspecial'); 
+    
 
 
 

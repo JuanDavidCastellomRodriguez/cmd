@@ -99,18 +99,27 @@
                </div>
         </div>
 
-        <div class="form-group col-lg-12 col-sm-12" v-if="cierre.infraestructura_cercana != ''">
-                    <label for="exampleInputName2">¿La infraestructura petrolera es propiedad de GeoPark?</label>
-                    <div class="checkbox" >
-                        <label><input type="checkbox" v-model="cierre.propiedad_geopark"  name="propiedad_geopark">Si</label>
+                <div class="row">
+                    <div class="form-group col-lg-5 col-sm-12" v-if="cierre.infraestructura_cercana != ''">
+                        <label for="exampleInputName2">¿La infraestructura petrolera es propiedad de GeoPark?</label>
+                        <div class="checkbox" >
+                            <label><input type="checkbox" v-model="cierre.propiedad_geopark"  name="propiedad_geopark">Si</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-lg-2 col-sm-12">            
+                        <label for="exampleInputName2">¿Caso Especial?</label>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" v-model="cierre.caso_especial" :value="cierre.caso_especial">Si
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group col-lg-5 col-sm-3" v-if="cierre.caso_especial == true">
+                        <label  for="exampleInputName2">¿Porque?</label>
+                        <input :value="cierre.razon_especial" v-model="cierre.razon_especial" type="text" class="form-control" id="exampleInputName2" >
                     </div>
                 </div>
-
-
-
-
-
-
 
 
                 <div class="form-group col-lg-12 col-sm-12">
@@ -119,7 +128,6 @@
                             <span class="" aria-hidden="true"></span>
                         </button>
                 </div>  
-
 
 
 
