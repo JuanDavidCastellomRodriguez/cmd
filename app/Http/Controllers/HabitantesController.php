@@ -48,11 +48,18 @@ class HabitantesController extends Controller
                 $info_vivienda = Subsidio::where('id_beneficiario', $request->id)
                                     ->where('id_info_vivienda', '<', $request->idInfo)
                                     ->orderBy('created_at', 'desc')->first();
-                $idPredio = InformacionVivienda::where('id', $info_vivienda->id_info_vivienda)->first();
-                $info2 = HabitantesVivienda::where('id_informacion', $idPredio->id)->get();
-                for ($i=0; $i < count($info2); $i++) { 
-                    $info[$i] = Habitante::where('id', $info2[$i]->id_habitante)->first();
+                if ($info_vivienda != null) {
+                    $idPredio = InformacionVivienda::where('id', $info_vivienda->id_info_vivienda)->first();
+                    $info2 = HabitantesVivienda::where('id_informacion', $idPredio->id)->get();                    
+                    for ($i=0; $i < count($info2); $i++) { 
+                        $info[$i] = Habitante::where('id', $info2[$i]->id_habitante)->first();
+                    }
+                } else {
+                    $idPredio = '';
+                    $info2 = '';
+                    $bandera = 0;
                 }
+                
                 
             }
             
@@ -71,11 +78,17 @@ class HabitantesController extends Controller
                 $subsidio = Subsidio::where('id_beneficiario', $request->id)
                                     ->where('id_info_productivo', '<', $request->idInfo)
                                     ->orderBy('created_at', 'desc')->first();
-                $infoProductivo = InformacionProductivos::where('id', $subsidio->id_info_productivo)->first();
-                $habitantes = HabitantesVivienda::where('id_productivo', $infoProductivo->id)->get();
-                for ($i=0; $i < count($habitantes); $i++) { 
-                    $info[$i] = Habitante::where('id', $habitantes[$i]->id_habitante)->first();
+                if ($subsidio != null) {
+                    $infoProductivo = InformacionProductivos::where('id', $subsidio->id_info_productivo)->first();
+                    $habitantes = HabitantesVivienda::where('id_productivo', $infoProductivo->id)->get();
+                    for ($i=0; $i < count($habitantes); $i++) { 
+                        $info[$i] = Habitante::where('id', $habitantes[$i]->id_habitante)->first();
+                    }
+                } else {
+                    $infoProductivo = '';
+                    $bandera = '';
                 }
+                
                 
             }
             //$data = InformacionVivienda::find($request->idInfo)->with(['HabitantesViviendas'])->get();

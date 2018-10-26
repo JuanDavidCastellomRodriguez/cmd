@@ -14,19 +14,27 @@ class UnidadesSanitariasController extends Controller
     public function getAllUnidades(Request $request){
         try{
             $unidad = UnidadesSanitaria::where('id_informacion', $request->idInfo)->where('id_tipo_visita',$request->tipo_visita)->get()->first();
-            if ($unidad === null) {
+            if ($unidad == null) {
             $subsidio = Subsidio::where('id_beneficiario', $request->id)
                                     ->where('id_info_vivienda', '<', $request->idInfo)
                                     ->orderBy('created_at', 'desc')->first();
-            $info = InformacionVivienda::where('id', $subsidio->id_info_vivienda)->first();
-            $unidad = UnidadesSanitaria::where('id_informacion', $info->id)->where('id_tipo_visita',$request->tipo_visita)->get()->first();
-            $bandera = 1;
+            if ($subsidio != null) {
+                $info = InformacionVivienda::where('id', $subsidio->id_info_vivienda)->first();
+                $unidad = UnidadesSanitaria::where('id_informacion', $info->id)->where('id_tipo_visita',$request->tipo_visita)->get()->first();
+                $bandera = 1;
+            } else {
+                $info = '';
+                $unidad = '';
+                $bandera = 0;
+            }
+               
+            
             }else {
                 $info = '';
                 $bandera = 0;
             }
             $data = null;
-            if($unidad){
+            if($unidad != ''){
                 $data = ([
                     'elementos' => $unidad->Elemento->pluck('id_elementos_sanitarios'),
                     'id' => $unidad->id,

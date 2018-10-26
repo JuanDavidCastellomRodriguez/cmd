@@ -12,13 +12,21 @@ class HabitacionesController extends Controller
 {
     public function getAllHabitaciones(Request $request){
         $habitaciones = Habitacione::where('id_informacion', $request->idInfo)->where('id_tipo_visita',$request->tipo_visita)->get()->first();
-        if ($habitaciones === null) {
+        if ($habitaciones == null) {
             $subsidio = Subsidio::where('id_beneficiario', $request->id)
                                     ->where('id_info_vivienda', '<', $request->idInfo)
                                     ->orderBy('created_at', 'desc')->first();
-            $info = InformacionVivienda::where('id', $subsidio->id_info_vivienda)->first();
-            $habitaciones = Habitacione::where('id_informacion', $info->id)->where('id_tipo_visita',$request->tipo_visita)->get()->first();
-            $bandera = 1;
+            if ($habitaciones != null) {
+                $info = InformacionVivienda::where('id', $subsidio->id_info_vivienda)->first();
+                $habitaciones = Habitacione::where('id_informacion', $info->id)->where('id_tipo_visita',$request->tipo_visita)->get()->first();
+                $bandera = 1;
+            } else {
+                $info = '';
+                $habitaciones = '';
+                $bandera = 0;
+            }
+            
+            
         }else {
             $info = '';
             $bandera = 0;

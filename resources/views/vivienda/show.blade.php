@@ -44,7 +44,7 @@
                 </label>
             </div>
             <div class="modal-footer">
-                <i  v-show="loading" class="fa fa-spinner fa-spin"></i>
+                <i class="fa fa-spinner fa-spin"></i>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Regresar</button>
             </div>
 
@@ -285,7 +285,7 @@
                     $("#txt-buscar-beneficiario").attr('disabled','disabled');
                     //this.nuevoBeneficiario.no_cedula = cedula;
                     if(this.nuevoBeneficiario.no_cedula != ''){
-                        this.loading = true;
+                        //this.loading = true;
                         this.$http.post('/vivienda/habitantes/buscar',{no_cedula : this.nuevoBeneficiario.no_cedula,tipoSubsidio : 1}).then((response)=>{
                             if(response.body.estado == 'ok'){
                                 this.nuevoBeneficiario = response.body.habitante;
@@ -295,7 +295,7 @@
                                 this.creandoNuevoBeneficiario = true;
                                 notificarFail('', 'Beneficiario no encontrado, se creará uno nuevo ' );
                             }
-                            this.loading = false
+                            //this.loading = false
 
                         },(error)=>{
                             //notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
@@ -304,7 +304,7 @@
 
                     }else{
                         notificarFail('', 'Debe ingresar un valor');
-                        this.loading = false
+                        //this.loading = false
                     }
 
                 },
@@ -359,9 +359,9 @@
                 },
                 
                 eliminarBeneficiario : function () {
-                    this.loading = true;
+                    //this.loading = true;
                     this.$http.post('/vivienda/habitantes/remove',{habitante : this.beneficiarioToRemove.id, idInfo: this.idinfo,tipoSubsidio : 1}).then((response)=>{
-                        this.loading = false;
+                        //this.loading = false;
                         if(response.body.estado == 'ok'){
                             $("#modal-confirm-delete-beneficiario").modal('hide');
                             notificarOk('', 'Beneficiario removido correctamente');
@@ -375,7 +375,7 @@
                         $("#modal-confirm-delete-beneficiario").modal('hide');
                         //notificarFail('', 'Error en el servidor ' + error.status+' '+ error.statusText);
                         //notificarFail('', 'Error en el servidor ');
-                        this.loading = false;
+                        //this.loading = false;
                     });
 
                 },
@@ -592,17 +592,20 @@
             mounted(){
                 if(this.idpredio != null){
                     this.$http.post('/vivienda/getpredio',{ id: this.idBeneficiario, idPredio : this.idpredio, idInfo : parseInt(this.idinfo) }).then((response)=>{
-
-                        this.changeDepartamento(response.body.departamento, response.body.municipio);
-                        this.changeMunicipio(response.body.municipio,response.body.predio.id_vereda);
-
                         
-                        this.predio.nombre = response.body.predio.nombre_predio;
-                        this.predio.direccion = response.body.predio.direccion;
-                        this.predio.latitud = response.body.predio.latitud;
-                        this.predio.longitud = response.body.predio.longitud;
-                        this.predio.msnm = response.body.predio.msnm;
-                        this.predio.idDepartamento = response.body.departamento;
+                        if (response.body.predio != '') {
+                            this.changeDepartamento(response.body.departamento, response.body.municipio);
+                            this.changeMunicipio(response.body.municipio,response.body.predio.id_vereda);
+
+                            
+                            this.predio.nombre = response.body.predio.nombre_predio;
+                            this.predio.direccion = response.body.predio.direccion;
+                            this.predio.latitud = response.body.predio.latitud;
+                            this.predio.longitud = response.body.predio.longitud;
+                            this.predio.msnm = response.body.predio.msnm;
+                            this.predio.idDepartamento = response.body.departamento;
+                            
+                        }
 
                         if(response.body.propietario != null){
                             this.propietarioPredio.id = response.body.propietario.id;
@@ -1252,7 +1255,7 @@
                  },
             subirArchivos(){
                 if(this.subirMasArchivos == true && this.cierre.archivo.length > 0){
-                    this.loading = true;
+                    //this.loading = true;
                     var archivos = new FormData()
                         for(var i = 0 ;i<this.cierre.archivo.length; i++){
                             let file = this.cierre.archivo[i] 
@@ -1263,7 +1266,7 @@
                         archivos.append('tipo_subsidio', 1)
                     this.$http.post('/guardarArchivos', archivos).then((response)=>{
                         notificarOk("Archivos guradados exitosamente");
-                        this.loading = false;
+                        //this.loading = false;
                         this.cierre.archivo = null;
                         //this.pagination = response.body.pagination;
 
@@ -1308,9 +1311,9 @@
             },
             upload(){
                 if(this.image.length > 0){
-                    this.loading = true;
+                    //this.loading = true;
                     this.$http.post('/subsidios/vivienda/diagnostico/cierre/agregarimagenes',{images: this.image, id : this.idinfo, tipo : 1 }).then(response => {
-                        this.loading = false;
+                        //this.loading = false;
                         for(index in response.body.fotos){
                             this.images.push(response.body.fotos[index]);
                             console.log(index)

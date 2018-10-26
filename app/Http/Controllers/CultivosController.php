@@ -27,16 +27,24 @@ class CultivosController extends Controller
                 $subsidio = Subsidio::where('id_beneficiario', $request->id)
                                 ->where('id_info_productivo', '<', $request->idInfo)
                                 ->orderBy('created_at', 'desc')->first();
-                $infoProductivo = InformacionProductivos::where('id', $subsidio->id_info_productivo)->first();
-                $cultivos = Cultivo::where('id_info_productivo',$infoProductivo->id)->get();              
-                $data = new Collection();
-                foreach ($cultivos as $cultivo){                    
-                    $cultivo->setAttribute('actividades',$this->actividadesCultivo($cultivo->id));
-                    $cultivo->setAttribute('semillas',Semilla::where('id_cultivo',$cultivo->id)->select('variedad', 'densidad', 'certificado_ica', 'otra_procedencia')->get()->toArray());
-                    $cultivo->id = '';
-                    $cultivo->id_info_productivo = $request->idInfo;
-                    $data->add($cultivo);
+                if ($subsidio != null) {
+                    $infoProductivo = InformacionProductivos::where('id', $subsidio->id_info_productivo)->first();
+                    $cultivos = Cultivo::where('id_info_productivo',$infoProductivo->id)->get();              
+                    $data = new Collection();
+                    foreach ($cultivos as $cultivo){                    
+                        $cultivo->setAttribute('actividades',$this->actividadesCultivo($cultivo->id));
+                        $cultivo->setAttribute('semillas',Semilla::where('id_cultivo',$cultivo->id)->select('variedad', 'densidad', 'certificado_ica', 'otra_procedencia')->get()->toArray());
+                        $cultivo->id = '';
+                        $cultivo->id_info_productivo = $request->idInfo;
+                        $data->add($cultivo);
+                    }                    
+                } else {
+                    $infoProductivo = '';
+                    $cultivos = '';
+                    $data = null;
+                    $bandera = 0;
                 }
+                
             }else {
                 $data = new Collection();
                 foreach ($cultivos as $cultivo){

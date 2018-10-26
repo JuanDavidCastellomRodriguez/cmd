@@ -18,13 +18,20 @@ class InformacionLotesController extends Controller
             $subsidio = Subsidio::where('id_beneficiario', $request->id)
                                 ->where('id_info_productivo', '<', $request->idInfo)
                                 ->orderBy('created_at', 'desc')->first();
-            $infoProductivo = InformacionProductivos::where('id', $subsidio->id_info_productivo)->first();
-            $potreros = InformacionLote::where('id_info_productivo',$infoProductivo->id)->get();
-            for ($i=0; $i < count($potreros); $i++) { 
-                $potreros[$i]->id = '';
-                $potreros[$i]->id_info_productivo = $request->idInfo;
+            if ($subsidio != null) {
+                $infoProductivo = InformacionProductivos::where('id', $subsidio->id_info_productivo)->first();
+                $potreros = InformacionLote::where('id_info_productivo',$infoProductivo->id)->get();
+                for ($i=0; $i < count($potreros); $i++) { 
+                    $potreros[$i]->id = '';
+                    $potreros[$i]->id_info_productivo = $request->idInfo;
+                }
+                $bandera = 1;                           
+            } else {
+                $infoProductivo = '';
+                $potreros = '';
+                $bandera = 0;
             }
-            $bandera = 1;            
+            
         }
         return response()->json([
             'estado' => 'ok',

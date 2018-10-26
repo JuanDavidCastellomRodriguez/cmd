@@ -239,37 +239,70 @@ class ViviendasController extends Controller
 
         try{
             $verificacion = InformacionVivienda::where('id', $request->idInfo)->first();
-            if ($verificacion->id_predio === null) {
-
+            //dd($verificacion);
+            if ($verificacion->id_predio == null) {                
                 $info_vivienda = Subsidio::where('id_beneficiario', $request->id)
                                     ->where('id_info_vivienda', '<', $request->idInfo)
                                     ->orderBy('created_at', 'desc')->first();
-                $idPredio = InformacionVivienda::where('id', $info_vivienda->id_info_vivienda)->first();
-                $predio = Predio::findOrFail($idPredio->id_predio);
-
-                $tenencia = TenenciaTierra::where('id_informacion', $idPredio->id)->first();
-                $propietario = PropietariosPredio::where('id_predio', $predio->id)->first();
-                $bandera = 1;
+                //dd($info_vivienda);
+                if ($info_vivienda != null) {
+                    $idPredio = InformacionVivienda::where('id', $info_vivienda->id_info_vivienda)->first();
+                    //dd($idPredio);
+                    if ($idPredio->id_predio != null) {
+                        $predio = Predio::findOrFail($idPredio->id_predio);
+        
+                        $tenencia = TenenciaTierra::where('id_informacion', $idPredio->id)->first();
+                        $propietario = PropietariosPredio::where('id_predio', $predio->id)->first();
+                        $bandera = 1;
+                        
+                        return response()->json([
+                            'estado'=> 'ok',
+                            'bandera' => $bandera,
+                            'infoVivienda' => $idPredio,
+                            'predio' => $predio,
+                            'propietario' => $propietario,
+                            'tenencia' => $tenencia,
+                            'departamento' => $predio->Vereda->Municipio->Departamento->id,
+                            'municipio' => $predio->Vereda->Municipio->id,
+                        ]);
+                    } else {
+                        $idPredio = '';
+                        $predio = '';
+                        $tenencia = '';
+                        $propietario = '';
+                        $bandera = 0;
+                    }
+                    
+                } else {
+                    $idPredio = '';
+                    $predio = '';
+                    $tenencia = '';
+                    $propietario = '';
+                    $bandera = 0;
+                }
+                
             }else {
                 $predio = Predio::findOrFail($request->idPredio);
+                //dd($predio);
                 $propietario = PropietariosPredio::where('id_predio',$request->idPredio)->first();
                 $tenencia = TenenciaTierra::where('id_informacion',$request->idInfo)->get()->first();
                 $idPredio = '';
                 $bandera = 0;
+                
+                return response()->json([
+                    'estado'=> 'ok',
+                    'bandera' => $bandera,
+                    'infoVivienda' => $idPredio,
+                    'predio' => $predio,
+                    'propietario' => $propietario,
+                    'tenencia' => $tenencia,
+                    'departamento' => $predio->Vereda->Municipio->Departamento->id,
+                    'municipio' => $predio->Vereda->Municipio->id,
+                ]);
             }
 
             
             
-            return response()->json([
-                'estado'=> 'ok',
-                'bandera' => $bandera,
-                'infoVivienda' => $idPredio,
-                'predio' => $predio,
-                'propietario' => $propietario,
-                'tenencia' => $tenencia,
-                'departamento' => $predio->Vereda->Municipio->Departamento->id,
-                'municipio' => $predio->Vereda->Municipio->id,
-            ]);
         }catch (QueryException $ee ){
             return response()->json([
                 'estado'=>'fail',
@@ -283,13 +316,20 @@ class ViviendasController extends Controller
 
         try{
             $general = Generalidade::where('id_informacion', $request->idInfo)->first();
-            if ($general === null) {
+            //dd($general);
+            if ($general == null) {
                 $info_vivienda = Subsidio::where('id_beneficiario', $request->id)
                                     ->where('id_info_vivienda', '<', $request->idInfo)
                                     ->orderBy('created_at', 'desc')->first();
-                $idPredio = InformacionVivienda::where('id', $info_vivienda->id_info_vivienda)->first();
-                $generalidades = Generalidade::where('id_informacion', $idPredio->id)->first();
-                $bandera = 1;
+                if ($info_vivienda != null) {
+                    $idPredio = InformacionVivienda::where('id', $info_vivienda->id_info_vivienda)->first();
+                    $generalidades = Generalidade::where('id_informacion', $idPredio->id)->first();
+                    $bandera = 1;                    
+                }else{
+                    $idPredio= '';
+                    $generalidades = '';
+                    $bandera = 0;
+                }
             }else {
                 $generalidades = Generalidade::where('id_informacion', $request->idInfo)->first();
                 $idPredio = '';

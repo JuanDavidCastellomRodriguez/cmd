@@ -24,14 +24,21 @@ class BovinosController extends Controller
                 $subsidio = Subsidio::where('id_beneficiario', $request->id)
                                 ->where('id_info_productivo', '<', $request->idInfo)
                                 ->orderBy('created_at', 'desc')->first();
-                $infoProductivo = InformacionProductivos::where('id', $subsidio->id_info_productivo)->first();
-                $bovinos = Bovino::where('id_info_productivo',$infoProductivo->id)->select('id_raza', 'id_tipo_propiedad', 'id_tipo_bovino', 'cantidad')->get();
-                foreach ($bovinos as $bovino){
-                    $bovino->setAttribute('raza',$bovino->Raza->raza);
-                    $bovino->setAttribute('propiedad',$bovino->TipoPropiedad->tipo_propiedad);
-                    $bovino->setAttribute('tipo',$bovino->TipoBovino->tipo_animal);
-                    $data->add($bovino);
+                if ($subsidio != null) {
+                    $infoProductivo = InformacionProductivos::where('id', $subsidio->id_info_productivo)->first();
+                    $bovinos = Bovino::where('id_info_productivo',$infoProductivo->id)->select('id_raza', 'id_tipo_propiedad', 'id_tipo_bovino', 'cantidad')->get();
+                    foreach ($bovinos as $bovino){
+                        $bovino->setAttribute('raza',$bovino->Raza->raza);
+                        $bovino->setAttribute('propiedad',$bovino->TipoPropiedad->tipo_propiedad);
+                        $bovino->setAttribute('tipo',$bovino->TipoBovino->tipo_animal);
+                        $data->add($bovino);
+                    }                    
+                } else {
+                    $infoProductivo = '';
+                    $bovinos = '';
+                    $banderaB = 0;
                 }
+                
             }else {
                 $banderaB = 0;
                 foreach ($bovinos as $bovino){
@@ -49,12 +56,19 @@ class BovinosController extends Controller
                 $subsidio = Subsidio::where('id_beneficiario', $request->id)
                                 ->where('id_info_productivo', '<', $request->idInfo)
                                 ->orderBy('created_at', 'desc')->first();
-                $infoProductivoM = InformacionProductivos::where('id', $subsidio->id_info_productivo)->first();
-                $manejos = RegActividadManejoAnimale::where('id_info_productivo',$infoProductivoM->id)->select('cantidad', 'periodicidad', 'id_actividad_manejo', 'producto_actividad')->get();
-                foreach ($manejos as $manejo){
-                    $manejo->setAttribute('actividad',$manejo->ActividadManejo->nombre_actividad);
-                    $dataManejo->add($manejo);
+                if ($subsidio != null) {
+                    $infoProductivoM = InformacionProductivos::where('id', $subsidio->id_info_productivo)->first();
+                    $manejos = RegActividadManejoAnimale::where('id_info_productivo',$infoProductivoM->id)->select('cantidad', 'periodicidad', 'id_actividad_manejo', 'producto_actividad')->get();
+                    foreach ($manejos as $manejo){
+                        $manejo->setAttribute('actividad',$manejo->ActividadManejo->nombre_actividad);
+                        $dataManejo->add($manejo);
+                    }                    
+                } else {
+                    $infoProductivoM = '';
+                    $manejos = '';
+                    $banderaM = 0;
                 }
+                
 
             } else {
                 $banderaM = 0;
@@ -71,13 +85,20 @@ class BovinosController extends Controller
                 $subsidio = Subsidio::where('id_beneficiario', $request->id)
                                 ->where('id_info_productivo', '<', $request->idInfo)
                                 ->orderBy('created_at', 'desc')->first();
-                $infoProductivoO = InformacionProductivos::where('id', $subsidio->id_info_productivo)->first();
-                $ordenios = RegOrdenio::where('id_info_productivo',$infoProductivoO->id)->select('produccion_dia', 'cantidad_cuaja', 'cantidad_autoconsumo', 'cantidad_venta', 'id_frecuencia_ordenio', 'id_unidades_ordenio')->get();
-                foreach ($ordenios as $ordenio){
-                    $ordenio->setAttribute('unidad',$ordenio->UnidadOrdenio->unidades_ordenio);
-                    $ordenio->setAttribute('frecuencia',$ordenio->FrecuenciaOrdenio->frecuencia);
-                    $dataOrdenio->add($ordenio);
+                if ($subsidio != null) {
+                    $infoProductivoO = InformacionProductivos::where('id', $subsidio->id_info_productivo)->first();
+                    $ordenios = RegOrdenio::where('id_info_productivo',$infoProductivoO->id)->select('produccion_dia', 'cantidad_cuaja', 'cantidad_autoconsumo', 'cantidad_venta', 'id_frecuencia_ordenio', 'id_unidades_ordenio')->get();
+                    foreach ($ordenios as $ordenio){
+                        $ordenio->setAttribute('unidad',$ordenio->UnidadOrdenio->unidades_ordenio);
+                        $ordenio->setAttribute('frecuencia',$ordenio->FrecuenciaOrdenio->frecuencia);
+                        $dataOrdenio->add($ordenio);
+                    }                    
+                } else {
+                    $infoProductivoO = '';
+                    $ordenios = '';
+                    $banderaO = 0;
                 }
+                
             } else {
                 $banderaO = 0;
                 foreach ($ordenios as $ordenio){
