@@ -3,6 +3,18 @@
         <h2>Cierre</h2>
         <form v-on:submit.prevent="guardarObs()" class="form">
             <div class="row">
+                    <div class="form-group col-lg-2 col-sm-12">            
+                        <label for="exampleInputName2">¿Caso Especial?</label>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" v-model="caso_especial">Si
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group col-lg-5 col-sm-3" v-if="caso_especial">
+                        <label  for="exampleInputName2">¿Porque?</label>
+                        <input  v-model="razon_especial" type="text" class="form-control" id="exampleInputName2" >
+                    </div>
                 <div class="col-sm-12">
                     <label for="observaciones">Observaciones del proyecto que se pretende desarrollar</label>
                     <textarea class="form-control" rows="10" v-model="obs"></textarea>

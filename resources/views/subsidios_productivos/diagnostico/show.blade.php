@@ -2310,7 +2310,9 @@
                     obs : '',
                     subirMasArchivos: false,
                     archivo: null,
-                    idPredio: this.idpredio
+                    idPredio: this.idpredio,
+                    caso_especial: false,
+                    razon_especial: ''
 
                 }
             },
@@ -2345,7 +2347,7 @@
                 },
 
                 guardarObs () {
-                    this.$http.post('/subsidios/productivos/diagnostico/cierre/save-cierre',{obs: this.obs, id: this.idinfo }).then((response)=>{
+                    this.$http.post('/subsidios/productivos/diagnostico/cierre/save-cierre',{obs: this.obs, id: this.idinfo, caso: this.caso_especial, razon: this.razon_especial }).then((response)=>{
                         if(response.body.estado ==='ok'){
 
                             notificarOk("", "Observaciones guardadas");
@@ -2414,6 +2416,8 @@
                 this.$http.post('/subsidios/productivos/diagnostico/cierre/info-cierre', {id :this.idinfo, tipo : 2 }).then((response)=>{
                     this.images = response.body.data;
                     this.obs = response.body.obs;
+                    this.caso_especial = response.body.caso;
+                    this.razon_especial = response.body.razon;
             }, (error)=>{
 
                 });

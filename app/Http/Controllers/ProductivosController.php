@@ -409,10 +409,16 @@ class ProductivosController extends Controller
 
 */
             $obs = InformacionProductivos::find($request->id)->observaciones_proyecto;
+            $caso = Subsidio::where('id_info_productivo', $request->id)
+                                ->where('id_tipo_subsidio', 2)
+                                ->firstOrFail();
+
             return response()->json([
                 'estado' => 'ok',
                 'data' => $fotos,
-                'obs' => $obs
+                'obs' => $obs,
+                'caso' => $caso->caso_especial == 1 ? true : false,
+                'razon' => $caso->razon_especial,
             ]);
         }catch (\Exception $ee){
             return response()->json([
@@ -429,6 +435,14 @@ class ProductivosController extends Controller
             $productivo = InformacionProductivos::find($request->id);
             $productivo->observaciones_proyecto = $request->obs;
             $productivo->save();
+
+            Subsidio::where('id_info_productivo', $request->id)
+                    ->where('id_tipo_subsidio', 2)
+                    ->update([
+                        'caso_especial' => $request->caso,
+                        'razon_especial' => $request->razon,
+                    ]);
+
             return response()->json([
                 'estado' => 'ok',
 
