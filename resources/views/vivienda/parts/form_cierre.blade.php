@@ -111,13 +111,13 @@
                         <label for="exampleInputName2">¿Caso Especial?</label>
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" v-model="cierre.caso_especial">Si
+                                <input type="checkbox" v-model="caso_especial">Si
                             </label>
                         </div>
                     </div>
-                    <div class="form-group col-lg-5 col-sm-3" v-if="cierre.caso_especial">
+                    <div class="form-group col-lg-5 col-sm-3" v-if="caso_especial">
                         <label  for="exampleInputName2">¿Porque?</label>
-                        <input  v-model="cierre.razon_especial" type="text" class="form-control" id="exampleInputName2" >
+                        <input  v-model="razon_especial" type="text" class="form-control" id="exampleInputName2" >
                     </div>
                 </div>
 

@@ -1235,9 +1235,7 @@
                     obra_proyectada: '',
                     archivo: null,
                     otra_infraestructura: false,
-                    cual_infraestructura: '',
-                    caso_especial: false,
-                    razon_especial: '',
+                    cual_infraestructura: ''
 
                 },
                 riesgos: '',
@@ -1245,6 +1243,8 @@
                 tipos_riesgos: '',
                 idPredio: this.idpredio,
                 otra_infraestructura: false,
+                caso_especial: false,
+                razon_especial: '',
             }
         },
         methods: {
@@ -1278,7 +1278,7 @@
             },
             
             guardarIndicadores(){
-                this.$http.post('/subsidios/vivienda/diagnostico/cierre/save-indicadores',this.cierre).then((response)=>{
+                this.$http.post('/subsidios/vivienda/diagnostico/cierre/save-indicadores',{cierre: this.cierre, caso: this.caso_especial, razon: this.razon_especial}).then((response)=>{
                     if(response.body.estado === 'ok'){
                         this.cierre.id = response.body.id;
                         notificarOk("", "Cierre Guardado");
@@ -1345,8 +1345,8 @@
         },
         mounted(){
             this.$http.post('/subsidios/vivienda/diagnostico/cierre/caso_especial', {id :this.idinfo, tipo : 1 }).then((response)=>{
-               this.cierre.caso_especial = response.body.caso;
-               this.cierre.razon_especial = response.body.razon;
+               this.caso_especial = response.body.caso;
+               this.razon_especial = response.body.razon;
            }, (error)=>{
                 //notificarFail("",""+error)
            });        

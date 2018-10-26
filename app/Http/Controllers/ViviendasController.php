@@ -700,59 +700,60 @@ class ViviendasController extends Controller
 
 
 
-    public function saveIndicadores(Request$request){
+    public function saveIndicadores(Request $request){
         try{
-            if($request->id == ''){
+            $request =  json_decode($request->getContent());
+            if($request->cierre->id == ''){
                 $indicadores = new Indicadore();
-                $indicadores->hacinamiento = $request->hacinamiento;
-                $indicadores->saneamiento_basico = $request->saneamiento_basico;
-                $indicadores->condiciones_seguridad = $request->condiciones_seguridad;
-                $indicadores->id_informacion = $request->id_informacion;
-                $indicadores->no_habitaciones = $request->no_habitaciones;
-                $indicadores->no_personas_vivienda = $request->no_personas_vivienda;
-                $indicadores->estados_vivienda_id = $request->estados_vivienda_id;
-                $indicadores->zonas_riesgos = collect($request->zonas_riesgos)->implode(',');
-                $indicadores->otro_riesgo = $request->otro_riesgo;
-                $indicadores->infraestructura_cercana = $request->infraestructura_cercana;
-                $indicadores->tipos_infraestructuras = collect($request->tipos_infraestructuras)->implode(',');
-                $indicadores->tipos_riesgos = collect($request->tipos_riesgos)->implode(',');
-                $indicadores->propiedad_geopark = $request->propiedad_geopark;
-                $indicadores->obra_proyectada = $request->obra_proyectada;
-                $indicadores->otra_infraestructura = $request->otra_infraestructura;
-                $indicadores->cual_infraestructura = $request->cual_infraestructura;
+                $indicadores->hacinamiento = $request->cierre->hacinamiento;
+                $indicadores->saneamiento_basico = $request->cierre->saneamiento_basico;
+                $indicadores->condiciones_seguridad = $request->cierre->condiciones_seguridad;
+                $indicadores->id_informacion = $request->cierre->id_informacion;
+                $indicadores->no_habitaciones = $request->cierre->no_habitaciones;
+                $indicadores->no_personas_vivienda = $request->cierre->no_personas_vivienda;
+                $indicadores->estados_vivienda_id = $request->cierre->estados_vivienda_id;
+                $indicadores->zonas_riesgos = collect($request->cierre->zonas_riesgos)->implode(',');
+                $indicadores->otro_riesgo = $request->cierre->otro_riesgo;
+                $indicadores->infraestructura_cercana = $request->cierre->infraestructura_cercana;
+                $indicadores->tipos_infraestructuras = collect($request->cierre->tipos_infraestructuras)->implode(',');
+                $indicadores->tipos_riesgos = collect($request->cierre->tipos_riesgos)->implode(',');
+                $indicadores->propiedad_geopark = $request->cierre->propiedad_geopark;
+                $indicadores->obra_proyectada = $request->cierre->obra_proyectada;
+                $indicadores->otra_infraestructura = $request->cierre->otra_infraestructura;
+                $indicadores->cual_infraestructura = $request->cierre->cual_infraestructura;
 
                 $indicadores->save();    
                 
-                Subsidio::where('id_info_vivienda', $request->id_informacion)
+                Subsidio::where('id_info_vivienda', $request->cierre->id_informacion)
                     ->where('id_tipo_subsidio', 1)
                     ->update([
-                        'caso_especial' => $request->caso_especial,
-                        'razon_especial' => $request->razon_especial,
+                        'caso_especial' => $request->caso,
+                        'razon_especial' => $request->razon,
                     ]);
             }else{
-                $indicadores = Indicadore::find($request->id);
-                $indicadores->hacinamiento = $request->hacinamiento;
-                $indicadores->saneamiento_basico = $request->saneamiento_basico;
-                $indicadores->condiciones_seguridad = $request->condiciones_seguridad;
-                //$indicadores->id_informacion = $request->id_informacion;
-                $indicadores->no_habitaciones = $request->no_habitaciones;
-                $indicadores->no_personas_vivienda = $request->no_personas_vivienda;
-                $indicadores->estados_vivienda_id = $request->estados_vivienda_id;
-                $indicadores->zonas_riesgos = collect($request->zonas_riesgos)->implode(',');
-                $indicadores->otro_riesgo = $request->otro_riesgo;
-                $indicadores->infraestructura_cercana = $request->infraestructura_cercana;
-                $indicadores->tipos_infraestructuras = collect($request->tipos_infraestructuras)->implode(',');
-                $indicadores->tipos_riesgos = collect($request->tipos_riesgos)->implode(',');
-                $indicadores->propiedad_geopark = $request->propiedad_geopark;
-                $indicadores->obra_proyectada = $request->obra_proyectada;
+                $indicadores = Indicadore::find($request->cierre->id);
+                $indicadores->hacinamiento = $request->cierre->hacinamiento;
+                $indicadores->saneamiento_basico = $request->cierre->saneamiento_basico;
+                $indicadores->condiciones_seguridad = $request->cierre->condiciones_seguridad;
+                //$indicadores->id_informacion = $request->cierre->id_informacion;
+                $indicadores->no_habitaciones = $request->cierre->no_habitaciones;
+                $indicadores->no_personas_vivienda = $request->cierre->no_personas_vivienda;
+                $indicadores->estados_vivienda_id = $request->cierre->estados_vivienda_id;
+                $indicadores->zonas_riesgos = collect($request->cierre->zonas_riesgos)->implode(',');
+                $indicadores->otro_riesgo = $request->cierre->otro_riesgo;
+                $indicadores->infraestructura_cercana = $request->cierre->infraestructura_cercana;
+                $indicadores->tipos_infraestructuras = collect($request->cierre->tipos_infraestructuras)->implode(',');
+                $indicadores->tipos_riesgos = collect($request->cierre->tipos_riesgos)->implode(',');
+                $indicadores->propiedad_geopark = $request->cierre->propiedad_geopark;
+                $indicadores->obra_proyectada = $request->cierre->obra_proyectada;
 
                 $indicadores->save();
 
-                Subsidio::where('id_info_vivienda', $request->id_informacion)
+                Subsidio::where('id_info_vivienda', $request->cierre->id_informacion)
                     ->where('id_tipo_subsidio', 1)
                     ->update([
-                        'caso_especial' => $request->caso_especial,
-                        'razon_especial' => $request->razon_especial,
+                        'caso_especial' => $request->caso,
+                        'razon_especial' => $request->razon,
                     ]);
             }
 
