@@ -73,8 +73,7 @@
                     <td>@{{ info.vereda }}</td>
                     <td>@{{ info.fase }}</td>
                     <td>@{{ info.beneficiario }}</td>
-                    <td v-if="info.caso_especial === 1">Si</td>
-                    <td v-else>No</td>
+                    <td>@{{ info.caso_especial}}</td>                    
                     <td>@{{ info.valor }}</td>
                     <td>@{{ info.porcentaje_ejecucion+' %' }}</td>
                     <td>
