@@ -78,7 +78,7 @@
                     </button>
                 </div>-->
 
-            <div class="col-lg-12" style="margin-top: 10px">
+            <div class="col-lg-10" style="margin-top: 10px">
 
                 <div class="form-group">
                     <label for="exampleInputName2">Ver grafico por:</label>
@@ -97,7 +97,9 @@
                     </select>
                     <span class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 25px;"></span>
                 </div>
-
+            </div>
+            <div class="col-lg-2 col-sm-12" style="margin-top: 35px;" v-show="nuevaConsulta.ordenServicio != ''">
+                <button class="btn btn-default " type="submit" >Generar Excel</button>
             </div>
         </div>
 
@@ -205,7 +207,8 @@
                 camposGrafico : [],
                 subsidiosBloqueOVereda: '',
                 municipios: '',
-                veredas: ''
+                veredas: '',
+                generateExcel: 0
 
 
 
@@ -282,11 +285,14 @@
                     }
                     this.dibujarSerial(data, "Grafico Presupuesto Asignado")
 
-                    this.$http.post('/exportExcel', {data: data, op: 2}).then((response)=>{
-                        notificarOk("Excel generado...")
-                    },(error)=>{
-                        notificarFail("Error"+ error) 
-                    });
+                    if (this.generateExcel) {
+                        this.$http.post('/exportExcel', {data: data, op: 2}).then((response)=>{
+                            notificarOk("Excel generado...")
+                        },(error)=>{
+                            notificarFail("Error"+ error) 
+                        });
+                        
+                    }    
 
                 },
                 subsidiosByEjecutado : function () {

@@ -16,6 +16,8 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Exports\UsersExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class InformesController extends Controller
 {
@@ -521,10 +523,16 @@ class InformesController extends Controller
 
         $writer = new \PHPExcel_Writer_Excel2007($excel);
         $writer->setIncludeCharts(TRUE);
-
         // Save the file.
         $writer->save(storage_path().'/'.Carbon::now()->timestamp.'file.xlsx');
         
+        
+        
     }
-    
+
+    /*public function export() 
+    {
+        return Excel::download(new UsersExport, 'users.xlsx');
+    }
+    */
 }
