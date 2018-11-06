@@ -17,7 +17,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Exports\UsersExport;
-use Maatwebsite\Excel\Facades\Excel;
+//use Maatwebsite\Excel\Facades\Excel;
+use Excel;
+use PHPExcel_Style_Fill;
+use PHPExcel_Style_Border;
+use PHPExcel_Style_Color;
+use PHPExcel_IOFactory;
 
 class InformesController extends Controller
 {
@@ -103,16 +108,24 @@ class InformesController extends Controller
             //$datosGenerales = $subsidios;
             $veredas = Campo::find($request->campo)->Veredas;
             $veredas = $veredas->pluck('id');
+
             if ($request->vereda == '9999') {
                 $subsidios = $subsidios->whereIn('id_vereda',$veredas);
+                
             }else{
 
                 $subsidios = $subsidios->whereIn('id_vereda',$request->vereda);
             }
+            
             //$subsidios = $subsidios->whereIn('id_vereda',$request->vereda);
             $datosGenerales = $subsidios;
-            if($request->tipo == '9999' || $request->vereda == '9999'){
-                $subsidios = $subsidios->where('valor', '<>', 0)->where('caso_especial', '=', 0)->groupBy( 'Vereda.Campo.nombre_campo');
+            if($request->tipo == '9999' || $request->vereda == '9999'){                
+                if ($request->municipio != '9999') {
+                    $subsidios = $subsidios->where("id_municipio", $request->municipio)->groupBy("Municipio.municipio");
+                    //dd($subsidios);
+                }else{
+                    $subsidios = $subsidios->where('valor', '<>', 0)->where('caso_especial', '=', 0)->groupBy('Vereda.Campo.nombre_campo');
+                }
             }else{
                 $subsidios = $subsidios->where('id_tipo_subsidio', $request->tipo);
                 $datosGenerales = $subsidios;
@@ -122,6 +135,8 @@ class InformesController extends Controller
                                         ->groupBy( 'Vereda.Campo.nombre_campo');
             }
 
+
+            //dd($subsidios);
         }
 
 
@@ -405,7 +420,8 @@ class InformesController extends Controller
 
     public function ExportExcel(Request $request)
     {
-        
+        //dd($request->data);
+        $titulo = $request->title;
         if ($request->op == 1) {
             $arrayName = array();
             $i = 0;
@@ -415,43 +431,84 @@ class InformesController extends Controller
 
             }
             $dataseriesLabels1 = array(
-                new \PHPExcel_Chart_DataSeriesValues('String', 'ChartTest!$B$1', NULL, 1),
+                new \PHPExcel_Chart_DataSeriesValues('String',("'".$titulo."'".'!$B$1'), NULL, 1),
             );
             $dataSeriesValues1 = array(
-                new \PHPExcel_Chart_DataSeriesValues('Number', '!$B$2:$B$'.count($request->data[0]), NULL),
+                new \PHPExcel_Chart_DataSeriesValues('Number',"'".$titulo."'".'!$B$2:$B$'.count($request->data[0]), NULL),
             );
             for ($i=1; $i <= count($arrayName); $i++) { 
                 $xAxisTickValues = array(
-                    new \PHPExcel_Chart_DataSeriesValues('String', 'ChartTest!$A$2:$A$'.$i, NULL), //  Jan to Dec
+                    new \PHPExcel_Chart_DataSeriesValues('String', "'".$titulo."'".'!$A$2:$A$'.$i, NULL), //  Jan to Dec
                 );
                 # code...
             }
         }else{
             $arrayName = $request->data;
+            
             //echo count($arrayName);
             $dataseriesLabels1 = array(
-                new \PHPExcel_Chart_DataSeriesValues('String', '', NULL, 1),
+                new \PHPExcel_Chart_DataSeriesValues('String', ("'".$titulo."'".'!$B$1'), NULL, 1),
             );
             $dataSeriesValues1 = array(
-                new \PHPExcel_Chart_DataSeriesValues('Number', '!$B$1:$B$'.count($arrayName), NULL),
+                new \PHPExcel_Chart_DataSeriesValues('Number', "'".$titulo."'".'!$B$2:$B$'.count($arrayName), NULL),
             );
-            for ($i=1; $i <= count($arrayName); $i++) { 
+            for ($i=0; $i < count($arrayName); $i++) { 
                 $xAxisTickValues = array(
-                    new \PHPExcel_Chart_DataSeriesValues('String', 'ChartTest!$A$1:$A$'.$i, NULL), //  Jan to Dec
+                    new \PHPExcel_Chart_DataSeriesValues('String', "'".$titulo."'".'!$A$2:$A$'.$i, NULL), //  Jan to Dec
                 );
                 # code...
             }
         }
         
+        //dd($arrayName);
        
         $excel = new \PHPExcel();
+        $excel->setActiveSheetIndex(0);
+        $excel->getActiveSheet()->setTitle($titulo);
 
-        $excel->createSheet();
-        $excel->setActiveSheetIndex(1);
-        $excel->getActiveSheet()->setTitle('ChartTest');
+        $excel->getActiveSheet()->getColumnDimension('A')->setAutoSize(true);
+        $excel->getActiveSheet()->getColumnDimension('B')->setAutoSize(true);
 
-        $objWorksheet = $excel->getActiveSheet();
-        $objWorksheet->fromArray($arrayName);
+        $excel->getActiveSheet()->getStyle('A1:B1')->applyFromArray(
+            array(
+                'fill' => array(
+                    'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                    'color' => array('rgb' => '17ac2f')
+                ),
+                'borders' => array(
+                    'allborders' => array(
+                      'style' => PHPExcel_Style_Border::BORDER_THIN
+                    )
+                  )
+            )
+        );
+
+        $excel->getActiveSheet()->getStyle('A1:B'.(count($arrayName)+1))->applyFromArray(
+            array(
+                'fill' => array(
+                    'type' => PHPExcel_Style_Fill::FILL_SOLID
+                ),
+                'borders' => array(
+                    'allborders' => array(
+                      'style' => PHPExcel_Style_Border::BORDER_THIN
+                    )
+                  )
+            )
+        );
+        if ($request->op != 1) {
+            $excel->setActiveSheetIndex(0)
+                    ->setCellValue('A1', 'Vereda')
+                    ->setCellValue('B1', 'Presupuesto');
+            $objWorksheet = $excel->getActiveSheet();
+            $objWorksheet->fromArray($arrayName, null, 'A2');
+        }else{
+            $objWorksheet = $excel->getActiveSheet();
+            $objWorksheet->fromArray($arrayName);
+        }
+
+        $excel->getActiveSheet()->getStyle('B1:B'.(count($arrayName)+1))->getNumberFormat()->setFormatCode('_("$"* #,##0.00_);_("$"* \(#,##0.00\);_("$"* "-"??_);_(@_)');
+
+        
                     
         
 
@@ -500,7 +557,7 @@ class InformesController extends Controller
         //  Set the series in the plot area
         $plotarea = new \PHPExcel_Chart_PlotArea(NULL, array($series1));
         $legend = new \PHPExcel_Chart_Legend(\PHPExcel_Chart_Legend::POSITION_RIGHT, NULL, false);
-        $title = new \PHPExcel_Chart_Title('Titulo 1');
+        $title = new \PHPExcel_Chart_Title($titulo);
 
         //  Create the chart
         $chart = new \PHPExcel_Chart(
@@ -521,10 +578,14 @@ class InformesController extends Controller
         //  Add the chart to the worksheet
         $objWorksheet->addChart($chart);
 
-        $writer = new \PHPExcel_Writer_Excel2007($excel);
+        //$writer = new \PHPExcel_Writer_Excel2007($excel);
+        //$writer->save(storage_path().'/'.Carbon::now()->timestamp.$titulo.'.xlsx');
+        $writer = \PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
         $writer->setIncludeCharts(TRUE);
         // Save the file.
-        $writer->save(storage_path().'/'.Carbon::now()->timestamp.'file.xlsx');
+
+// Write file to the browser
+        $writer->save(Carbon::now()->timestamp.$titulo.'.xlsx');
         
         
         

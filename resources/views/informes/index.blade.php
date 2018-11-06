@@ -292,7 +292,12 @@
                             notificarFail("Error"+ error) 
                         });
                         
-                    }    
+                    }
+                    this.$http.post('/exportExcel', {data: data, op: 2, title: "Grafico Presupuesto Asignado"}).then((response)=>{
+                        notificarOk("Excel generado...")
+                    },(error)=>{
+                        notificarFail("Error"+ error) 
+                    });
 
                 },
                 subsidiosByEjecutado : function () {
@@ -305,7 +310,7 @@
                     }
                     this.dibujarSerial(data, "Grafico Presupuesto Ejecutado")
 
-                    this.$http.post('/exportExcel', {data: data, op: 2}).then((response)=>{
+                    this.$http.post('/exportExcel', {data: data, op: 2, title: "Grafico Presupuesto Ejecutado"}).then((response)=>{
                         notificarOk("Excel generado...")
                     },(error)=>{
                         notificarFail("Error"+ error) 
@@ -340,7 +345,7 @@
 
                     this.dibujarPie(data, "Grafico Subsidios Asignados")
 
-                    this.$http.post('/exportExcel', {data: data, op: 1}).then((response)=>{
+                    this.$http.post('/exportExcel', {data: data, op: 1, title: "Grafico Beneficios Asignados"}).then((response)=>{
                         notificarOk("Excel generado...")
                     },(error)=>{
                         notificarFail("Error"+ error) 
@@ -361,7 +366,7 @@
 
                     this.dibujarPie(data, "Grafico Subsidios Entregados")
 
-                    this.$http.post('/exportExcel', {data: data, op: 2}).then((response)=>{
+                    this.$http.post('/exportExcel', {data: data, op: 2, title: "Grafico Beneficios Entregados"}).then((response)=>{
                         notificarOk("Excel generado...")
                     },(error)=>{
                         notificarFail("Error"+ error) 
@@ -498,7 +503,7 @@
 
                     this.dibujarSerialBloqueFase("Inversion Total Por Bloque",dataBloques,veredas, "Pesos Colombianos")
 
-                    this.$http.post('/exportExcel', {data: dataBloques, vereda: veredas, op: 1}).then((response)=>{
+                    this.$http.post('/exportExcel', {data: dataBloques, vereda: veredas, op: 1, title: "Inversion Total"}).then((response)=>{
                         notificarOk("Excel generado...")
                     },(error)=>{
                         notificarFail("Error"+ error) 
@@ -619,7 +624,7 @@
                     jQuery.unique(veredas);
 
                     this.dibujarSerialBloqueFase("Subsidios Total "+bloqueActual,dataBloques,veredas,"Cantidad de Subsidios")
-                    this.$http.post('/exportExcel', {data: dataBloques, vereda: veredas, op: 1}).then((response)=>{
+                    this.$http.post('/exportExcel', {data: dataBloques, vereda: veredas, op: 1, title: "Beneficios Asignados"}).then((response)=>{
                         notificarOk("Excel generado...")
                     },(error)=>{
                         notificarFail("Error"+ error) 
